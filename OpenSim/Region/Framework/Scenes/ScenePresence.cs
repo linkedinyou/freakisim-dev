@@ -134,6 +134,9 @@ namespace OpenSim.Region.Framework.Scenes
         /// </summary>
         public static readonly Vector3 SIT_TARGET_ADJUSTMENT = new Vector3(0.0f, 0.0f, 0.4f);
 
+        // AKIDO Old Sit Target
+        public static readonly Vector3 OLD_SIT_TARGET_ADJUSTMENT = new Vector3(0.1f, 0.0f, 0.3f);
+
         /// <summary>
         /// Movement updates for agents in neighboring regions are sent directly to clients.
         /// This value only affects how often agent positions are sent to neighbor regions
@@ -3010,9 +3013,22 @@ namespace OpenSim.Region.Framework.Scenes
                     Vector3 up = new Vector3((float)x, (float)y, (float)z);
                     Vector3 sitOffset = up * (float)offset;
 
+
+                    // AKIDO SitTarget Compatibility Workaround
+                    Vector3 newPos;
+
                     // sitOffset is in Avatar Center coordinates: from origin to 'sitTargetPos + SIT_TARGET_ADJUSTMENT'.
                     // So, we need to _substract_ it to get to the origin of the Avatar Center.
-                    Vector3 newPos = sitTargetPos + SIT_TARGET_ADJUSTMENT - sitOffset;
+                    if (m_scene.m_useWrongSitTarget) {
+                        if (part.CreationDate > 1320537600) { // 06/11/2011 0:0:0
+                            newPos = sitTargetPos + SIT_TARGET_ADJUSTMENT - sitOffset;
+                        } else {
+                            newPos = sitTargetPos + OLD_SIT_TARGET_ADJUSTMENT;
+                        }
+                    } else {
+                        newPos = sitTargetPos + SIT_TARGET_ADJUSTMENT - sitOffset;
+                    }
+
                     Quaternion newRot;
 
                     if (part.IsRoot)

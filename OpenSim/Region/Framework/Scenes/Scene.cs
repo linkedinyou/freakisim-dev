@@ -225,6 +225,13 @@ namespace OpenSim.Region.Framework.Scenes
             }
         }
 
+        // AKIDO wrongSitTarget Variable
+        // In November 2011 a bug concerning the SitTarget was fixed.
+        // This caused huge headache among existing Sim Oweners who had
+        // to change their furniture etc. This workaround if enabled calculates
+        // the "wrong" SitTarget for furniture created before Nov 2011
+        public bool m_useWrongSitTarget = false;
+
         private List<string> m_AllowedViewers = new List<string>();
         private List<string> m_BannedViewers = new List<string>();
         
@@ -958,6 +965,9 @@ namespace OpenSim.Region.Framework.Scenes
                         m_BannedViewers.Add(viewer.Trim().ToLower());
                     }
                 }
+
+                // AKIDO get the Variable useWrongSitTarget from the [Startup] Section of OpenSim.ini
+                m_useWrongSitTarget = startupConfig.GetBoolean("UseWrongSitTarget", m_useWrongSitTarget);
 
                 MinFrameTime              = startupConfig.GetFloat( "MinFrameTime",                      MinFrameTime);
                 m_update_backup           = startupConfig.GetInt(   "UpdateStorageEveryNFrames",         m_update_backup);

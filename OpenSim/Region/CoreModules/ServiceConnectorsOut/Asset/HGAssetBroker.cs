@@ -39,6 +39,11 @@ using OpenSim.Region.Framework.Scenes;
 using OpenSim.Services.Interfaces;
 using OpenMetaverse;
 
+// AKIDO include required
+using System.Xml.Serialization;
+using OpenMetaverse.StructuredData;
+
+
 namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Asset
 {
     [Extension(Path = "/OpenSim/RegionModules", NodeName = "RegionModule", Id = "HGAssetBroker")]
@@ -54,6 +59,10 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Asset
 
         private Scene m_aScene;
         private string m_LocalAssetServiceURI;
+
+        // AKIDO required
+        private string surabayaServerURI = String.Empty;
+        private bool surabayaServerEnabled = true;
 
         private bool m_Enabled = false;
 
@@ -71,6 +80,18 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Asset
 
         public void Initialise(IConfigSource source)
         {
+            // AKIDO get the Surabaya Server Config
+            IConfig surabayaConfig = source.Configs["SurabayaServer"];
+            if (surabayaConfig != null) {
+                surabayaServerURI = surabayaConfig.GetString("SurabayaServerURI");
+                surabayaServerEnabled = surabayaConfig.GetBoolean("Enabled");
+                m_log.DebugFormat("[AssetServicesConnector]: Surabaya ServerURI: {0}", surabayaServerURI);
+            } else {
+                m_log.Warn("[AssetServicesConnector]: Surabaya Config is missing, disabling Surabaya");
+                surabayaServerEnabled = false;
+                surabayaServerURI = "";
+            }
+
             IConfig moduleConfig = source.Configs["Modules"];
             if (moduleConfig != null)
             {
@@ -343,6 +364,55 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Asset
             {
                 if (m_Cache != null)
                     m_Cache.Cache(asset);
+
+                // AKIDO Baked Textures are stored on the Surabaya Server as well...
+                // it is also possible to disable Surabaya. I'd favor to configure
+                // Surabaya in the CAPS Section of the OpenSim.ini but right now with still some
+                // old Viwers which do not support http getTexture() I stick to this hack.
+                try {
+                    if(surabayaServerEnabled) {
+                        // Create an XML of the Texture in order to transport the Asset to Surabaya.
+                        if (asset.Type == (sbyte) AssetType.Texture) {
+                            XmlSerializer xs = new XmlSerializer(typeof(AssetBase));
+                            byte[] result = ServerUtils.SerializeResult(xs, asset);
+                            string resultString = Util.UTF8.GetString(result);
+                            // AKIDO: remove commented code
+                            // m_log.DebugFormat("Dump of XML: {0}", resultString);
+                            OSDMap serializedAssetCaps = new OSDMap();
+                            serializedAssetCaps.Add("assetID", asset.ID);
+                            if(asset.Temporary) {
+                                serializedAssetCaps.Add("temporary", "true");
+                            } else {
+                                serializedAssetCaps.Add("temporary", "false");
+                            }
+                            serializedAssetCaps.Add("serializedAsset", resultString);
+
+                            int tickstart = Util.EnvironmentTickCount();
+
+                            OSDMap surabayaAnswer = WebUtil.PostToServiceCompressed(surabayaServerURI+"/cachetexture", serializedAssetCaps, 3000);
+                            if(surabayaAnswer != null) {
+                                // m_log.InfoFormat("Caching baked Texture: {0}",surabayaAnswer.ToString());
+                                OSDBoolean isSuccess = (OSDBoolean) surabayaAnswer["Success"];
+                                if (isSuccess) {
+                                    OSDMap answer = (OSDMap) surabayaAnswer["_Result"];
+                                    string surabayaResult = answer["result"];
+                                    if(!surabayaResult.Equals("ok")) {
+                                        m_log.ErrorFormat("Error PostingAgent Data: {0}", surabayaAnswer["reason"]);
+                                    } else {
+                                        m_log.InfoFormat("Caching baked Texture {0} was successful in {1}ms", asset.ID, Util.EnvironmentTickCountSubtract(tickstart));
+                                    }
+                                } else {
+                                    m_log.InfoFormat("Caching baked Texture {0} was not successful: {1}", asset.ID, surabayaAnswer["Message"]);
+                                }
+                            } else {
+                                m_log.ErrorFormat("Caching baked texture {0} to Surabaya returned NULL after {1}ms", asset.ID ,Util.EnvironmentTickCountSubtract(tickstart));
+                            }
+                        }
+                    }
+                } catch (Exception ex) {
+                    m_log.Error("Exception while caching baked texture to Surabaya: ", ex);
+                }
+
                 return asset.ID;
             }
 
