@@ -39,6 +39,7 @@ using System.Reflection;
 // AKIDO include required
 using System.Xml.Serialization;
 using OpenMetaverse.StructuredData;
+using OpenMetaverse;
 
 
 namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Asset
