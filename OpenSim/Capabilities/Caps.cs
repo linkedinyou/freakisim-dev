@@ -265,12 +265,14 @@ namespace OpenSim.Framework.Capabilities
             }
         }
 
+        // AKIDO Changed implementation of caps in order to get the proper inventory of HG Tourists
+
         /// <summary>
         /// Return an LLSD-serializable Hashtable describing the
         /// capabilities and their handler details.
         /// </summary>
         /// <param name="excludeSeed">If true, then exclude the seed cap.</param>
-        public Hashtable GetCapsDetails(bool excludeSeed, List<string> requestedCaps)
+        public Hashtable GetCapsDetails(bool excludeSeed, List<string> requestedCaps, string inventory_server_name, string inventory_server_port)
         {
             Hashtable caps = CapsHandlers.GetCapsDetails(excludeSeed, requestedCaps);
 
@@ -309,7 +311,15 @@ namespace OpenSim.Framework.Capabilities
                 if (!requestedCaps.Contains(kvp.Key))
                     continue;
 
-                caps[kvp.Key] = kvp.Value;
+                // AKIDO change the returned caps path to include the inventory server and inventory port. Fixes missing inventory for HG Tourists
+                if (kvp.Key.Equals("FetchInventory2")) {
+                    caps[kvp.Key] = kvp.Value + inventory_server_name + "/" + inventory_server_port;
+                } else if (kvp.Key.Equals("FetchInventoryDescendents2")) {
+                    caps[kvp.Key] = kvp.Value + inventory_server_name + "/" + inventory_server_port;
+                } else {
+                    caps[kvp.Key] = kvp.Value;
+                }
+
             }
 
             return caps;

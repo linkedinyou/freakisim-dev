@@ -46,6 +46,11 @@ using OpenSim.Framework.Servers;
 using OpenSim.Framework.Servers.HttpServer;
 using OpenSim.Services.Interfaces;
 
+// AKIDO required includes
+using OpenSim.Region.Framework.Interfaces;
+using System.Text.RegularExpressions;
+using System.Web;
+
 using Caps = OpenSim.Framework.Capabilities.Caps;
 using OSDArray = OpenMetaverse.StructuredData.OSDArray;
 using OSDMap = OpenMetaverse.StructuredData.OSDMap;
@@ -115,6 +120,27 @@ namespace OpenSim.Region.ClientStack.Linden
         private bool m_dumpAssetsToFile = false;
         private string m_regionName;
         private int m_levelUpload = 0;
+
+        // AKIDO required variables
+        protected IUserManagement m_UserManagement;
+        protected IUserManagement UserManagementModule {
+            get {
+                if (m_UserManagement == null) {
+
+                    m_UserManagement = m_Scene.RequestModuleInterface<IUserManagement> ();
+
+                    if (m_UserManagement == null) {
+                        m_log.ErrorFormat (
+                            "[BunchOfCaps]: Could not retrieve IUserManagement module from {0}",
+                            m_Scene.RegionInfo.RegionName);
+                    }
+                }
+
+                return m_UserManagement;
+            }
+        }
+        private string inventory_server_name = string.Empty;
+        private string inventory_server_port = string.Empty;
 
         public BunchOfCaps(Scene scene, Caps caps)
         {
@@ -255,6 +281,8 @@ namespace OpenSim.Region.ClientStack.Linden
             }
         }
 
+        // AKIDO changed the whole seed caps request function in order to fix the Inventory Problem for HG Tourists, when connected to a Surabaya Server
+
         /// <summary>
         /// Construct a client response detailing all the capabilities this server can provide.
         /// </summary>
@@ -265,10 +293,12 @@ namespace OpenSim.Region.ClientStack.Linden
         /// <param name="httpResponse">HTTP response header object</param>
         /// <returns></returns>
         public string SeedCapRequest(string request, string path, string param,
-                                  IOSHttpRequest httpRequest, IOSHttpResponse httpResponse)
-        {
-            m_log.DebugFormat(
-                "[CAPS]: Received SEED caps request in {0} for agent {1}", m_regionName, m_HostCapsObj.AgentID);
+            IOSHttpRequest httpRequest, IOSHttpResponse httpResponse) 
+        {                                  
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat("{0} called", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+                m_log.DebugFormat("request: {0}, path: {1}, param: {2} )  in {3} for agent {4}",request, path, param, m_regionName, m_HostCapsObj.AgentID);
+            }
 
             if (!m_Scene.CheckClient(m_HostCapsObj.AgentID, httpRequest.RemoteIPEndPoint))
             {
@@ -279,15 +309,90 @@ namespace OpenSim.Region.ClientStack.Linden
                 return string.Empty;
             }
 
-            OSDArray capsRequested = (OSDArray)OSDParser.DeserializeLLSDXml(request);
-            List<string> validCaps = new List<string>();
+            string inventoryURL = string.Empty;
+            ScenePresence sp = null;
 
-            foreach (OSD c in capsRequested)
-                validCaps.Add(c.AsString());
+            m_Scene.TryGetScenePresence (m_HostCapsObj.AgentID, out sp);
 
-            string result = LLSDHelpers.SerialiseLLSDReply(m_HostCapsObj.GetCapsDetails(true, validCaps));
+            if (sp != null) {
+                AgentCircuitData aCircuit = m_Scene.AuthenticateHandler.GetAgentCircuitData (sp.ControllingClient.CircuitCode);
+                if (aCircuit != null) {
+                    if (aCircuit.ServiceURLs != null) {
+                        if (aCircuit.ServiceURLs.ContainsKey ("InventoryServerURI")) {
+                            inventoryURL = aCircuit.ServiceURLs ["InventoryServerURI"].ToString ();
+                            if (inventoryURL != null && inventoryURL != string.Empty) {
+                                inventoryURL = inventoryURL.Trim (new char[] { '/' });
+                                if (m_log.IsDebugEnabled) {
+                                    m_log.DebugFormat ("[BunchOfCaps]: Found Inventory URL: {0} of Agent: {1}", inventoryURL, m_HostCapsObj.AgentID);
+                                }
+                            } else {
+                                m_log.WarnFormat ("[BunchOfCaps]: User {0} AgentCirquitData.ServiceURLs.InventoryURL is null or empty", m_HostCapsObj.AgentID);
+                            }
+                        } else {
+                            m_log.WarnFormat ("[BunchOfCaps]: User {0} has no AgentCirquitData.ServiceURLs.InventoryURL", m_HostCapsObj.AgentID);
+                        }
+                    } else {
+                        m_log.WarnFormat ("[BunchOfCaps]: User {0} has no AgentCirquitData.ServiceURLs", m_HostCapsObj.AgentID);
+                    }
+                } else {
+                    m_log.WarnFormat ("[BunchOfCaps]: User {0} has no AgentCirquitData", m_HostCapsObj.AgentID);
+                }
+            }
 
-            //m_log.DebugFormat("[CAPS] CapsRequest {0}", result);
+            if (sp == null) {
+                inventoryURL = UserManagementModule.GetUserServerURL (m_HostCapsObj.AgentID, "InventoryServerURI");
+                if (!string.IsNullOrEmpty (inventoryURL)) {
+                    inventoryURL = inventoryURL.Trim (new char[] { '/' });
+                    m_log.DebugFormat ("[HG INVENTORY CONNECTOR]: Added {0} to the cache of inventory URLs", inventoryURL);
+                } else {
+                    m_log.WarnFormat ("[BunchOfCaps]: User {0} UserManagementModule.GetUserServerURL(InventoryServerURI) is null or empty using the default inventory URL", m_HostCapsObj.AgentID);
+
+                    IConfigSource config = m_Scene.Config;
+                    if (config != null) {
+                        //
+                        // Reading the inventory Server Url from the config and parse the server name and the server port out of the Server URI
+                        // Will be used to access the correct Grid Inventory Server from the Surabaya Server.
+                        //
+                        IConfig inventoryServiceConfig = config.Configs ["InventoryService"];
+                        if (inventoryServiceConfig != null) {
+                            inventoryURL = inventoryServiceConfig.GetString ("InventoryServerURI", inventory_server_name);
+                            if(inventoryURL == null) {
+                                m_log.Error("No InventoryServerURI found in Section [InventoryService]");
+                            }
+                        } else {
+                            m_log.Error("No [Appearance] Section found in Config");
+                        }
+                    } else {
+                        m_log.Error("No IConfigSource found in Scene");
+                    }
+
+                }
+            }
+
+            Match m = Regex.Match(inventoryURL, "http://(?<server>.*):(?<port>.*)");
+            if(m.Success) {
+                inventory_server_name = m.Groups["server"].Value;
+                inventory_server_port = m.Groups["port"].Value;
+            } else {
+                m_log.ErrorFormat("No Match parsing inventoryURL: {0}", inventoryURL);
+            }
+
+            OSDArray capsRequested = (OSDArray)OSDParser.DeserializeLLSDXml (request);
+            List<string> validCaps = new List<string> ();
+
+            foreach (OSD c in capsRequested) {
+                if(m_log.IsDebugEnabled) {
+                    m_log.DebugFormat("[BunchOfCaps]: capsRequested: {0}", c.AsString() );
+                }
+                validCaps.Add (c.AsString ());
+            }
+
+            string result = LLSDHelpers.SerialiseLLSDReply(m_HostCapsObj.GetCapsDetails(true, validCaps, inventory_server_name, inventory_server_port));
+
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat("[CAPS] CapsRequest {0}", result);
+            }
+            m_log.Info("SEEDCAPSREQUEST");
 
             return result;
         }
