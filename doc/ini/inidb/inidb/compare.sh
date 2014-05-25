@@ -22,13 +22,13 @@ DevelHome="/Users/opensim/develop"
 
 # checking OSgrid inis
 echo "==== check (lstest) OSgrid FreAkiSim OpenSim.ini against Database ========================"
-perl checkAkiOpenSimIniAgainstDatabase.pl "$DevelHome/freakisim/doc/osgrid/ini/OpenSim.ini" OSgrid
+perl checkAkiOpenSimIniAgainstDatabase.pl "$DevelHome/freakisim-dev/doc/osgrid/ini/OpenSim.ini" OSgrid
 echo "==== check (latest) OSgrid Distribution OpenSim.ini against Database ========================"
 perl checkOpenSimIniAgainstDatabase.pl "$DevelHome/osgridsim/bin/OpenSim.ini" OSgrid
 echo "==== check (latest) OSgrid Distribution OpenSimDefaults.ini against Database ========================"
 perl checkDefaultIniAgainstDatabase.pl "$DevelHome/osgridsim/bin/OpenSimDefaults.ini"
 echo "==== check Database ageinst (latest) OSgrid FreAkiSim OpenSim.ini ========================"
-perl checkDatabaseAgainstAkiOpenSimIni.pl "$DevelHome/freakisim/doc/osgrid/ini/OpenSim.ini" OSgrid
+perl checkDatabaseAgainstAkiOpenSimIni.pl "$DevelHome/freakisim-dev/doc/osgrid/ini/OpenSim.ini" OSgrid
 echo "==== check Database ageinst (latest) OSgrid Distribution OpenSim.ini ========================"
 perl checkDatabaseAgainstOpenSimIni.pl "$DevelHome/osgridsim/bin/OpenSim.ini" OSgrid
 echo "==== check Database ageinst (latest) OSgrid Distribution OpenSimDefaults.ini ========================"
@@ -39,6 +39,6 @@ echo ""
 echo ""
 
 echo "==== check OpenSim (GIT) OpenSimDefaults.ini against Database ========================"
-perl checkDefaultIniAgainstDatabase.pl "$DevelHome/opensim/bin/OpenSimDefaults.ini"
+perl checkDefaultIniAgainstDatabase.pl "$DevelHome/arribasim-dev/bin/OpenSimDefaults.ini"
 echo "==== check Database ageinst (latest) OSgrid Distribution OpenSimDefaults.ini ========================"
-perl checkDatabaseAgainstDefaultIni.pl "$DevelHome/opensim/bin/OpenSimDefaults.ini" 
+perl checkDatabaseAgainstDefaultIni.pl "$DevelHome/arribasim-dev/bin/OpenSimDefaults.ini" 
