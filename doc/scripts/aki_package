@@ -15,17 +15,16 @@ SRCDIR=/home/opensim/src
 cd $SRCDIR
 
 # copying the correct tag into an extra directory
-cp -R $SRCDIR/akisim  $SRCDIR/$VERSION
+cp -R $SRCDIR/freakisim-dev  $SRCDIR/$VERSION
 
 # remove the .git folder
 cd $SRCDIR/$VERSION
 rm -R -f .git
 cd $SRCDIR
 
-
-# Copy module source
-cp -R $SRCDIR/osprofile/trunk/OpenSimProfile $SRCDIR/$VERSION/addon-modules
-cp -R $SRCDIR/ossearch/trunk/OpenSimSearch $SRCDIR/$VERSION/addon-modules
+# Copy module source -> not necessary anymore, because the modules are part of the sim
+# cp -R $SRCDIR/osprofile/trunk/OpenSimProfile $SRCDIR/$VERSION/addon-modules
+# cp -R $SRCDIR/ossearch/trunk/OpenSimSearch $SRCDIR/$VERSION/addon-modules
 
 tar cfz $VERSION.tar.gz $VERSION
 cp $VERSION.tar.gz /srv/www/vhosts/suai.dyndns.org
