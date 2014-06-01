@@ -1050,6 +1050,7 @@ namespace OpenSim.Region.Framework.Scenes
                 m_eventManager.OnPermissionError += dm.SendAlertToUser;
 
             m_eventManager.OnSignificantClientMovement += HandleOnSignificantClientMovement;
+            m_eventManager.OnSimulatorIPChanged += SimulatorIPChanged;
         }
 
         public override string GetSimulatorVersion()
@@ -1906,6 +1907,23 @@ namespace OpenSim.Region.Framework.Scenes
                                 RegionInfo.RegionSizeX, RegionInfo.RegionSizeY);
             if (error != String.Empty)
                 throw new Exception(error);
+        }
+
+        private string lastEpAddress = string.Empty;
+        public void SimulatorIPChanged(System.Net.EndPoint ep)
+        {
+            if(ep.ToString() != lastEpAddress)
+            {
+                /* re register region */
+                lastEpAddress = ep.ToString();
+                GridRegion region = new GridRegion(RegionInfo);
+                string error = GridService.RegisterRegion(RegionInfo.ScopeID, region);
+                m_log.DebugFormat("{0} Re-do RegisterRegionWithGrid. name={1},id={2},loc=<{3},{4}>,size=<{5},{6}>",
+                                    LogHeader, m_regionName,
+                                    RegionInfo.RegionID,
+                                    RegionInfo.RegionLocX, RegionInfo.RegionLocY,
+                                    RegionInfo.RegionSizeX, RegionInfo.RegionSizeY);
+            }
         }
 
         #endregion
@@ -3762,6 +3780,13 @@ namespace OpenSim.Region.Framework.Scenes
                             RegionInfo.RegionSettings.TelehubObject, acd.Name, Name);
                     }
 
+                    // Final permissions check; this time we don't allow changing the position
+                    if (!IsPositionAllowed(acd.AgentID, acd.startpos, ref reason))
+                    {
+                        m_authenticateHandler.RemoveCircuit(acd.circuitcode);
+                        return false;
+                    }
+
                     return true;
                 }
 
@@ -3771,8 +3796,30 @@ namespace OpenSim.Region.Framework.Scenes
                     if (land.LandData.LandingType == (byte)1 && land.LandData.UserLocation != Vector3.Zero)
                     {
                         acd.startpos = land.LandData.UserLocation;
+
+                        // Final permissions check; this time we don't allow changing the position
+                        if (!IsPositionAllowed(acd.AgentID, acd.startpos, ref reason))
+                        {
+                            m_authenticateHandler.RemoveCircuit(acd.circuitcode);
+                            return false;
+                        }
                     }
                 }
+            }
+
+            return true;
+        }
+
+        private bool IsPositionAllowed(UUID agentID, Vector3 pos, ref string reason)
+        {
+            ILandObject land = LandChannel.GetLandObject(pos);
+            if (land == null)
+                return true;
+
+            if (land.IsBannedFromLand(agentID) || land.IsRestrictedFromLand(agentID))
+            {
+                reason = "You are banned from the region.";
+                return false;
             }
 
             return true;

@@ -433,6 +433,12 @@ namespace OpenSim.Region.Framework.Scenes
         public delegate void CrossAgentToNewRegion(ScenePresence sp, bool isFlying, GridRegion newRegion);
         public event CrossAgentToNewRegion OnCrossAgentToNewRegion;
 
+        public delegate void SimulatorIPChanged(System.Net.EndPoint ep);
+        /// <summary>
+        /// Fired when a Dyn IP detector detects an IP address change
+        /// </summary>
+        public event SimulatorIPChanged OnSimulatorIPChanged;
+
         public event IncomingInstantMessage OnUnhandledInstantMessage;
 
         public delegate void ClientClosed(UUID clientID, Scene scene);
@@ -2908,6 +2914,27 @@ namespace OpenSim.Region.Framework.Scenes
                     {
                         m_log.ErrorFormat(
                             "[EVENT MANAGER]: Delegate for TriggerSetRootAgentScene failed - continuing.  {0} {1}", 
+                            e.Message, e.StackTrace);
+                    }
+                }
+            }
+        }
+
+        public void TriggerOnSimulatorIPChanged(System.Net.EndPoint ep)
+        {
+            SimulatorIPChanged handlerSimulatorIPChanged = OnSimulatorIPChanged;
+            if(handlerSimulatorIPChanged != null)
+            {
+                foreach (SimulatorIPChanged d in handlerSimulatorIPChanged.GetInvocationList())
+                {
+                    try
+                    {
+                        d(ep);
+                    }
+                    catch (Exception e)
+                    {
+                        m_log.ErrorFormat(
+                            "[EVENT MANAGER]: Delegate for TriggerOnSimulatorIPChanged failed - continuing.  {0} {1}",
                             e.Message, e.StackTrace);
                     }
                 }

@@ -164,6 +164,7 @@ namespace OpenSim.Region.Framework.Scenes
         public Object AttachmentsSyncLock { get; private set; }
 
         private Dictionary<UUID, ScriptControllers> scriptedcontrols = new Dictionary<UUID, ScriptControllers>();
+        private ReaderWriterLock scriptedcontrolsRwLock = new ReaderWriterLock();
         private ScriptControlled IgnoredControls = ScriptControlled.CONTROL_ZERO;
         private ScriptControlled LastCommands = ScriptControlled.CONTROL_ZERO;
         private bool MouseDown = false;
@@ -3891,8 +3892,9 @@ namespace OpenSim.Region.Framework.Scenes
 
             cAgent.ParentPart = ParentUUID;
             cAgent.SitOffset = PrevSitOffset;
-            
-            lock (scriptedcontrols)
+
+            scriptedcontrolsRwLock.AcquireWriterLock(-1);
+            try
             {
                 ControllerData[] controls = new ControllerData[scriptedcontrols.Count];
                 int i = 0;
@@ -3902,6 +3904,10 @@ namespace OpenSim.Region.Framework.Scenes
                     controls[i++] = new ControllerData(c.objectID, c.itemID, (uint)c.ignoreControls, (uint)c.eventControls);
                 }
                 cAgent.Controllers = controls;
+            }
+            finally
+            {
+                scriptedcontrolsRwLock.ReleaseWriterLock();
             }
 
             // Animations
@@ -3963,7 +3969,8 @@ namespace OpenSim.Region.Framework.Scenes
             
             try
             {
-                lock (scriptedcontrols)
+                scriptedcontrolsRwLock.AcquireWriterLock(-1);
+                try
                 {
                     if (cAgent.Controllers != null)
                     {
@@ -3980,6 +3987,10 @@ namespace OpenSim.Region.Framework.Scenes
                             scriptedcontrols[sc.itemID] = sc;
                         }
                     }
+                }
+                finally
+                {
+                    scriptedcontrolsRwLock.ReleaseWriterLock();
                 }
             }
             catch { }
@@ -4553,18 +4564,22 @@ namespace OpenSim.Region.Framework.Scenes
                 obj.ignoreControls = ScriptControlled.CONTROL_ZERO;
             }
 
-            lock (scriptedcontrols)
+            scriptedcontrolsRwLock.AcquireWriterLock(-1);
+            try
             {
                 if (pass_on == 1 && accept == 0)
                 {
                     IgnoredControls &= ~(ScriptControlled)controls;
-                    if (scriptedcontrols.ContainsKey(Script_item_UUID))
-                        scriptedcontrols.Remove(Script_item_UUID);
+                    scriptedcontrols.Remove(Script_item_UUID);
                 }
                 else
                 {
                     scriptedcontrols[Script_item_UUID] = obj;
                 }
+            }
+            finally
+            {
+                scriptedcontrolsRwLock.ReleaseWriterLock();
             }
 
             ControllingClient.SendTakeControls(controls, pass_on == 1 ? true : false, true);
@@ -4573,9 +4588,14 @@ namespace OpenSim.Region.Framework.Scenes
         public void HandleForceReleaseControls(IClientAPI remoteClient, UUID agentID)
         {
             IgnoredControls = ScriptControlled.CONTROL_ZERO;
-            lock (scriptedcontrols)
+            scriptedcontrolsRwLock.AcquireWriterLock(-1);
+            try
             {
                 scriptedcontrols.Clear();
+            }
+            finally
+            {
+                scriptedcontrolsRwLock.ReleaseWriterLock();
             }
             ControllingClient.SendTakeControls(int.MaxValue, false, false);
         }
@@ -4583,11 +4603,18 @@ namespace OpenSim.Region.Framework.Scenes
         private void UnRegisterSeatControls(UUID obj)
         {
             List<UUID> takers = new List<UUID>();
-
-            foreach (ScriptControllers c in scriptedcontrols.Values)
+            scriptedcontrolsRwLock.AcquireReaderLock(-1);
+            try
             {
-                if (c.objectID == obj)
-                    takers.Add(c.itemID);
+                foreach (ScriptControllers c in scriptedcontrols.Values)
+                {
+                    if (c.objectID == obj)
+                        takers.Add(c.itemID);
+                }
+            }
+            finally
+            {
+                scriptedcontrolsRwLock.ReleaseReaderLock();
             }
             foreach (UUID t in takers)
             {
@@ -4599,7 +4626,8 @@ namespace OpenSim.Region.Framework.Scenes
         {
             ScriptControllers takecontrols;
 
-            lock (scriptedcontrols)
+            scriptedcontrolsRwLock.AcquireWriterLock(-1);
+            try
             {
                 if (scriptedcontrols.TryGetValue(Script_item_UUID, out takecontrols))
                 {
@@ -4616,13 +4644,18 @@ namespace OpenSim.Region.Framework.Scenes
                     }
                 }
             }
+            finally
+            {
+                scriptedcontrolsRwLock.ReleaseWriterLock();
+            }
         }
 
         private void SendControlsToScripts(uint flags)
         {
             // Notify the scripts only after calling UpdateMovementAnimations(), so that if a script
             // (e.g., a walking script) checks which animation is active it will be the correct animation.
-            lock (scriptedcontrols)
+            scriptedcontrolsRwLock.AcquireReaderLock(-1);
+            try
             {
                 if (scriptedcontrols.Count <= 0)
                     return;
@@ -4713,6 +4746,10 @@ namespace OpenSim.Region.Framework.Scenes
                 }
     
                 LastCommands = allflags;
+            }
+            finally
+            {
+                scriptedcontrolsRwLock.ReleaseReaderLock();
             }
         }
 

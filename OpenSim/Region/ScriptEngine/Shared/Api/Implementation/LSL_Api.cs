@@ -2647,10 +2647,7 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
         public void llLoopSoundSlave(string sound, double volume)
         {
             m_host.AddScriptLPS(1);
-            lock (m_host.ParentGroup.LoopSoundSlavePrims)
-            {
-                m_host.ParentGroup.LoopSoundSlavePrims.Add(m_host);
-            }
+            m_host.ParentGroup.LoopSoundSlavePrims.Add(m_host);
         }
 
         public void llPlaySoundSlave(string sound, double volume)
@@ -3645,7 +3642,7 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
 
             if ((perm & (~implicitPerms)) == 0) // Requested only implicit perms
             {
-                lock (m_host.TaskInventory)
+                lock (m_host.TaskInventory[m_item.ItemID])
                 {
                     m_host.TaskInventory[m_item.ItemID].PermsGranter = agentID;
                     m_host.TaskInventory[m_item.ItemID].PermsMask = perm;
