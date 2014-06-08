@@ -80,35 +80,43 @@ namespace OpenSim
             IConfig startupConfig = argvSource.Configs["Startup"];
 
             List<string> sources = new List<string>();
+            bool inimaster_from_resources = true;
 
-            string masterFileName = startupConfig.GetString("inimaster", "OpenSimDefaults.ini");
-
-            if (masterFileName == "none")
-                masterFileName = String.Empty;
-
-            if (IsUri(masterFileName))
+            if (startupConfig.Contains("inimaster") || File.Exists(Path.GetFullPath("OpenSimDefaults.ini")))
             {
-                if (!sources.Contains(masterFileName))
-                    sources.Add(masterFileName);
+                string masterFileName = startupConfig.GetString("inimaster", "OpenSimDefaults.ini");
+
+                if (masterFileName == "none")
+                    masterFileName = String.Empty;
+
+                if (IsUri(masterFileName))
+                {
+                    if (!sources.Contains(masterFileName))
+                        sources.Add(masterFileName);
+                }
+                else
+                {
+                    string masterFilePath = Path.GetFullPath(
+                            Path.Combine(Util.configDir(), masterFileName));
+
+                    if (masterFileName != String.Empty)
+                    {
+                        if (File.Exists(masterFilePath))
+                        {
+                            if (!sources.Contains(masterFilePath))
+                                sources.Add(masterFilePath);
+                        }
+                        else
+                        {
+                            m_log.ErrorFormat("Master ini file {0} not found", Path.GetFullPath(masterFilePath));
+                            Environment.Exit(1);
+                        }
+                    }
+                }
             }
             else
             {
-                string masterFilePath = Path.GetFullPath(
-                        Path.Combine(Util.configDir(), masterFileName));
-
-                if (masterFileName != String.Empty)
-                {
-                    if (File.Exists(masterFilePath))
-                    {
-                        if (!sources.Contains(masterFilePath))
-                            sources.Add(masterFilePath);
-                    }
-                    else
-                    {
-                        m_log.ErrorFormat("Master ini file {0} not found", Path.GetFullPath(masterFilePath));
-                        Environment.Exit(1);
-                    }
-                }
+                inimaster_from_resources = true;
             }
 
             string iniFileName = startupConfig.GetString("inifile", "OpenSim.ini");
@@ -142,6 +150,20 @@ namespace OpenSim
             m_config.Source.Merge(DefaultConfig());
 
             m_log.Info("[CONFIG]: Reading configuration settings");
+
+            if(inimaster_from_resources)
+            {
+                m_log.InfoFormat("[CONFIG]: Reading embedded OpenSimDefaults.ini");
+                try
+                {
+                    using (Stream resource = GetType().Assembly.GetManifestResourceStream("OpenSim.Resources.OpenSimDefaults.ini"))
+                        m_config.Source.Merge(new IniConfigSource(resource));
+                }
+                catch
+                {
+                    /* support for special compile variants */
+                }
+            }
 
             for (int i = 0 ; i < sources.Count ; i++)
             {
@@ -211,6 +233,10 @@ namespace OpenSim
 
             // Make sure command line options take precedence
             m_config.Source.Merge(argvSource);
+
+            InitializeDefaultConfigs();
+
+            ValidateParameters();
 
             ReadConfigSettings();
 
@@ -382,6 +408,92 @@ namespace OpenSim
             }
 
             m_networkServersInfo.loadFromConfiguration(m_config.Source);
+        }
+
+        private void AddConfigParam(string module, string variable, object value)
+        {
+            if(null == m_config.Source.Configs[module])
+            {
+                m_config.Source.Configs.Add(module);
+            }
+            IConfig section = m_config.Source.Configs[module];
+            if(!section.Contains(variable))
+            {
+                section.Set(variable, value);
+            }
+        }
+
+        private void InitializeDefaultConfig(string cfgresource, string variant, bool optional, string text)
+        {
+            if (variant != string.Empty)
+            {
+                IniConfigSource dbDefaultConfig;
+                try
+                {
+                    string variantresourcename = string.Format(cfgresource, variant);
+                    using (Stream resource = GetType().Assembly.GetManifestResourceStream(variantresourcename))
+                        dbDefaultConfig = new IniConfigSource(resource);
+                }
+                catch
+                {
+                    if(optional)
+                    {
+                        return;
+                    }
+                    m_log.ErrorFormat("{0} variant {1} is not supported", text, variant);
+                    throw new Exception("Failed to initialize");
+                }
+
+                foreach (IConfig cfg in dbDefaultConfig.Configs)
+                {
+                    foreach (string key in cfg.GetKeys())
+                    {
+                        AddConfigParam(cfg.Name, key, cfg.Get(key));
+                    }
+                }
+            }
+        }
+
+        private void InitializeDefaultConfigs()
+        {
+            IConfig dbConfig = m_config.Source.Configs["DatabaseService"];
+            IConfig archConfig = m_config.Source.Configs["Architecture"];
+
+            if (dbConfig != null)
+            {
+                string variant;
+
+                variant = dbConfig.GetString("Type", string.Empty);
+                InitializeDefaultConfig("OpenSim.Resources.Architecture.Database.{0}.ini", variant, false, "DatabaseService.Type");
+            }
+
+            if (archConfig != null)
+            {
+                string variant;
+
+                variant = archConfig.GetString("physics", string.Empty);
+                InitializeDefaultConfig("OpenSim.Resources.Architecture.Physics.{0}.ini", variant, false, "Architecture.Physics");
+
+                variant = archConfig.GetString("HGInventoryVersion", string.Empty);
+                InitializeDefaultConfig("OpenSim.Resources.Architecture.HGInventory.{0}.ini", variant, false, "Architecture.HGInventoryVersion");
+
+                variant = archConfig.GetString("SearchVariant", string.Empty);
+                InitializeDefaultConfig("OpenSim.Resources.Architecture.Search.{0}.ini", variant, false, "Architecture.SearchVariant");
+
+                variant = archConfig.GetString("GroupsVariant", string.Empty);
+                InitializeDefaultConfig("OpenSim.Resources.Architecture.Groups.{0}.ini", variant, false, "Architecture.GroupsVariant");
+
+                variant = archConfig.GetString("ProfilesVariant", string.Empty);
+                InitializeDefaultConfig("OpenSim.Resources.Architecture.Profile.{0}.ini", variant, false, "Architecture.ProfilesVariant");
+                
+                /* Architecture Type must be last */
+                variant = archConfig.GetString("Type", string.Empty);
+                InitializeDefaultConfig("OpenSim.Resources.Architecture.Type.{0}.ini", variant, false, "Architecture.Type");
+            }
+        }
+
+        private void ValidateParameters()
+        {
         }
     }
 }
