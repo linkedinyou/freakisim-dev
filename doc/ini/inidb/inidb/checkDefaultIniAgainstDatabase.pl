@@ -31,17 +31,19 @@ use constant { true => 1, false => 0 };
 
 use DBI;
 
-if ($#ARGV != 0 ) {
-	print "\n";
-	print "Usage: checkDefaultIniAgainstDatabase INIFILE\n\n";
-	print "Checks a given INIFILE of type OpenSimDefault.ini against the ini database and reports differences to the console\n";
-	print "Valid files are: \n\n";
-	print "  - OpenSimDefaults.ini\n";
-	print "  - OpenSim.ini\n";
+if ($#ARGV != 1 ) {
+	usage();
 	exit;
 }
 
 my $filepath = $ARGV[0];
+my $grid = lc($ARGV[1]);
+
+if( !($grid eq "osgrid" || $grid eq "metropolis" || $grid eq "repo" ) ) {
+	usage();
+	exit;
+}
+
 
 my $dbh = DBI->connect('DBI:mysql:opensim_ini', 'opensim', 'opensim'
 	           ) || die "Could not connect to database: $DBI::errstr";
@@ -64,6 +66,7 @@ sub findInDatabase {
     my $section = shift @_;
 	my @parameters = @_;
 	my $sth;
+	my $sql;
     foreach my $parameter (@parameters) {
         chomp($parameter);
         chomp($section);
@@ -74,22 +77,66 @@ sub findInDatabase {
 		} else {
 			$ini_value = trim($ini_value);
 		}
+
+		my ($aki_value, $aki_enabled, $metro_value, $metro_enabled, $opensim_value, $opensim_enabled_default, $osgrid_value, $osgrid_enabled) = undef;
 		
-		my $sql = qq'SELECT opensim_value, opensim_enabled_default FROM ini WHERE ini_section="$section" AND ini_parameter="$parameter"';
-		$sth = $dbh->prepare($sql)or die "Cannot prepare: " . $dbh->errstr();
-		$sth->execute() or die "Cannot execute: " . $sth->errstr();
-		my($opensim_value,$opensim_enabled_default) = $sth->fetchrow_array();
-		if($opensim_value ne undef) {
-	  		if($opensim_value ne $ini_value) {
-  				print "$section;$parameter;$opensim_value;$ini_value;different_values\n";		
-  			} elsif ($opensim_enabled_default == false ) {
-  				print "$section;$parameter;$opensim_value;$ini_value;disabled_in_database\n";		  				
-  			}
-		} else {
-  			print "$section;$parameter;--;$ini_value;not found in database\n";		  				
+		if ($grid eq "metropolis") {
+			$sql = qq'SELECT aki_value, aki_enabled, metro_value, metro_enabled, opensim_value, opensim_enabled_default FROM ini WHERE ini_section="$section" AND ini_parameter="$parameter"';
+            $sth = $dbh->prepare($sql)or die "Cannot prepare: " . $dbh->errstr();
+            $sth->execute() or die "Cannot execute: " . $sth->errstr();
+            ($aki_value,$aki_enabled,$metro_value,$metro_enabled,$opensim_value,$opensim_enabled_default) = $sth->fetchrow_array();
+            
+ #           if($aki_enabled == true && $aki_value ne $ini_value) {
+ #               print "$section;$parameter;$aki_value;$ini_value;different_values\n";       
+ #           } elsif($metro_enabled == true && $metro_value ne $ini_value) {
+ #               print "$section;$parameter;$metro_value;$ini_value;different_values\n";       
+            if ($opensim_enabled_default == true && $opensim_value ne $ini_value) {
+                print "$section;$parameter;$opensim_value;$ini_value;different_values\n";       
+            } elsif($aki_enabled == false && $metro_enabled == false && $opensim_enabled_default == false){
+                print "$section;$parameter;--;$ini_value;disabled_in_database\n";
+            } elsif($aki_value eq undef && $metro_value eq undef && $opensim_value eq undef) {
+                print "$section;$parameter;--;$ini_value;not found in database\n";            	
+            }
+            
+		} elsif ($grid eq "osgrid") {
+			$sql = qq'SELECT aki_value, aki_enabled, osgrid_value, osgrid_enabled, opensim_value, opensim_enabled_default FROM ini WHERE ini_section="$section" AND ini_parameter="$parameter"';			
+            $sth = $dbh->prepare($sql)or die "Cannot prepare: " . $dbh->errstr();
+            $sth->execute() or die "Cannot execute: " . $sth->errstr();
+            ($aki_value,$aki_enabled,$osgrid_value,$osgrid_enabled,$opensim_value,$opensim_enabled_default) = $sth->fetchrow_array();
+            
+#            if($aki_enabled == true && $aki_value ne $ini_value) {
+#                print "$section;$parameter;$aki_value;$ini_value;different_values\n";       
+#            } elsif($osgrid_enabled == true && $osgrid_value ne $ini_value) {
+#                print "$section;$parameter;$osgrid_value;$ini_value;different_values\n";       
+            if ($opensim_enabled_default == true && $opensim_value ne $ini_value) {
+                print "$section;$parameter;$opensim_value;$ini_value;different_values\n";       
+            } elsif($aki_enabled == false && $osgrid_enabled == false && $opensim_enabled_default == false){
+                print "$section;$parameter;--;$ini_value;disabled_in_database\n";
+            } elsif($aki_value eq undef && $osgrid_value eq undef && $opensim_value eq undef) {
+                print "$section;$parameter;--;$ini_value;not found in database\n";              
+            }
+            
+		} elsif ($grid eq "repo") {
+			$sql = qq'SELECT opensim_value, opensim_enabled_default FROM ini WHERE ini_section="$section" AND ini_parameter="$parameter"';
+			$sth = $dbh->prepare($sql)or die "Cannot prepare: " . $dbh->errstr();
+            $sth->execute() or die "Cannot execute: " . $sth->errstr();
+            ($opensim_value,$opensim_enabled_default) = $sth->fetchrow_array();
+            
+            if ($opensim_enabled_default == true && $opensim_value ne $ini_value) {
+                print "$section;$parameter;$opensim_value;$ini_value;different_values\n";       
+            } elsif($opensim_enabled_default == false){
+                print "$section;$parameter;--;$ini_value;disabled_in_database\n";
+            } elsif($opensim_value eq undef)  {
+                print "$section;$parameter;--;$ini_value;not found in database\n";              
+            }
+			
 		}
+		
+		
     }
 }
+
+$dbh->disconnect();
 
 # Perl trim function to remove whitespace from the start and end of the string
 sub trim($) {
@@ -99,6 +146,18 @@ sub trim($) {
 	return $string;
 }
 
+# Prints usage
+sub usage() {
+	print "\n";
+	print "Usage: checkDefaultIniAgainstDatabase INIFILE GRID\n\n";
+	print "Checks a given INIFILE of type OpenSimDefault.ini of a given GRID or Source-Repository against the ini database and reports differences to the console\n";
+	print "Valid INIFILES are: \n";
+	print "  - OpenSimDefaults.ini\n";
+	print "Valid GRIDs are: \n";
+	print "  - OSgrid\n";
+	print "  - Metropolis\n";
+	print "  - Repo\n";
+}	
 	
 
 
@@ -109,4 +168,3 @@ sub trim($) {
 
 
 
-$dbh->disconnect();
