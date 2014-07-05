@@ -77,7 +77,15 @@ namespace OpenSim.Region.ScriptEngine.Shared.Instance
 
             while (count > 0)
             {
-                EventParams ep = (EventParams)instance.DequeueEvent();
+                EventParams ep;
+                try
+                {
+                    ep = (EventParams)instance.DequeueEvent();
+                }
+                catch(InvalidOperationException)
+                {
+                    break;
+                }
                 instance.EnqueueEvent(ep);
                 count--;
 
