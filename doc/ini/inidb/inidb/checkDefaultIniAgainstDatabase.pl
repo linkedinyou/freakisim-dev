@@ -86,14 +86,14 @@ sub findInDatabase {
             $sth->execute() or die "Cannot execute: " . $sth->errstr();
             ($aki_value,$aki_enabled,$metro_value,$metro_enabled,$opensim_value,$opensim_enabled_default) = $sth->fetchrow_array();
             
- #           if($aki_enabled == true && $aki_value ne $ini_value) {
- #               print "$section;$parameter;$aki_value;$ini_value;different_values\n";       
- #           } elsif($metro_enabled == true && $metro_value ne $ini_value) {
- #               print "$section;$parameter;$metro_value;$ini_value;different_values\n";       
-            if ($opensim_enabled_default == true && $opensim_value ne $ini_value) {
+            if($aki_enabled == true && $aki_value ne $ini_value) {
+                print "$section;$parameter;$aki_value;$ini_value;different_values\n";       
+#            } elsif($metro_enabled == true && $metro_value ne $ini_value) {
+#                print "$section;$parameter;$metro_value;$ini_value;different_values\n";       
+            } elsif ($opensim_enabled_default == true && $opensim_value ne $ini_value) {
                 print "$section;$parameter;$opensim_value;$ini_value;different_values\n";       
-            } elsif($aki_enabled == false && $metro_enabled == false && $opensim_enabled_default == false){
-                print "$section;$parameter;--;$ini_value;disabled_in_database\n";
+#            } elsif($aki_enabled == false && $metro_enabled == false && $opensim_enabled_default == false){
+#                print "$section;$parameter;--;$ini_value;disabled_in_database\n";
             } elsif($aki_value eq undef && $metro_value eq undef && $opensim_value eq undef) {
                 print "$section;$parameter;--;$ini_value;not found in database\n";            	
             }
@@ -104,29 +104,31 @@ sub findInDatabase {
             $sth->execute() or die "Cannot execute: " . $sth->errstr();
             ($aki_value,$aki_enabled,$osgrid_value,$osgrid_enabled,$opensim_value,$opensim_enabled_default) = $sth->fetchrow_array();
             
-#            if($aki_enabled == true && $aki_value ne $ini_value) {
-#                print "$section;$parameter;$aki_value;$ini_value;different_values\n";       
+            if($aki_enabled == true && $aki_value ne $ini_value) {
+                print "$section;$parameter;$aki_value;$ini_value;different_values\n";       
 #            } elsif($osgrid_enabled == true && $osgrid_value ne $ini_value) {
 #                print "$section;$parameter;$osgrid_value;$ini_value;different_values\n";       
-            if ($opensim_enabled_default == true && $opensim_value ne $ini_value) {
+            } elsif ($opensim_enabled_default == true && $opensim_value ne $ini_value) {
                 print "$section;$parameter;$opensim_value;$ini_value;different_values\n";       
-            } elsif($aki_enabled == false && $osgrid_enabled == false && $opensim_enabled_default == false){
-                print "$section;$parameter;--;$ini_value;disabled_in_database\n";
+#            } elsif($aki_enabled == false && $osgrid_enabled == false && $opensim_enabled_default == false){
+#                print "$section;$parameter;--;$ini_value;disabled_in_database\n";
             } elsif($aki_value eq undef && $osgrid_value eq undef && $opensim_value eq undef) {
                 print "$section;$parameter;--;$ini_value;not found in database\n";              
             }
             
 		} elsif ($grid eq "repo") {
-			$sql = qq'SELECT opensim_value, opensim_enabled_default FROM ini WHERE ini_section="$section" AND ini_parameter="$parameter"';
+			$sql = qq'SELECT aki_value, aki_enabled, opensim_value, opensim_enabled_default FROM ini WHERE ini_section="$section" AND ini_parameter="$parameter"';
 			$sth = $dbh->prepare($sql)or die "Cannot prepare: " . $dbh->errstr();
             $sth->execute() or die "Cannot execute: " . $sth->errstr();
-            ($opensim_value,$opensim_enabled_default) = $sth->fetchrow_array();
+            ($aki_value,$aki_enabled,$opensim_value,$opensim_enabled_default) = $sth->fetchrow_array();
             
-            if ($opensim_enabled_default == true && $opensim_value ne $ini_value) {
+            if($aki_enabled == true && $aki_value ne $ini_value) {
+                print "$section;$parameter;$aki_value;$ini_value;different_values\n";       
+            } elsif ($aki_enabled == false && $opensim_enabled_default == true && $opensim_value ne $ini_value) {
                 print "$section;$parameter;$opensim_value;$ini_value;different_values\n";       
-            } elsif($opensim_enabled_default == false){
+            } elsif($opensim_enabled_default == false && $aki_enabled == false){
                 print "$section;$parameter;--;$ini_value;disabled_in_database\n";
-            } elsif($opensim_value eq undef)  {
+            } elsif($opensim_value eq undef && $aki_value eq undef )  {
                 print "$section;$parameter;--;$ini_value;not found in database\n";              
             }
 			

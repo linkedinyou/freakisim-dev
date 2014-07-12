@@ -101,7 +101,9 @@ while(@row = $sth->fetchrow_array()) {
                     print "$ini_section;$ini_parameter;$opensim_value;$ini_value;different_values\n";                                   
                 }
             } elsif ($grid eq "repo") {
-                if ($ini_value ne $opensim_value) {
+                if ($aki_enabled == true && $ini_value ne $aki_value) {
+                    print "$ini_section;$ini_parameter;$aki_value;$ini_value;different_values\n";               
+                } elsif ($aki_enabled == false && $opensim_enabled_default == true && $ini_value ne $opensim_value) {
                     print "$ini_section;$ini_parameter;$opensim_value;$ini_value;different_values\n";                                   
                 }
             }
