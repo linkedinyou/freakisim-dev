@@ -193,13 +193,11 @@ namespace OpenSim.Region.ScriptEngine.Shared.Instance
 
         public DateTime TimeStarted { get; private set; }
 
-        public long MeasurementPeriodTickStart { get; private set; }
+        public int MeasurementPeriodTickStart { get; private set; }
 
-        public long MeasurementPeriodExecutionTime { get; private set; }
+        public int MeasurementPeriodExecutionTime { get; private set; }
 
-        public static readonly long MaxMeasurementPeriod = 30 * TimeSpan.TicksPerMinute;
-
-        private bool m_coopTermination;
+        public static readonly int MaxMeasurementPeriod = 30 * 60000; /* this is ms unit, anyone telling otherwise is just blind */
  
         private EventWaitHandle m_coopSleepHandle;
 
@@ -237,11 +235,7 @@ namespace OpenSim.Region.ScriptEngine.Shared.Instance
             m_AttachedAvatar = Part.ParentGroup.AttachedAvatar;
             m_RegionID = Part.ParentGroup.Scene.RegionInfo.RegionID;
 
-            if (Engine.Config.GetString("ScriptStopStrategy", "abort") == "co-op")
-            {
-                m_coopTermination = true;
-                m_coopSleepHandle = new XEngineEventWaitHandle(false, EventResetMode.AutoReset);
-            }
+            m_coopSleepHandle = new XEngineEventWaitHandle(false, EventResetMode.AutoReset);
         }
 
         /// <summary>
@@ -274,11 +268,6 @@ namespace OpenSim.Region.ScriptEngine.Shared.Instance
                 if (scriptType != null)
                 {
                     constructorParams = new object[] { m_coopSleepHandle };
-                }
-                else if (!m_coopTermination)
-                {
-                    scriptType = scriptAssembly.GetType("SecondLife.Script");
-                    constructorParams = null;
                 }
                 else
                 {
@@ -507,7 +496,7 @@ namespace OpenSim.Region.ScriptEngine.Shared.Instance
         public void DestroyScriptInstance()
         {
             ReleaseControls();
-            AsyncCommandManager.UnregisterScriptFacilities(Engine, LocalID, ItemID);
+            AsyncCommandManager.UnregisterScriptFacilities(Engine, LocalID, ItemID, true);
         }
 
         public void RemoveState()
@@ -548,7 +537,7 @@ namespace OpenSim.Region.ScriptEngine.Shared.Instance
                 Running = true;
 
                 TimeStarted = DateTime.Now;
-                MeasurementPeriodTickStart = Util.EnvironmentTickCount();
+                MeasurementPeriodTickStart = Environment.TickCount;
                 MeasurementPeriodExecutionTime = 0;
 
                 if (EventQueue.Count > 0)
@@ -597,33 +586,24 @@ namespace OpenSim.Region.ScriptEngine.Shared.Instance
             // Wait for the current event to complete.
             if (!m_InSelfDelete)
             {
-                if (!m_coopTermination)
-                {
-                    // If we're not co-operative terminating then try and wait for the event to complete before stopping
-                    if (workItem.Wait(timeout))
-                        return true;
-                }
-                else
+                if (DebugLevel >= 1)
+                    m_log.DebugFormat(
+                        "[SCRIPT INSTANCE]: Co-operatively stopping script {0} {1} in {2} {3}",
+                        ScriptName, ItemID, PrimName, ObjectID);
+
+                // This will terminate the event on next handle check by the script.
+                m_coopSleepHandle.Set();
+
+                // For now, we will wait forever since the event should always cleanly terminate once LSL loop
+                // checking is implemented.  May want to allow a shorter timeout option later.
+                if (workItem.Wait(Timeout.Infinite))
                 {
                     if (DebugLevel >= 1)
                         m_log.DebugFormat(
-                            "[SCRIPT INSTANCE]: Co-operatively stopping script {0} {1} in {2} {3}",
+                            "[SCRIPT INSTANCE]: Co-operatively stopped script {0} {1} in {2} {3}",
                             ScriptName, ItemID, PrimName, ObjectID);
 
-                    // This will terminate the event on next handle check by the script.
-                    m_coopSleepHandle.Set();
-
-                    // For now, we will wait forever since the event should always cleanly terminate once LSL loop
-                    // checking is implemented.  May want to allow a shorter timeout option later.
-                    if (workItem.Wait(Timeout.Infinite))
-                    {
-                        if (DebugLevel >= 1)
-                            m_log.DebugFormat(
-                                "[SCRIPT INSTANCE]: Co-operatively stopped script {0} {1} in {2} {3}",
-                                ScriptName, ItemID, PrimName, ObjectID);
-
-                        return true;
-                    }
+                    return true;
                 }
             }
 
@@ -827,7 +807,7 @@ namespace OpenSim.Region.ScriptEngine.Shared.Instance
                             Part.ParentGroup.Scene.Name);
 
                     AsyncCommandManager.UnregisterScriptFacilities(Engine,
-                        LocalID, ItemID);
+                        LocalID, ItemID, false);
 
                     Part.SetScriptEvents(ItemID, (int)m_Script.GetStateEventFlags(State));
                 }
@@ -845,7 +825,7 @@ namespace OpenSim.Region.ScriptEngine.Shared.Instance
                             m_EventStart = DateTime.Now;
                             m_InEvent = true;
 
-                            int start = Util.EnvironmentTickCount();
+                            int start = Environment.TickCount;
 
                             // Reset the measurement period when we reach the end of the current one.
                             if (start - MeasurementPeriodTickStart > MaxMeasurementPeriod)
@@ -853,7 +833,7 @@ namespace OpenSim.Region.ScriptEngine.Shared.Instance
 
                             m_Script.ExecuteEvent(State, data.EventName, data.Params);
 
-                            MeasurementPeriodExecutionTime += Util.EnvironmentTickCount() - start;
+                            MeasurementPeriodExecutionTime += Environment.TickCount - start;
 
                             m_InEvent = false;
                             m_CurrentEvent = String.Empty;
@@ -982,7 +962,7 @@ namespace OpenSim.Region.ScriptEngine.Shared.Instance
             Stop(timeout);
             Part.Inventory.GetInventoryItem(ItemID).PermsMask = 0;
             Part.Inventory.GetInventoryItem(ItemID).PermsGranter = UUID.Zero;
-            AsyncCommandManager.UnregisterScriptFacilities(Engine, LocalID, ItemID);
+            AsyncCommandManager.UnregisterScriptFacilities(Engine, LocalID, ItemID, true);
             EventQueue.Clear();
             m_Script.ResetVars();
             State = "default";
@@ -1006,16 +986,17 @@ namespace OpenSim.Region.ScriptEngine.Shared.Instance
             m_Script.ResetVars();
             Part.Inventory.GetInventoryItem(ItemID).PermsMask = 0;
             Part.Inventory.GetInventoryItem(ItemID).PermsGranter = UUID.Zero;
-            AsyncCommandManager.UnregisterScriptFacilities(Engine, LocalID, ItemID);
+            AsyncCommandManager.UnregisterScriptFacilities(Engine, LocalID, ItemID, true);
 
             EventQueue.Clear();
             m_Script.ResetVars();
+            string oldState = State;
             State = "default";
 
             Part.SetScriptEvents(ItemID,
                                  (int)m_Script.GetStateEventFlags(State));
 
-            if (m_CurrentEvent != "state_entry")
+            if (m_CurrentEvent != "state_entry" || oldState != "default")
             {
                 m_SaveState = true;
                 PostEvent(new EventParams("state_entry",

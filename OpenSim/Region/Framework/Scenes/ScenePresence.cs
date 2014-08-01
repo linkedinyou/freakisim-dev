@@ -191,7 +191,7 @@ namespace OpenSim.Region.Framework.Scenes
         public bool Flying
         {
             get { return PhysicsActor != null && PhysicsActor.Flying; }
-            set { PhysicsActor.Flying = value; }
+            set { if(PhysicsActor != null) PhysicsActor.Flying = value; }
         }
 
         // add for fly velocity control
@@ -3249,14 +3249,14 @@ namespace OpenSim.Region.Framework.Scenes
         // vars to support reduced update frequency when velocity is unchanged
         private Vector3 lastVelocitySentToAllClients = Vector3.Zero;
         private Vector3 lastPositionSentToAllClients = Vector3.Zero;
-        private int lastTerseUpdateToAllClientsTick = Util.EnvironmentTickCount();
+        private int lastTerseUpdateToAllClientsTick = Environment.TickCount;
 
         /// <summary>
         /// Send a location/velocity/accelleration update to all agents in scene
         /// </summary>
         public void SendTerseUpdateToAllClients()
         {
-            int currentTick = Util.EnvironmentTickCount();
+            int currentTick = Environment.TickCount;
 
             // Decrease update frequency when avatar is moving but velocity is
             // not changing.

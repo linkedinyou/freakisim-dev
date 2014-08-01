@@ -67,6 +67,7 @@ bin/OpenSim.Grid.MessagingServer.log
 bin/OpenSim.Grid.UserServer.log
 bin/OpenSim.log
 bin/*.manifest
+bin/*.vshost.*
 bin/crashes/
 Examples/*.dll
 OpenSim.build
@@ -102,3 +103,5 @@ OpenSim/Tests/test-results/
 test-results/
 doc/html
 doc/doxygen.error.log
+*.log
+/OpenSim/Framework/Servers/versioninfo.txt

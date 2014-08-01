@@ -234,16 +234,6 @@ namespace OpenSim.Region.ScriptEngine.XEngine
             m_ScriptConfig = configSource.Configs["XEngine"];
             m_ConfigSource = configSource;
 
-            string rawScriptStopStrategy = m_ScriptConfig.GetString("ScriptStopStrategy", "co-op");
-
-            m_log.InfoFormat("[XEngine]: Script stop strategy is {0}", rawScriptStopStrategy);
-            if(rawScriptStopStrategy != "co-op")
-            {
-                m_ScriptConfig = null;
-                m_log.Warn("[XEngine]: DISABLING SCRIPTS! Please change ScriptStopStrategy to co-op in [XEngine] section and delete ScriptEngines folder");
-                return;
-            }
-
             ScriptClassName = "XEngineScript";
             ScriptBaseClassName = typeof(XEngineScriptBase).FullName;
             ScriptBaseClassParameters = typeof(XEngineScriptBase).GetConstructor(new Type[] { typeof(WaitHandle) }).GetParameters();
@@ -378,7 +368,7 @@ namespace OpenSim.Region.ScriptEngine.XEngine
                 (module, cmdparams) => HandleScriptsAction(cmdparams, HandleStartScript));
 
             MainConsole.Instance.Commands.AddCommand(
-                "Scripts", false, "debug scripts log", "debug scripts log <item-id> <log-level>", "Extra debug logging for a script",
+                "Debug", false, "debug scripts log", "debug scripts log <item-id> <log-level>", "Extra debug logging for a script",
                 "Activates or deactivates extra debug logging for the given script.\n"
                     + "Level == 0, deactivate extra debug logging.\n"
                     + "Level >= 1, log state changes.\n"
@@ -1186,7 +1176,9 @@ namespace OpenSim.Region.ScriptEngine.XEngine
                                                 m_MaxScriptQueue);
 
                 if (!instance.Load(m_AppDomains[appDomain], assembly, stateSource))
+                {
                     return false;
+                }
 
     //                    if (DebugLevel >= 1)
     //                    m_log.DebugFormat(
@@ -1992,7 +1984,7 @@ namespace OpenSim.Region.ScriptEngine.XEngine
 
         public Dictionary<uint, float> GetObjectScriptsExecutionTimes()
         {
-            long tickNow = Util.EnvironmentTickCount();
+            int tickNow = Environment.TickCount;
             Dictionary<uint, float> topScripts = new Dictionary<uint, float>();
             m_Scripts.ForEach(delegate(IScriptInstance si)
             {
@@ -2012,7 +2004,7 @@ namespace OpenSim.Region.ScriptEngine.XEngine
                 return 0.0f;
             }
             float time = 0.0f;
-            long tickNow = Util.EnvironmentTickCount();
+            int tickNow = Environment.TickCount;
             IScriptInstance si;
             // Calculate the time for all scripts that this engine is executing
             // Ignore any others
@@ -2027,9 +2019,9 @@ namespace OpenSim.Region.ScriptEngine.XEngine
             return time;
         }
 
-        private float CalculateAdjustedExectionTime(IScriptInstance si, long tickNow)
+        private float CalculateAdjustedExectionTime(IScriptInstance si, int tickNow)
         {
-            long ticksElapsed = tickNow - si.MeasurementPeriodTickStart;
+            int ticksElapsed = tickNow - si.MeasurementPeriodTickStart;
 
             // Avoid divide by zero
             if (ticksElapsed == 0)
