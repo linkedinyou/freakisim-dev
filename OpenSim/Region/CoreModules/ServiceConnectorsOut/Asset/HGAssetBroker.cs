@@ -385,7 +385,7 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Asset
                             }
                             serializedAssetCaps.Add("serializedAsset", resultString);
 
-                            int tickstart = Util.EnvironmentTickCount();
+                            int tickstart = Environment.TickCount;
 
                             OSDMap surabayaAnswer = WebUtil.PostToServiceCompressed(surabayaServerURI+"/cachetexture", serializedAssetCaps, 3000);
                             if(surabayaAnswer != null) {
@@ -397,13 +397,13 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Asset
                                     if(!surabayaResult.Equals("ok")) {
                                         m_log.ErrorFormat("Error PostingAgent Data: {0}", surabayaAnswer["reason"]);
                                     } else {
-                                        m_log.InfoFormat("Caching baked Texture {0} was successful in {1}ms", asset.ID, Util.EnvironmentTickCountSubtract(tickstart));
+                                        m_log.InfoFormat("Caching baked Texture {0} was successful in {1}ms", asset.ID, Environment.TickCount - tickstart);
                                     }
                                 } else {
                                     m_log.InfoFormat("Caching baked Texture {0} was not successful: {1}", asset.ID, surabayaAnswer["Message"]);
                                 }
                             } else {
-                                m_log.ErrorFormat("Caching baked texture {0} to Surabaya returned NULL after {1}ms", asset.ID ,Util.EnvironmentTickCountSubtract(tickstart));
+                                m_log.ErrorFormat("Caching baked texture {0} to Surabaya returned NULL after {1}ms", asset.ID, Environment.TickCount - tickstart);
                             }
                         }
                     }
