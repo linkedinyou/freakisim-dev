@@ -105,3 +105,5 @@ doc/html
 doc/doxygen.error.log
 *.log
 /OpenSim/Framework/Servers/versioninfo.txt
+/FreAkiSim.sln
+/FreAkiSim.userprefs
