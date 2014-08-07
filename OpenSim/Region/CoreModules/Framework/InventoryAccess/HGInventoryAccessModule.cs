@@ -146,7 +146,7 @@ namespace OpenSim.Region.CoreModules.Framework.InventoryAccess
 
         protected void OnCompleteMovementToRegion(IClientAPI client, bool arg2)
         {
-            //m_log.DebugFormat("[HG INVENTORY ACCESS MODULE]: OnCompleteMovementToRegion of user {0}", client.Name);
+            if(m_log.IsDebugEnabled) m_log.DebugFormat("OnCompleteMovementToRegion of user {0}", client.Name);
             object sp = null;
             if (client.Scene.TryGetScenePresence(client.AgentId, out sp))
             {
@@ -170,6 +170,7 @@ namespace OpenSim.Region.CoreModules.Framework.InventoryAccess
 
         protected void TeleportStart(IClientAPI client, GridRegion destination, GridRegion finalDestination, uint teleportFlags, bool gridLogout)
         {
+			if(m_log.IsDebugEnabled) m_log.DebugFormat("TeleportStart of user: {0} - destination: {1} - finalDestination: {2}", client.Name, destination.RegionName, finalDestination.RegionName);
             if (gridLogout && m_RestrictInventoryAccessAbroad)
             {
                 IUserManagement uMan = m_Scene.RequestModuleInterface<IUserManagement>();
@@ -255,7 +256,7 @@ namespace OpenSim.Region.CoreModules.Framework.InventoryAccess
             if (!assetID.Equals(UUID.Zero))
                 UploadInventoryItem(agentID, AssetType.Unknown, assetID, "", 0);
             else
-                m_log.Debug("[HGScene]: Scene.Inventory did not create asset");
+                m_log.Debug("Scene.Inventory did not create asset");
         }
 
         ///
@@ -265,7 +266,7 @@ namespace OpenSim.Region.CoreModules.Framework.InventoryAccess
                                                    UUID RayTargetID, byte BypassRayCast, bool RayEndIsIntersection,
                                                    bool RezSelected, bool RemoveItem, UUID fromTaskID, bool attachment)
         {
-            m_log.DebugFormat("[HGScene]: RezObject itemID={0} fromTaskID={1}", itemID, fromTaskID);
+            m_log.DebugFormat("RezObject itemID={0} fromTaskID={1}", itemID, fromTaskID);
 
             //if (fromTaskID.Equals(UUID.Zero))
             //{
@@ -300,6 +301,10 @@ namespace OpenSim.Region.CoreModules.Framework.InventoryAccess
 
         public override void TransferInventoryAssets(InventoryItemBase item, UUID sender, UUID receiver)
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.DebugFormat ("TransferInventoryAssets InventoryItemBase: {0} - sender: {1} - receiver: {2}", item.Name, sender, receiver);
+			}
+
             string senderAssetServer = string.Empty;
             string receiverAssetServer = string.Empty;
             bool isForeignSender, isForeignReceiver;
