@@ -200,7 +200,32 @@ namespace OpenSim.Region.Framework.Scenes
         /// </summary>
         public bool SendPeriodicAppearanceUpdates { get; set; }
 
-        protected float m_defaultDrawDistance = 255.0f;
+		/// <summary>
+		/// How much a root agent has to change position before updates are sent to viewers.
+		/// </summary>
+		public float RootPositionUpdateTolerance { get; set; }
+
+		/// <summary>
+		/// How much a root agent has to rotate before updates are sent to viewers.
+		/// </summary>
+		public float RootRotationUpdateTolerance { get; set; }
+
+		/// <summary>
+		/// How much a root agent has to change velocity before updates are sent to viewers.
+		/// </summary>
+		public float RootVelocityUpdateTolerance { get; set; }
+
+        /// <summary>
+        /// If greater than 1, we only send terse updates to other root agents on every n updates.
+        /// </summary>
+        public int RootTerseUpdatePeriod { get; set; }
+
+        /// <summary>
+        /// If greater than 1, we only send terse updates to child agents on every n updates.
+        /// </summary>
+        public int ChildTerseUpdatePeriod { get; set; }
+
+		protected float m_defaultDrawDistance = 255.0f;
         public float DefaultDrawDistance 
         {
             // get { return m_defaultDrawDistance; }
@@ -411,7 +436,6 @@ namespace OpenSim.Region.Framework.Scenes
         private bool m_reprioritizationEnabled = true;
         private double m_reprioritizationInterval = 5000.0;
         private double m_rootReprioritizationDistance = 10.0;
-        private double m_childReprioritizationDistance = 20.0;
 
         private Timer m_mapGenerationTimer = new Timer();
         private bool m_generateMaptiles;
@@ -648,7 +672,7 @@ namespace OpenSim.Region.Framework.Scenes
         public bool IsReprioritizationEnabled { get { return m_reprioritizationEnabled; } }
         public double ReprioritizationInterval { get { return m_reprioritizationInterval; } }
         public double RootReprioritizationDistance { get { return m_rootReprioritizationDistance; } }
-        public double ChildReprioritizationDistance { get { return m_childReprioritizationDistance; } }
+		public double ChildReprioritizationDistance { get; set; }
 
         public AgentCircuitManager AuthenticateHandler
         {
@@ -1003,7 +1027,16 @@ namespace OpenSim.Region.Framework.Scenes
                 m_reprioritizationEnabled = interestConfig.GetBoolean("ReprioritizationEnabled", true);
                 m_reprioritizationInterval = interestConfig.GetDouble("ReprioritizationInterval", 5000.0);
                 m_rootReprioritizationDistance = interestConfig.GetDouble("RootReprioritizationDistance", 10.0);
-                m_childReprioritizationDistance = interestConfig.GetDouble("ChildReprioritizationDistance", 20.0);
+				ChildReprioritizationDistance 
+					= interestConfig.GetDouble("ChildReprioritizationDistance", ChildReprioritizationDistance);
+
+                RootPositionUpdateTolerance 
+                    = interestConfig.GetFloat("RootPositionUpdateTolerance", RootPositionUpdateTolerance);
+                RootRotationUpdateTolerance
+                    = interestConfig.GetFloat("RootRotationUpdateTolerance", RootRotationUpdateTolerance);
+                RootVelocityUpdateTolerance
+                    = interestConfig.GetFloat("RootVelocityUpdateTolerance", RootVelocityUpdateTolerance);
+
             }
 
             m_log.DebugFormat("[SCENE]: Using the {0} prioritization scheme", m_priorityScheme);
@@ -1023,6 +1056,11 @@ namespace OpenSim.Region.Framework.Scenes
 
             PeriodicBackup = true;
             UseBackup = true;
+
+            RootRotationUpdateTolerance = 0.1f;
+            RootVelocityUpdateTolerance = 0.001f;
+            RootPositionUpdateTolerance = 0.05f;
+			ChildReprioritizationDistance = 20.0;
 
             m_eventManager = new EventManager();
 
