@@ -103,7 +103,7 @@ namespace OpenSim.Framework
             get { return m_texture; }
             set
             {
-//                m_log.DebugFormat("[AVATAR APPEARANCE]: Set TextureEntry to {0}", value);
+                if(m_log.IsDebugEnabled)  m_log.DebugFormat("Set TextureEntry to {0}", value);
                 m_texture = value;
             }
         }
@@ -134,7 +134,7 @@ namespace OpenSim.Framework
 
         public AvatarAppearance()
         {
-//            m_log.WarnFormat("[AVATAR APPEARANCE]: create empty appearance");
+            if(m_log.IsDebugEnabled) m_log.DebugFormat("create empty appearance");
 
             m_serial = 0;
             SetDefaultWearables();
@@ -146,7 +146,7 @@ namespace OpenSim.Framework
 
         public AvatarAppearance(OSDMap map)
         {
-//            m_log.WarnFormat("[AVATAR APPEARANCE]: create appearance from OSDMap");
+            if(m_log.IsDebugEnabled) m_log.DebugFormat("create appearance from OSDMap");
 
             Unpack(map);
 //            SetHeight(); done in Unpack
@@ -154,7 +154,7 @@ namespace OpenSim.Framework
 
         public AvatarAppearance(AvatarWearable[] wearables, Primitive.TextureEntry textureEntry, byte[] visualParams)
         {
-//            m_log.WarnFormat("[AVATAR APPEARANCE] create initialized appearance");
+            if(m_log.IsDebugEnabled) m_log.WarnFormat("create initialized appearance");
 
             m_serial = 0;
 
@@ -184,7 +184,7 @@ namespace OpenSim.Framework
 
         public AvatarAppearance(AvatarAppearance appearance, bool copyWearables)
         {
-//            m_log.WarnFormat("[AVATAR APPEARANCE] create from an existing appearance");
+            if(m_log.IsDebugEnabled) m_log.DebugFormat("Create from an existing appearance");
 
             if (appearance == null)
             {
@@ -260,7 +260,7 @@ namespace OpenSim.Framework
         /// </summary>
         public virtual void ResetAppearance()
         {
-//            m_log.WarnFormat("[AVATAR APPEARANCE]: Reset appearance");
+            if(m_log.IsDebugEnabled) m_log.DebugFormat("Reset appearance");
             
             m_serial = 0;
 
@@ -449,15 +449,12 @@ namespace OpenSim.Framework
 
         public virtual void SetWearable(int wearableId, AvatarWearable wearable)
         {
-// DEBUG ON
-//          m_log.WarnFormat("[AVATARAPPEARANCE] set wearable {0} --> {1}:{2}",wearableId,wearable.ItemID,wearable.AssetID);
-// DEBUG OFF
+            if(m_log.IsDebugEnabled) m_log.DebugFormat("set wearable {0}",wearableId);
             m_wearables[wearableId].Clear();
             for (int i = 0; i < wearable.Count; i++)
                 m_wearables[wearableId].Add(wearable[i].ItemID, wearable[i].AssetID);
         }
 
-// DEBUG ON
         public override String ToString()
         {
             String s = "";
@@ -482,7 +479,6 @@ namespace OpenSim.Framework
 
             return s;
         }
-// DEBUG OFF
 
         /// <summary>
         /// Get a list of the attachments.
@@ -505,18 +501,30 @@ namespace OpenSim.Framework
 
         internal void AppendAttachment(AvatarAttachment attach)
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.DebugFormat ("AppendAttachment: {0}", attach.AssetID);
+			}
+
 //            m_log.DebugFormat(
 //                "[AVATAR APPEARNCE]: Appending itemID={0}, assetID={1} at {2}",
 //                attach.ItemID, attach.AssetID, attach.AttachPoint);
+
+			foreach (AvatarAttachment prev in m_attachments[attach.AttachPoint]) {
+				if (prev.ItemID == attach.ItemID) {
+					return;
+				}
+			}
 
             m_attachments[attach.AttachPoint].Add(attach);
         }
 
         internal void ReplaceAttachment(AvatarAttachment attach)
         {
-//            m_log.DebugFormat(
-//                "[AVATAR APPEARANCE]: Replacing itemID={0}, assetID={1} at {2}",
-//                attach.ItemID, attach.AssetID, attach.AttachPoint);
+			if (m_log.IsDebugEnabled) {
+				m_log.DebugFormat (
+					"Replacing itemID={0}, assetID={1} at {2}",
+					attach.ItemID, attach.AssetID, attach.AttachPoint);
+			}
 
             ThreadedClasses.RwLockedList<AvatarAttachment> newList = new ThreadedClasses.RwLockedList<AvatarAttachment>();
             newList.Add(attach);
@@ -540,9 +548,11 @@ namespace OpenSim.Framework
         /// </returns>
         public bool SetAttachment(int attachpoint, UUID item, UUID asset)
         {
-//            m_log.DebugFormat(
-//                "[AVATAR APPEARANCE]: Setting attachment at {0} with item ID {1}, asset ID {2}",
-//                 attachpoint, item, asset);
+			if (m_log.IsDebugEnabled) {
+				m_log.DebugFormat (
+					"Setting attachment at {0} with item ID {1}, asset ID {2}",
+					attachpoint, item, asset);
+			}
 
             if (attachpoint == 0)
                 return false;
@@ -562,9 +572,11 @@ namespace OpenSim.Framework
             AvatarAttachment existingAttachment = GetAttachmentForItem(item);
             if (existingAttachment != null)
             {
-//                    m_log.DebugFormat(
-//                        "[AVATAR APPEARANCE]: Found existing attachment for {0}, asset {1} at point {2}", 
-//                        existingAttachment.ItemID, existingAttachment.AssetID, existingAttachment.AttachPoint);
+				if (m_log.IsDebugEnabled) {
+                    m_log.DebugFormat(
+                        "Found existing attachment for {0}, asset {1} at point {2}", 
+                        existingAttachment.ItemID, existingAttachment.AssetID, existingAttachment.AttachPoint);
+				}
 
                 if (existingAttachment.AssetID != UUID.Zero && existingAttachment.AttachPoint == (attachpoint & 0x7F))
                 {
