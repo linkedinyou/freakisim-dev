@@ -1721,7 +1721,7 @@ namespace OpenSim.Region.Framework.Scenes
                 client.Name, Scene.Name, AbsolutePosition);
 
             // Make sure it's not a login agent. We don't want to wait for updates during login
-			if (!(PresenceType == PresenceType.Npc || IsRealLogin(m_teleportFlags)))
+            if (PresenceType != PresenceType.Npc && (m_teleportFlags & TeleportFlags.ViaLogin) == 0)
             {
                 // Let's wait until UpdateAgent (called by departing region) is done
                 if (!WaitForUpdateAgent(client))
