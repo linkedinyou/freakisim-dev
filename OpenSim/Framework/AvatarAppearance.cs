@@ -501,9 +501,19 @@ namespace OpenSim.Framework
 
         internal void AppendAttachment(AvatarAttachment attach)
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.DebugFormat ("AppendAttachment: {0}", attach.AssetID);
+			}
+
 //            m_log.DebugFormat(
 //                "[AVATAR APPEARNCE]: Appending itemID={0}, assetID={1} at {2}",
 //                attach.ItemID, attach.AssetID, attach.AttachPoint);
+
+			foreach (AvatarAttachment prev in m_attachments[attach.AttachPoint]) {
+				if (prev.ItemID == attach.ItemID) {
+					return;
+				}
+			}
 
             m_attachments[attach.AttachPoint].Add(attach);
         }
