@@ -860,6 +860,11 @@ namespace OpenSim.Region.Framework.Scenes
             get { return Util.GetViewerName(m_scene.AuthenticateHandler.GetAgentCircuitData(ControllingClient.CircuitCode)); }
         }
 
+        /// <summary>
+        /// Count of how many terse updates we have sent out.  It doesn't matter if this overflows.
+        /// </summary>
+        private int m_terseUpdateCount;
+
         #endregion
 
         #region Constructor(s)
@@ -3177,10 +3182,6 @@ namespace OpenSim.Region.Framework.Scenes
 
         public override void Update()
         {
-            const float ROTATION_TOLERANCE = 0.01f;
-            const float VELOCITY_TOLERANCE = 0.001f;
-            const float POSITION_TOLERANCE = 0.05f;
-
             if (IsChildAgent == false)
             {
                 // NOTE: Velocity is not the same as m_velocity. Velocity will attempt to
@@ -3197,9 +3198,9 @@ namespace OpenSim.Region.Framework.Scenes
 
                 if (!updateClients)
                     updateClients 
-                        = !Rotation.ApproxEquals(m_lastRotation, ROTATION_TOLERANCE) 
-                            || !Velocity.ApproxEquals(m_lastVelocity, VELOCITY_TOLERANCE)
-                            || !m_pos.ApproxEquals(m_lastPosition, POSITION_TOLERANCE);
+						= !Rotation.ApproxEquals(m_lastRotation, Scene.RootRotationUpdateTolerance) 
+						|| !Velocity.ApproxEquals(m_lastVelocity, Scene.RootVelocityUpdateTolerance)
+						|| !m_pos.ApproxEquals(m_lastPosition, Scene.RootPositionUpdateTolerance);
 
                 if (updateClients)
                 {
@@ -3232,6 +3233,29 @@ namespace OpenSim.Region.Framework.Scenes
             // server.
             if (remoteClient.IsActive)
             {
+                if (Scene.RootTerseUpdatePeriod > 1)
+                {
+                    //                    Console.WriteLine(
+                    //                        "{0} {1} {2} {3} {4} {5} for {6} to {7}", 
+                    //                        remoteClient.AgentId, UUID, remoteClient.SceneAgent.IsChildAgent, m_terseUpdateCount, Scene.RootTerseUpdatePeriod, Velocity.ApproxEquals(Vector3.Zero, 0.001f), Name, remoteClient.Name);
+                    if (remoteClient.AgentId != UUID
+                        && !remoteClient.SceneAgent.IsChildAgent
+                        && m_terseUpdateCount % Scene.RootTerseUpdatePeriod != 0 
+                        && !Velocity.ApproxEquals(Vector3.Zero, 0.001f))
+                    {
+                        //                        m_log.DebugFormat("[SCENE PRESENCE]: Discarded update from {0} to {1}, args {2} {3} {4} {5} {6} {7}",
+                        //                            Name, remoteClient.Name, remoteClient.AgentId, UUID, remoteClient.SceneAgent.IsChildAgent, m_terseUpdateCount, Scene.RootTerseUpdatePeriod, Velocity.ApproxEquals(Vector3.Zero, 0.001f));
+
+                        return;
+                    }
+                }
+
+                if (Scene.ChildTerseUpdatePeriod > 1 
+                    && remoteClient.SceneAgent.IsChildAgent
+                    && m_terseUpdateCount % Scene.ChildTerseUpdatePeriod != 0 
+                    && !Velocity.ApproxEquals(Vector3.Zero, 0.001f))
+                    return;
+
                 //m_log.DebugFormat("[SCENE PRESENCE]: " + Name + " sending TerseUpdate to " + remoteClient.Name + " : Pos={0} Rot={1} Vel={2}", m_pos, Rotation, m_velocity);
 
                 remoteClient.SendEntityUpdate(
@@ -3282,6 +3306,8 @@ namespace OpenSim.Region.Framework.Scenes
                 lastVelocitySentToAllClients = Velocity;
                 lastTerseUpdateToAllClientsTick = currentTick;
                 lastPositionSentToAllClients = OffsetPosition;
+
+                m_terseUpdateCount++;
 
 //                Console.WriteLine("Scheduled update for {0} in {1}", Name, Scene.Name);
                 m_scene.ForEachClient(SendTerseUpdateToClient);
