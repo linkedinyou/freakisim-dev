@@ -3485,6 +3485,10 @@ namespace OpenSim.Region.Framework.Scenes
         /// also return a reason.</returns>
         public bool NewUserConnection(AgentCircuitData acd, uint teleportFlags, GridRegion source, out string reason, bool requirePresenceLookup)
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.Debug ("NewUserConnection(AgentCircuitData acd, uint teleportFlags, GridRegion source, out string reason, bool requirePresenceLookup)");
+			}
+
             bool vialogin = ((teleportFlags & (uint)TPFlags.ViaLogin) != 0 ||
                 (teleportFlags & (uint)TPFlags.ViaHGLogin) != 0);
             bool viahome = ((teleportFlags & (uint)TPFlags.ViaHome) != 0);
@@ -3876,6 +3880,10 @@ namespace OpenSim.Region.Framework.Scenes
 
         public bool TestLandRestrictions(UUID agentID, out string reason, ref float posX, ref float posY)
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.Debug ("TestLandRestrictions(UUID agentID, out string reason, ref float posX, ref float posY)");
+			}
+
             if (posX < 0)
                 posX = 0;
             else if (posX >= (float)RegionInfo.RegionSizeX)
@@ -3936,6 +3944,10 @@ namespace OpenSim.Region.Framework.Scenes
         /// also return a reason.</returns>
         public virtual bool VerifyUserPresence(AgentCircuitData agent, out string reason)
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.Debug ("VerifyUserPresence(AgentCircuitData agent, out string reason)");
+			}
+
             reason = String.Empty;
 
             IPresenceService presence = RequestModuleInterface<IPresenceService>();
@@ -3965,6 +3977,10 @@ namespace OpenSim.Region.Framework.Scenes
         /// also return a reason.</returns>
         protected virtual bool AuthorizeUser(AgentCircuitData agent, bool bypassAccessControl, out string reason)
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.Debug ("AuthorizeUser(AgentCircuitData agent, bool bypassAccessControl, out string reason)");
+			}
+
             reason = String.Empty;
 
             if (!m_strictAccessControl) return true;

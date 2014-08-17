@@ -29,6 +29,8 @@ using OpenMetaverse;
 using System;
 using System.Collections.Generic;
 using System.Threading;
+using log4net;
+using System.Reflection;
 
 namespace OpenSim.Framework
 {
@@ -37,6 +39,7 @@ namespace OpenSim.Framework
     /// </summary>
     public class AgentCircuitManager
     {
+		private static readonly ILog m_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         /// <summary>
         /// Agent circuits indexed by circuit code.
         /// </summary>
@@ -47,7 +50,11 @@ namespace OpenSim.Framework
 
         public virtual AuthenticateResponse AuthenticateSession(UUID sessionID, UUID agentID, uint circuitcode)
         {
-            AgentCircuitData validcircuit = null;
+			if (m_log.IsDebugEnabled) {
+				m_log.Debug ("AuthenticateResponse AuthenticateSession(UUID sessionID, UUID agentID, uint circuitcode)");
+			}
+
+			AgentCircuitData validcircuit = null;
             AuthenticateResponse user = new AuthenticateResponse();
             try
             {
@@ -90,6 +97,10 @@ namespace OpenSim.Framework
         /// <param name="agentData"></param>
         public virtual void AddNewCircuit(uint circuitCode, AgentCircuitData agentData)
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.Debug ("AddNewCircuit(uint circuitCode, AgentCircuitData agentData)");
+			}
+
             try
             {
                 m_agentCircuits.Add(circuitCode, agentData.AgentID, agentData);
@@ -104,16 +115,25 @@ namespace OpenSim.Framework
 
         public virtual void RemoveCircuit(uint circuitCode)
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.Debug ("RemoveCircuit(uint circuitCode)");
+			}
             m_agentCircuits.Remove(circuitCode);
         }
 
         public virtual void RemoveCircuit(UUID agentID)
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.Debug ("RemoveCircuit(UUID agentID)");
+			}
             m_agentCircuits.Remove(agentID);
         }
 
         public AgentCircuitData GetAgentCircuitData(uint circuitCode)
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.Debug ("GetAgentCircuitData(uint circuitCode)");
+			}
             AgentCircuitData agentCircuit = null;
 
             m_agentCircuits.TryGetValue(circuitCode, out agentCircuit);
@@ -123,6 +143,10 @@ namespace OpenSim.Framework
 
         public AgentCircuitData GetAgentCircuitData(UUID agentID)
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.Debug ("GetAgentCircuitData(UUID agentID)");
+			}
+
             AgentCircuitData agentCircuit = null;
 
             m_agentCircuits.TryGetValue(agentID, out agentCircuit);
@@ -135,6 +159,9 @@ namespace OpenSim.Framework
         /// <returns></returns>
         public Dictionary<UUID, AgentCircuitData> GetAgentCircuits()
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.Debug ("GetAgentCircuits()");
+			}
             Dictionary<UUID, AgentCircuitData> val;
             m_agentCircuits.CopyTo(out val);
             return val;
@@ -142,6 +169,10 @@ namespace OpenSim.Framework
 
         public void UpdateAgentData(AgentCircuitData agentData)
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.Debug ("UpdateAgentData(AgentCircuitData agentData)");
+			}
+
             AgentCircuitData circuit;
             try
             {
@@ -168,6 +199,10 @@ namespace OpenSim.Framework
         /// <param name="newcircuitcode"></param>
         public bool TryChangeCiruitCode(uint circuitcode, uint newcircuitcode)
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.Debug ("TryChangeCiruitCode(uint circuitcode, uint newcircuitcode)");
+			}
+
             try
             {
                 m_agentCircuits.ChangeKey(newcircuitcode, circuitcode);
@@ -181,6 +216,9 @@ namespace OpenSim.Framework
 
         public void UpdateAgentChildStatus(uint circuitcode, bool childstatus)
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.Debug ("UpdateAgentChildStatus(uint circuitcode, bool childstatus)");
+			}
             try
             {
                 m_agentCircuits[circuitcode].child = childstatus;
@@ -192,6 +230,9 @@ namespace OpenSim.Framework
 
         public bool GetAgentChildStatus(uint circuitcode)
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.Debug ("GetAgentChildStatus(uint circuitcode)");
+			}
             try
             { 
                 return m_agentCircuits[circuitcode].child;

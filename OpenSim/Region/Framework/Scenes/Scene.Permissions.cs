@@ -29,6 +29,8 @@ using OpenMetaverse;
 using OpenSim.Framework;
 using System;
 using System.Collections.Generic;
+using log4net;
+using System.Reflection;
 
 namespace OpenSim.Region.Framework.Scenes
 {        
@@ -91,7 +93,7 @@ namespace OpenSim.Region.Framework.Scenes
 
     public class ScenePermissions
     {
-//        private static readonly ILog m_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog m_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         
         private Scene m_scene;
 
@@ -713,6 +715,10 @@ namespace OpenSim.Region.Framework.Scenes
         #region CAN BE GODLIKE
         public bool IsGod(UUID user)
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.DebugFormat ("IsGod(UUID user: {0})", user.ToString());
+			}
+
             IsGodHandler handler = OnIsGod;
             if (handler != null)
             {

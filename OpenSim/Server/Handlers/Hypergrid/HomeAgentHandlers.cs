@@ -89,6 +89,10 @@ namespace OpenSim.Server.Handlers.Hypergrid
 
         protected override GridRegion ExtractGatekeeper(AgentDestinationData d)
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.Debug ("ExtractGatekeeper(AgentDestinationData d)");
+			}
+
             if (d is ExtendedAgentDestinationData)
             {
                 ExtendedAgentDestinationData data = (ExtendedAgentDestinationData)d;

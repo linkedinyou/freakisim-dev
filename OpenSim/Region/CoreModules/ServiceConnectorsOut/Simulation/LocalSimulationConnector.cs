@@ -210,6 +210,10 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Simulation
 
         public bool CreateAgent(GridRegion source, GridRegion destination, AgentCircuitData aCircuit, uint teleportFlags, out string reason)
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.Debug ("CreateAgent(GridRegion source, GridRegion destination, AgentCircuitData aCircuit, uint teleportFlags, out string reason)");
+			}
+
             if (destination == null)
             {
                 reason = "Given destination was null";

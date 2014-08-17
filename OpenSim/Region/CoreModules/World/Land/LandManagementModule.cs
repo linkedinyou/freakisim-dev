@@ -838,6 +838,10 @@ namespace OpenSim.Region.CoreModules.World.Land
         /// <returns>Land object at the point supplied</returns>
         public ILandObject GetLandObject(float x_float, float y_float)
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.DebugFormat ("GetLandObject(float {0}, float {1})", x_float, y_float);
+			}
+
             return GetLandObject((int)x_float, (int)y_float, true /* returnNullIfLandObjectNotFound */);
             /*
             int x;
@@ -917,6 +921,10 @@ namespace OpenSim.Region.CoreModules.World.Land
         /// </param>
         private ILandObject GetLandObject(int x, int y, bool returnNullIfLandObjectOutsideBounds)
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.DebugFormat ("GetLandObject(int x: {0}, int y: {1}, bool returnNullIfLandObjectOutsideBounds: {2})", x, y, returnNullIfLandObjectOutsideBounds);
+			}
+
             if (x >= m_scene.RegionInfo.RegionSizeX || y >=  m_scene.RegionInfo.RegionSizeY || x < 0 || y < 0)
             {
                 // These exceptions here will cause a lot of complaints from the users specifically because

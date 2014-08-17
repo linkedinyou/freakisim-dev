@@ -30,12 +30,16 @@ using OpenSim.Framework;
 using OpenSim.Region.Framework.Interfaces;
 using OpenSim.Region.Framework.Scenes;
 using System.Collections.Generic;
+using log4net;
+using System.Reflection;
 
 namespace OpenSim.Region.CoreModules.World.Land
 {
     public class LandChannel : ILandChannel
     {
-        #region Constants
+		private static readonly ILog m_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
+		#region Constants
 
         //Land types set with flags in ParcelOverlay.
         //Only one of these can be used.
@@ -68,6 +72,9 @@ namespace OpenSim.Region.CoreModules.World.Land
 
         public LandChannel(Scene scene, LandManagementModule landManagementMod)
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.Debug ("LandChannel(Scene scene, LandManagementModule landManagementMod)");
+			}
             m_scene = scene;
             m_landManagementModule = landManagementMod;
         }
@@ -76,6 +83,10 @@ namespace OpenSim.Region.CoreModules.World.Land
 
         public ILandObject GetLandObject(float x_float, float y_float)
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.DebugFormat ("GetLandObject(float {0}, float {1})", x_float, y_float);
+			}
+
             if (m_landManagementModule != null)
             {
                 return m_landManagementModule.GetLandObject(x_float, y_float);
@@ -88,6 +99,9 @@ namespace OpenSim.Region.CoreModules.World.Land
 
         public ILandObject GetLandObject(int localID)
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.DebugFormat ("GetLandObject(int {0})", localID);
+			}
             if (m_landManagementModule != null)
             {
                 return m_landManagementModule.GetLandObject(localID);
@@ -97,11 +111,18 @@ namespace OpenSim.Region.CoreModules.World.Land
 
         public ILandObject GetLandObject(Vector3 position)
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.Debug ("GetLandObject(Vector3 position)");
+			}
             return GetLandObject(position.X, position.Y);
         }
 
         public ILandObject GetLandObject(int x, int y)
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.DebugFormat ("GetLandObject(int {0}, int {1})", x, y);
+			}
+
             if (m_landManagementModule != null)
             {
                 return m_landManagementModule.GetLandObject(x, y);
@@ -114,6 +135,10 @@ namespace OpenSim.Region.CoreModules.World.Land
 
         public List<ILandObject> AllParcels()
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.Debug("AllParcels())");
+			}
+
             if (m_landManagementModule != null)
             {
                 return m_landManagementModule.AllParcels();
@@ -124,12 +149,20 @@ namespace OpenSim.Region.CoreModules.World.Land
         
         public void Clear(bool setupDefaultParcel)
         {
-            if (m_landManagementModule != null)
+			if (m_log.IsDebugEnabled) {
+				m_log.Debug("Clear(bool setupDefaultParcel)");
+			}
+
+			if (m_landManagementModule != null)
                 m_landManagementModule.Clear(setupDefaultParcel);
         }
 
         public List<ILandObject> ParcelsNearPoint(Vector3 position)
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.Debug("ParcelsNearPoint(Vector3 position)");
+			}
+
             if (m_landManagementModule != null)
             {
                 return m_landManagementModule.ParcelsNearPoint(position);
@@ -140,6 +173,10 @@ namespace OpenSim.Region.CoreModules.World.Land
 
         public bool IsForcefulBansAllowed()
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.Debug("IsForcefulBansAllowed()");
+			}
+
             if (m_landManagementModule != null)
             {
                 return m_landManagementModule.AllowedForcefulBans;
@@ -150,6 +187,10 @@ namespace OpenSim.Region.CoreModules.World.Land
 
         public void UpdateLandObject(int localID, LandData data)
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.Debug("UpdateLandObject(int localID, LandData data)");
+			}
+
             if (m_landManagementModule != null)
             {
                 m_landManagementModule.UpdateLandObject(localID, data);
@@ -158,6 +199,10 @@ namespace OpenSim.Region.CoreModules.World.Land
 
         public void Join(int start_x, int start_y, int end_x, int end_y, UUID attempting_user_id)
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.Debug("Join(int start_x, int start_y, int end_x, int end_y, UUID attempting_user_id)");
+			}
+
             if (m_landManagementModule != null)
             {
                 m_landManagementModule.Join(start_x, start_y, end_x, end_y, attempting_user_id);
@@ -166,6 +211,10 @@ namespace OpenSim.Region.CoreModules.World.Land
 
         public void Subdivide(int start_x, int start_y, int end_x, int end_y, UUID attempting_user_id)
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.Debug("Subdivide(int start_x, int start_y, int end_x, int end_y, UUID attempting_user_id)");
+			}
+
             if (m_landManagementModule != null)
             {
                 m_landManagementModule.Subdivide(start_x, start_y, end_x, end_y, attempting_user_id);
@@ -174,6 +223,10 @@ namespace OpenSim.Region.CoreModules.World.Land
         
         public void ReturnObjectsInParcel(int localID, uint returnType, UUID[] agentIDs, UUID[] taskIDs, IClientAPI remoteClient)
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.Debug("ReturnObjectsInParcel(int localID, uint returnType, UUID[] agentIDs, UUID[] taskIDs, IClientAPI remoteClient)");
+			}
+
             if (m_landManagementModule != null)
             {
                 m_landManagementModule.ReturnObjectsInParcel(localID, returnType, agentIDs, taskIDs, remoteClient);
@@ -182,6 +235,10 @@ namespace OpenSim.Region.CoreModules.World.Land
 
         public void setParcelObjectMaxOverride(overrideParcelMaxPrimCountDelegate overrideDel)
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.Debug("setParcelObjectMaxOverride(overrideParcelMaxPrimCountDelegate overrideDel)");
+			}
+
             if (m_landManagementModule != null)
             {
                 m_landManagementModule.setParcelObjectMaxOverride(overrideDel);
@@ -190,6 +247,10 @@ namespace OpenSim.Region.CoreModules.World.Land
 
         public void setSimulatorObjectMaxOverride(overrideSimulatorMaxPrimCountDelegate overrideDel)
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.Debug("setSimulatorObjectMaxOverride(overrideSimulatorMaxPrimCountDelegate overrideDel)");
+			}
+
             if (m_landManagementModule != null)
             {
                 m_landManagementModule.setSimulatorObjectMaxOverride(overrideDel);
@@ -198,6 +259,10 @@ namespace OpenSim.Region.CoreModules.World.Land
 
         public void SetParcelOtherCleanTime(IClientAPI remoteClient, int localID, int otherCleanTime)
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.Debug("SetParcelOtherCleanTime(IClientAPI remoteClient, int localID, int otherCleanTime)");
+			}
+
             if (m_landManagementModule != null)
             {
                 m_landManagementModule.setParcelOtherCleanTime(remoteClient, localID, otherCleanTime);

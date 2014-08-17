@@ -836,6 +836,10 @@ namespace OpenSim.Region.Framework.Scenes
         /// <returns>null if the presence was not found</returns>
         protected internal ScenePresence GetScenePresence(UUID agentID)
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.DebugFormat ("GetScenePresence(UUID agentID: {0})", agentID.ToString());
+			}
+
             m_presenceLock.AcquireReaderLock(-1);
             try
             {
@@ -858,6 +862,10 @@ namespace OpenSim.Region.Framework.Scenes
         /// <returns>null if the presence was not found</returns>
         protected internal ScenePresence GetScenePresence(string firstName, string lastName)
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.DebugFormat ("GetScenePresence(String firstName: {0}, String lastName: {1})", firstName, lastName);
+			}
+
             List<ScenePresence> presences = GetScenePresences();
             foreach (ScenePresence presence in presences)
             {
@@ -875,6 +883,10 @@ namespace OpenSim.Region.Framework.Scenes
         /// <returns>null if the presence was not found</returns>
         protected internal ScenePresence GetScenePresence(uint localID)
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.DebugFormat ("GetScenePresence(uint localID: {0})", localID);
+			}
+
             List<ScenePresence> presences = GetScenePresences();
             foreach (ScenePresence presence in presences)
                 if (presence.LocalId == localID)
@@ -884,6 +896,10 @@ namespace OpenSim.Region.Framework.Scenes
 
         protected internal bool TryGetScenePresence(UUID agentID, out ScenePresence avatar)
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.DebugFormat ("TryGetScenePresence(UUID agentID: {0}, out ScenePresence avatar)", agentID.ToString());
+			}
+
             m_presenceLock.AcquireReaderLock(-1);
             try
             {
@@ -898,6 +914,9 @@ namespace OpenSim.Region.Framework.Scenes
 
         protected internal bool TryGetAvatarByName(string name, out ScenePresence avatar)
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.DebugFormat ("TryGetAvatarByName(String name: {0}, out ScenePresence avatar)", name);
+			}
             avatar = null;
             foreach (ScenePresence presence in GetScenePresences())
             {
@@ -917,6 +936,9 @@ namespace OpenSim.Region.Framework.Scenes
         /// <returns>null if no scene object group containing that prim is found</returns>
         public SceneObjectGroup GetGroupByPrim(uint localID)
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.DebugFormat ("GetGroupByPrim(uint localID: {0})", localID);
+			}
             EntityBase entity;
             if (Entities.TryGetValue(localID, out entity))
                 return entity as SceneObjectGroup;
@@ -995,6 +1017,10 @@ namespace OpenSim.Region.Framework.Scenes
         /// <returns>null if no scene object group containing that prim is found</returns>
         public SceneObjectGroup GetGroupByPrim(UUID fullID)
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.DebugFormat ("GetGroupByPrim(UUID fullID: {0})", fullID.ToString());
+			}
+
             SceneObjectGroup sog;
             SceneObjectGroupsByFullPartIDRwLock.AcquireReaderLock(-1);
             try

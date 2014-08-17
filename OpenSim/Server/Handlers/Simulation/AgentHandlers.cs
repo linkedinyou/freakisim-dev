@@ -207,7 +207,9 @@ namespace OpenSim.Server.Handlers.Simulation
         protected override byte[] ProcessRequest(string path, Stream request,
                 IOSHttpRequest httpRequest, IOSHttpResponse httpResponse)
         {
-//            m_log.DebugFormat("[SIMULATION]: Stream handler called");
+			if (m_log.IsDebugEnabled) {
+				m_log.DebugFormat ("ProcessRequest() - path: {0}", path);
+			}
 
             Hashtable keysvals = new Hashtable();
             Hashtable headervals = new Hashtable();
@@ -273,6 +275,10 @@ namespace OpenSim.Server.Handlers.Simulation
 
         protected void DoAgentPost(Hashtable request, Hashtable responsedata, UUID id)
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.Debug ("DoAgentPost(Hashtable request, Hashtable responsedata, UUID id)");
+			}
+
             OSDMap args = Utils.GetOSDMap((string)request["body"]);
             if (args == null)
             {

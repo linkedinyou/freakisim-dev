@@ -523,6 +523,10 @@ namespace OpenSim.Region.CoreModules.World.Permissions
         /// <returns></returns>
         protected bool IsAdministrator(UUID user)
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.DebugFormat ("IsAdministrator(UUID user: {0})", user.ToString());
+			}
+
             if (user == UUID.Zero)
                 return false;
 
@@ -1000,6 +1004,10 @@ namespace OpenSim.Region.CoreModules.World.Permissions
 
         private bool IsGod(UUID user, Scene scene)
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.DebugFormat ("IsGod(UUID user: {0}, Scene scene)", user.ToString());
+			}
+
             DebugPermissionInformation(MethodInfo.GetCurrentMethod().Name);
             if (m_bypassPermissions) return m_bypassPermissionsValue;
 

@@ -26,6 +26,8 @@
  */
 
 using System.IO;
+using log4net;
+using System.Reflection;
 
 namespace OpenSim.Framework.Servers.HttpServer
 {
@@ -37,6 +39,8 @@ namespace OpenSim.Framework.Servers.HttpServer
     /// </remarks>
     public abstract class BaseStreamHandler : BaseRequestHandler, IStreamedRequestHandler
     {
+		private static readonly ILog m_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
         protected BaseStreamHandler(string httpMethod, string path) : this(httpMethod, path, null, null) {}
 
         protected BaseStreamHandler(string httpMethod, string path, string name, string description)
@@ -46,6 +50,10 @@ namespace OpenSim.Framework.Servers.HttpServer
             string path, Stream request, IOSHttpRequest httpRequest, IOSHttpResponse httpResponse)
         {
             RequestsReceived++;
+
+			if(m_log.IsDebugEnabled) {
+				m_log.DebugFormat ("Handle() - path: {0}", path);
+			}
 
             byte[] result = ProcessRequest(path, request, httpRequest, httpResponse);
 
