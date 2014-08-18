@@ -181,9 +181,6 @@ namespace OpenSim.Region.Framework.Scenes
 
         protected internal void UpdatePreparePhysics()
         {
-            if (m_log.IsDebugEnabled) {
-                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
-            }
             // If we are using a threaded physics engine
             // grab the latest scene from the engine before
             // trying to process it.
@@ -204,9 +201,6 @@ namespace OpenSim.Region.Framework.Scenes
         /// </remarks>
         protected internal void UpdatePresences()
         {
-            if (m_log.IsDebugEnabled) {
-                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
-            }
             ForEachScenePresence(delegate(ScenePresence presence)
             {
                 presence.Update();
@@ -220,9 +214,6 @@ namespace OpenSim.Region.Framework.Scenes
         /// <returns></returns>
         protected internal float UpdatePhysics(double elapsed)
         {
-            if (m_log.IsDebugEnabled) {
-                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
-            }
             // Here is where the Scene calls the PhysicsScene. This is a one-way
             // interaction; the PhysicsScene cannot access the calling Scene directly.
             // But with joints, we want a PhysicsActor to be able to influence a
@@ -243,9 +234,6 @@ namespace OpenSim.Region.Framework.Scenes
 
         protected internal void UpdateScenePresenceMovement()
         {
-            if (m_log.IsDebugEnabled) {
-                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
-            }
             ForEachScenePresence(delegate(ScenePresence presence)
             {
                 presence.UpdateMovement();
@@ -254,9 +242,6 @@ namespace OpenSim.Region.Framework.Scenes
 
         public void GetCoarseLocations(out List<Vector3> coarseLocations, out List<UUID> avatarUUIDs, uint maxLocations)
         {
-            if (m_log.IsDebugEnabled) {
-                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
-            }
             coarseLocations = new List<Vector3>();
             avatarUUIDs = new List<UUID>();
 
@@ -579,9 +564,6 @@ namespace OpenSim.Region.Framework.Scenes
         /// </summary>
         protected internal void UpdateObjectGroups()
         {
-            if (m_log.IsDebugEnabled) {
-                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
-            }
             if (!Monitor.TryEnter(m_updateLock))
                 return;
             try
@@ -804,41 +786,26 @@ namespace OpenSim.Region.Framework.Scenes
 
         public int GetChildAgentCount()
         {
-            if (m_log.IsDebugEnabled) {
-                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
-            }
             return m_numChildAgents;
         }
 
         public int GetRootAgentCount()
         {
-            if (m_log.IsDebugEnabled) {
-                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
-            }
             return m_numRootAgents;
         }
 
         public int GetTotalObjectsCount()
         {
-            if (m_log.IsDebugEnabled) {
-                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
-            }
             return m_numPrim;
         }
 
         public int GetActiveObjectsCount()
         {
-            if (m_log.IsDebugEnabled) {
-                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
-            }
             return m_physicalPrim;
         }
 
         public int GetActiveScriptsCount()
         {
-            if (m_log.IsDebugEnabled) {
-                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
-            }
             return m_activeScripts;
         }
 
@@ -890,9 +857,6 @@ namespace OpenSim.Region.Framework.Scenes
         /// <returns></returns>
         protected internal List<ScenePresence> GetScenePresences()
         {
-            if (m_log.IsDebugEnabled) {
-                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
-            }
             m_presenceLock.AcquireReaderLock(-1);
             try
             {
@@ -1184,9 +1148,6 @@ namespace OpenSim.Region.Framework.Scenes
         /// </returns>
         protected internal List<SceneObjectGroup> GetSceneObjectGroups()
         {
-            if (m_log.IsDebugEnabled) {
-                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
-            }
             SceneObjectGroupsByFullIDRwLock.AcquireReaderLock(-1);
             try
             {
@@ -1362,9 +1323,6 @@ namespace OpenSim.Region.Framework.Scenes
         /// <returns></returns>
         protected internal EntityBase[] GetEntities()
         {
-            if (m_log.IsDebugEnabled) {
-                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
-            }
             return Entities.GetEntities();
         }
 
@@ -1402,9 +1360,6 @@ namespace OpenSim.Region.Framework.Scenes
         /// <param name="action"></param>
         protected internal void ForEachSOG(Action<SceneObjectGroup> action)
         {
-            if (m_log.IsDebugEnabled) {
-                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
-            }
             foreach (SceneObjectGroup obj in GetSceneObjectGroups())
             {
                 try
@@ -1427,9 +1382,6 @@ namespace OpenSim.Region.Framework.Scenes
         /// <param name="action"></param>
         public void ForEachAvatar(Action<ScenePresence> action)
         {
-            if (m_log.IsDebugEnabled) {
-                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
-            }
             ForEachScenePresence(delegate(ScenePresence sp)
             {
                 if (!sp.IsChildAgent)
@@ -1445,9 +1397,6 @@ namespace OpenSim.Region.Framework.Scenes
         /// <param name="action"></param>
         public void ForEachScenePresence(Action<ScenePresence> action)
         {
-            if (m_log.IsDebugEnabled) {
-                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
-            }
             // Once all callers have their delegates configured for parallelism, we can unleash this
             /*
             Action<ScenePresence> protectedAction = new Action<ScenePresence>(delegate(ScenePresence sp)

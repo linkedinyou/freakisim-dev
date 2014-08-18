@@ -185,6 +185,10 @@ namespace OpenSim.Region.Framework.Scenes
 
         public SceneBase(RegionInfo regInfo)
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+			}
+
             RegionInfo = regInfo;
             if(RegionInfo.MayChangeIP)
             {
@@ -197,6 +201,10 @@ namespace OpenSim.Region.Framework.Scenes
 
         private void OnIPChangeTimer(object source, ElapsedEventArgs e)
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+			}
+
             /* Trigger resolver */
             RegionInfo.CheckExternalHostName();
             if (RegionInfo.IsIPChanged)
@@ -231,6 +239,10 @@ namespace OpenSim.Region.Framework.Scenes
         /// <param name="RemoteClient">Client to send to</param>
         public virtual void SendLayerData(IClientAPI RemoteClient)
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+			}
+
             ITerrainModule terrModule = RequestModuleInterface<ITerrainModule>();
             if (terrModule != null)
             {
@@ -248,6 +260,10 @@ namespace OpenSim.Region.Framework.Scenes
 
         public bool TryGetScenePresence(UUID agentID, out object scenePresence)
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+			}
+
             scenePresence = null;
             ScenePresence sp = null;
             if (TryGetScenePresence(agentID, out sp))
@@ -293,6 +309,10 @@ namespace OpenSim.Region.Framework.Scenes
         /// </summary>
         public virtual void Close()
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+			}
+
             try
             {
                 EventManager.TriggerShutdown();
@@ -311,6 +331,10 @@ namespace OpenSim.Region.Framework.Scenes
         /// <returns>A brand new local ID</returns>
         public uint AllocateLocalId()
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+			}
+
             uint myID;
 
             _primAllocateMutex.WaitOne();
@@ -329,6 +353,10 @@ namespace OpenSim.Region.Framework.Scenes
         /// <param name="module"></param>
         public void AddRegionModule(string name, IRegionModuleBase module)
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+			}
+
             if (!RegionModules.ContainsKey(name))
             {
                 RegionModules.Add(name, module);
@@ -337,6 +365,10 @@ namespace OpenSim.Region.Framework.Scenes
 
         public void RemoveRegionModule(string name)
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+			}
+
             RegionModules.Remove(name);
         }
 
@@ -346,6 +378,10 @@ namespace OpenSim.Region.Framework.Scenes
         /// <param name="commander"></param>
         public void RegisterModuleCommander(ICommander commander)
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+			}
+
             m_moduleCommanders.Add(commander.Name, commander);
         }
 
@@ -355,6 +391,10 @@ namespace OpenSim.Region.Framework.Scenes
         /// <param name="name"></param>
         public void UnregisterModuleCommander(string name)
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+			}
+
             m_moduleCommanders.Remove(name);
         }
 
@@ -365,6 +405,10 @@ namespace OpenSim.Region.Framework.Scenes
         /// <returns>The module commander, null if no module commander with that name was found</returns>
         public ICommander GetCommander(string name)
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+			}
+
             ICommander val;
             if (m_moduleCommanders.TryGetValue(name, out val))
             {
@@ -376,6 +420,10 @@ namespace OpenSim.Region.Framework.Scenes
 
         public Dictionary<string, ICommander> GetCommanders()
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+			}
+
             return new Dictionary<string, ICommander>(m_moduleCommanders);
         }
 
@@ -387,7 +435,10 @@ namespace OpenSim.Region.Framework.Scenes
         /// <param name="mod"></param>
         public void RegisterModuleInterface<M>(M mod)
         {
-//            m_log.DebugFormat("[SCENE BASE]: Registering interface {0}", typeof(M));
+			if (m_log.IsDebugEnabled) {
+				m_log.DebugFormat ("{0}<M>(M mod) M: {1}", System.Reflection.MethodBase.GetCurrentMethod ().Name,  typeof(M));
+			}
+
             
             List<Object> l = null;
             if (!ModuleInterfaces.TryGetValue(typeof(M), out l))
@@ -413,6 +464,10 @@ namespace OpenSim.Region.Framework.Scenes
 
         public void UnregisterModuleInterface<M>(M mod)
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.DebugFormat ("{0}<M>(M mod) ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+			}
+
             List<Object> l;
             if (ModuleInterfaces.TryGetValue(typeof(M), out l))
             {
@@ -432,6 +487,10 @@ namespace OpenSim.Region.Framework.Scenes
 
         public void StackModuleInterface<M>(M mod)
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.DebugFormat ("{0}<M>(M mod)", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+			}
+
             List<Object> l;
             if (ModuleInterfaces.ContainsKey(typeof(M)))
                 l = ModuleInterfaces[typeof(M)];
@@ -461,6 +520,10 @@ namespace OpenSim.Region.Framework.Scenes
         /// <returns>null if there is no registered module implementing that interface</returns>
         public T RequestModuleInterface<T>()
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.DebugFormat ("{0}<T> ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+			}
+
             if (ModuleInterfaces.ContainsKey(typeof(T)) &&
                     (ModuleInterfaces[typeof(T)].Count > 0))
                 return (T)ModuleInterfaces[typeof(T)][0];
@@ -474,6 +537,10 @@ namespace OpenSim.Region.Framework.Scenes
         /// <returns>an empty array if there are no registered modules implementing that interface</returns>
         public T[] RequestModuleInterfaces<T>()
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.DebugFormat ("{0}<T>() ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+			}
+
             if (ModuleInterfaces.ContainsKey(typeof(T)))
             {
                 List<T> ret = new List<T>();
@@ -500,6 +567,10 @@ namespace OpenSim.Region.Framework.Scenes
         /// <param name="callback"></param>
         public void AddCommand(IRegionModuleBase module, string command, string shorthelp, string longhelp, CommandDelegate callback)
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+			}
+
             AddCommand(module, command, shorthelp, longhelp, string.Empty, callback);
         }
 
@@ -520,6 +591,10 @@ namespace OpenSim.Region.Framework.Scenes
         public void AddCommand(
             string category, IRegionModuleBase module, string command, string shorthelp, string longhelp, CommandDelegate callback)
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+			}
+
             AddCommand(category, module, command, shorthelp, longhelp, string.Empty, callback);
         }
 
@@ -534,6 +609,10 @@ namespace OpenSim.Region.Framework.Scenes
         /// <param name="callback"></param>
         public void AddCommand(IRegionModuleBase module, string command, string shorthelp, string longhelp, string descriptivehelp, CommandDelegate callback)
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+			}
+
             string moduleName = "";
 
             if (module != null)
@@ -558,6 +637,10 @@ namespace OpenSim.Region.Framework.Scenes
             string category, IRegionModuleBase module, string command,
             string shorthelp, string longhelp, string descriptivehelp, CommandDelegate callback)
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+			}
+
             if (MainConsole.Instance == null)
                 return;
 
@@ -586,6 +669,10 @@ namespace OpenSim.Region.Framework.Scenes
 
         public void Restart()
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+			}
+
             // This has to be here to fire the event
             restart handlerPhysicsCrash = OnRestart;
             if (handlerPhysicsCrash != null)

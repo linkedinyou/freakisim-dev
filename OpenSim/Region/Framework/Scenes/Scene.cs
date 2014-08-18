@@ -1834,9 +1834,6 @@ namespace OpenSim.Region.Framework.Scenes
         /// <returns></returns>
         public void Backup(bool forced)
         {
-            if (m_log.IsDebugEnabled) {
-                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
-            }
             lock (m_returns)
             {
                 EventManager.TriggerOnBackup(SimulationDataService, forced);
@@ -5061,17 +5058,11 @@ namespace OpenSim.Region.Framework.Scenes
 
         public int GetRootAgentCount()
         {
-            if (m_log.IsDebugEnabled) {
-                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
-            }
             return m_sceneGraph.GetRootAgentCount();
         }
 
         public int GetChildAgentCount()
         {
-            if (m_log.IsDebugEnabled) {
-                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
-            }
             return m_sceneGraph.GetChildAgentCount();
         }
 
@@ -5129,9 +5120,6 @@ namespace OpenSim.Region.Framework.Scenes
         /// </returns>
         public List<ScenePresence> GetScenePresences()
         {
-            if (m_log.IsDebugEnabled) {
-                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
-            }
             return new List<ScenePresence>(m_sceneGraph.GetScenePresences());
         }
 
@@ -5142,9 +5130,6 @@ namespace OpenSim.Region.Framework.Scenes
         /// <param name="action"></param>
         public void ForEachRootScenePresence(Action<ScenePresence> action)
         {
-            if (m_log.IsDebugEnabled) {
-                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
-            }
             m_sceneGraph.ForEachAvatar(action);
         }
 
@@ -5154,9 +5139,6 @@ namespace OpenSim.Region.Framework.Scenes
         /// <param name="action"></param>
         public void ForEachScenePresence(Action<ScenePresence> action)
         {
-            if (m_log.IsDebugEnabled) {
-                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
-            }
             m_sceneGraph.ForEachScenePresence(action);
         }
 
@@ -5333,9 +5315,6 @@ namespace OpenSim.Region.Framework.Scenes
         /// <param name="action"></param>
         public void ForEachRootClient(Action<IClientAPI> action)
         {
-            if (m_log.IsDebugEnabled) {
-                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
-            }
             ForEachRootScenePresence(delegate(ScenePresence presence)
             {
                 action(presence.ControllingClient);
@@ -5348,9 +5327,6 @@ namespace OpenSim.Region.Framework.Scenes
         /// <param name="action"></param>
         public void ForEachClient(Action<IClientAPI> action)
         {
-            if (m_log.IsDebugEnabled) {
-                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
-            }
             m_clientManager.ForEachSync(action);
         }
 
@@ -5372,9 +5348,6 @@ namespace OpenSim.Region.Framework.Scenes
 
         public void ForEachSOG(Action<SceneObjectGroup> action)
         {
-            if (m_log.IsDebugEnabled) {
-                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
-            }
             m_sceneGraph.ForEachSOG(action);
         }
 
@@ -5385,9 +5358,6 @@ namespace OpenSim.Region.Framework.Scenes
         /// <returns></returns>
         public EntityBase[] GetEntities()
         {
-            if (m_log.IsDebugEnabled) {
-                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
-            }
             return m_sceneGraph.GetEntities();
         }
 
@@ -5406,9 +5376,6 @@ namespace OpenSim.Region.Framework.Scenes
 
         public void CleanTempObjects()
         {
-            if (m_log.IsDebugEnabled) {
-                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
-            }
             EntityBase[] entities = GetEntities();
             foreach (EntityBase obj in entities)
             {

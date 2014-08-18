@@ -55,6 +55,10 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Presence
 
         public void AddRegion(Scene scene)
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+			}
+
             if (!m_Enabled)
                 return;
 
@@ -69,6 +73,10 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Presence
 
         public void RemoveRegion(Scene scene)
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+			}
+
             if (!m_Enabled)
                 return;
 
@@ -77,6 +85,10 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Presence
 
         public void RegionLoaded(Scene scene)
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+			}
+
             if (!m_Enabled)
                 return;
 
@@ -100,26 +112,46 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Presence
 
         public bool LogoutAgent(UUID sessionID)
         {
-            return m_PresenceService.LogoutAgent(sessionID);
+			if (m_log.IsDebugEnabled) {
+				m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+			}
+
+			return m_PresenceService.LogoutAgent(sessionID);
         }
 
         public bool LogoutRegionAgents(UUID regionID)
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+			}
+
             return m_PresenceService.LogoutRegionAgents(regionID);
         }
 
         public bool ReportAgent(UUID sessionID, UUID regionID)
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+			}
+
             return m_PresenceService.ReportAgent(sessionID, regionID);
         }
 
         public PresenceInfo GetAgent(UUID sessionID)
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+			}
+
             return m_PresenceService.GetAgent(sessionID);
         }
 
         public PresenceInfo[] GetAgents(string[] userIDs)
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+			}
+
             // Don't bother potentially making a useless network call if we not going to ask for any users anyway.
             if (userIDs.Length == 0)
                 return new PresenceInfo[0];
