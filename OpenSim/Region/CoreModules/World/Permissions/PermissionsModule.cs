@@ -157,6 +157,9 @@ namespace OpenSim.Region.CoreModules.World.Permissions
 
         public void Initialise(IConfigSource config)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             string permissionModules = Util.GetConfigVarFromSections<string>(config, "permissionmodules",
                 new string[] { "Startup", "Permissions" }, "DefaultPermissionsModule");
 
@@ -262,6 +265,9 @@ namespace OpenSim.Region.CoreModules.World.Permissions
 
         public void AddRegion(Scene scene)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (!m_Enabled)
                 return;
 
@@ -347,6 +353,9 @@ namespace OpenSim.Region.CoreModules.World.Permissions
 
         public void RemoveRegion(Scene scene)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (!m_Enabled)
                 return;
 
@@ -373,6 +382,9 @@ namespace OpenSim.Region.CoreModules.World.Permissions
 
         public void HandleBypassPermissions(string module, string[] args)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (m_scene.ConsoleScene() != null &&
                 m_scene.ConsoleScene() != m_scene)
             {
@@ -396,6 +408,9 @@ namespace OpenSim.Region.CoreModules.World.Permissions
 
         public void HandleForcePermissions(string module, string[] args)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (m_scene.ConsoleScene() != null &&
                 m_scene.ConsoleScene() != m_scene)
             {
@@ -423,6 +438,9 @@ namespace OpenSim.Region.CoreModules.World.Permissions
 
         public void HandleDebugPermissions(string module, string[] args)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (m_scene.ConsoleScene() != null &&
                 m_scene.ConsoleScene() != m_scene)
             {
@@ -447,6 +465,9 @@ namespace OpenSim.Region.CoreModules.World.Permissions
         #region Helper Functions
         protected void SendPermissionError(UUID user, string reason)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             m_scene.EventManager.TriggerPermissionError(user, reason);
         }
         
@@ -466,6 +487,9 @@ namespace OpenSim.Region.CoreModules.World.Permissions
         /// <returns></returns>
         protected bool IsGroupMember(UUID groupID, UUID userID, ulong powers)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (null == GroupsModule)
                 return false;
 
@@ -489,6 +513,9 @@ namespace OpenSim.Region.CoreModules.World.Permissions
         /// <returns>The parsed value</returns>
         private static UserSet ParseUserSetConfigSetting(IConfigSource config, string settingName, UserSet defaultValue)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             UserSet userSet = defaultValue;
 
             string rawSetting = Util.GetConfigVarFromSections<string>(config, settingName, 
@@ -553,6 +580,9 @@ namespace OpenSim.Region.CoreModules.World.Permissions
         /// <returns></returns>
         protected bool IsGridGod(UUID user, Scene scene)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             DebugPermissionInformation(MethodInfo.GetCurrentMethod().Name);
             if (m_bypassPermissions) return m_bypassPermissionsValue;
 
@@ -573,7 +603,10 @@ namespace OpenSim.Region.CoreModules.World.Permissions
         }
 
         protected bool IsFriendWithPerms(UUID user, UUID objectOwner)
-        {            
+        {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (user == UUID.Zero)
                 return false;
 
@@ -586,6 +619,9 @@ namespace OpenSim.Region.CoreModules.World.Permissions
 
         protected bool IsEstateManager(UUID user)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (user == UUID.Zero) return false;
         
             return m_scene.RegionInfo.EstateSettings.IsEstateManagerOrOwner(user);
@@ -595,6 +631,9 @@ namespace OpenSim.Region.CoreModules.World.Permissions
 
         public bool PropagatePermissions()
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (m_bypassPermissions)
                 return false;
 
@@ -603,11 +642,17 @@ namespace OpenSim.Region.CoreModules.World.Permissions
 
         public bool BypassPermissions()
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             return m_bypassPermissions;
         }
 
         public void SetBypassPermissions(bool value)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             m_bypassPermissions=value;
         }
 
@@ -615,6 +660,9 @@ namespace OpenSim.Region.CoreModules.World.Permissions
 
         public uint GenerateClientFlags(UUID user, UUID objID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             // Here's the way this works,
             // ObjectFlags and Permission flags are two different enumerations
             // ObjectFlags, however, tells the client to change what it will allow the user to do.
@@ -683,6 +731,9 @@ namespace OpenSim.Region.CoreModules.World.Permissions
 
         private uint ApplyObjectModifyMasks(uint setPermissionMask, uint objectFlagsMask)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             // We are adding the temporary objectflags to the object's objectflags based on the
             // permission flag given.  These change the F flags on the client.
 
@@ -711,6 +762,9 @@ namespace OpenSim.Region.CoreModules.World.Permissions
 
         public PermissionClass GetPermissionClass(UUID user, SceneObjectPart obj)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (obj == null)
                 return PermissionClass.Everyone;
 
@@ -760,6 +814,9 @@ namespace OpenSim.Region.CoreModules.World.Permissions
         /// <returns></returns>
         protected bool GenericObjectPermission(UUID currentUser, UUID objId, bool denyOnLocked)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             // Default: deny
             bool permission = false;
             bool locked = false;
@@ -854,6 +911,9 @@ namespace OpenSim.Region.CoreModules.World.Permissions
         #region Generic Permissions
         protected bool GenericCommunicationPermission(UUID user, UUID target)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             // Setting this to true so that cool stuff can happen until we define what determines Generic Communication Permission
             bool permission = true;
             string reason = "Only registered users may communicate with another account.";
@@ -873,6 +933,9 @@ namespace OpenSim.Region.CoreModules.World.Permissions
 
         public bool GenericEstatePermission(UUID user)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             // Default: deny
             bool permission = false;
 
@@ -889,6 +952,9 @@ namespace OpenSim.Region.CoreModules.World.Permissions
 
         protected bool GenericParcelPermission(UUID user, ILandObject parcel, ulong groupPowers)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             bool permission = false;
 
             if (parcel.LandData.OwnerID == user)
@@ -920,6 +986,9 @@ namespace OpenSim.Region.CoreModules.World.Permissions
     
         protected bool GenericParcelOwnerPermission(UUID user, ILandObject parcel, ulong groupPowers, bool allowEstateManager)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (parcel.LandData.OwnerID == user)
             {
                 // Returning immediately so that group deeded objects on group deeded land don't trigger a NRE on
@@ -948,6 +1017,9 @@ namespace OpenSim.Region.CoreModules.World.Permissions
 
         protected bool GenericParcelPermission(UUID user, Vector3 pos, ulong groupPowers)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             ILandObject parcel = m_scene.LandChannel.GetLandObject(pos.X, pos.Y);
             if (parcel == null) return false;
             return GenericParcelPermission(user, parcel, groupPowers);
@@ -1993,10 +2065,13 @@ namespace OpenSim.Region.CoreModules.World.Permissions
         
         private bool CanControlPrimMedia(UUID agentID, UUID primID, int face)
         {
-//            m_log.DebugFormat(
-//                "[PERMISSONS]: Performing CanControlPrimMedia check with agentID {0}, primID {1}, face {2}",
-//                agentID, primID, face);
-            
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+                //            m_log.DebugFormat(
+                //                "[PERMISSONS]: Performing CanControlPrimMedia check with agentID {0}, primID {1}, face {2}",
+                //                agentID, primID, face);
+            }
+
             if (null == MoapModule)
                 return false;
             
@@ -2019,10 +2094,13 @@ namespace OpenSim.Region.CoreModules.World.Permissions
         
         private bool CanInteractWithPrimMedia(UUID agentID, UUID primID, int face)
         {
-//            m_log.DebugFormat(
-//                "[PERMISSONS]: Performing CanInteractWithPrimMedia check with agentID {0}, primID {1}, face {2}",
-//                agentID, primID, face);
-            
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+                //            m_log.DebugFormat(
+                //                "[PERMISSONS]: Performing CanInteractWithPrimMedia check with agentID {0}, primID {1}, face {2}",
+                //                agentID, primID, face);
+            }
+
             if (null == MoapModule)
                 return false;
             

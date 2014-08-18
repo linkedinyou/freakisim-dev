@@ -163,6 +163,9 @@ namespace OpenSim.Region.Framework.Scenes
 
         public uint GenerateClientFlags(UUID userID, UUID objectID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             // libomv will moan about PrimFlags.ObjectYouOfficer being
             // obsolete...
 #pragma warning disable 0612
@@ -198,6 +201,9 @@ namespace OpenSim.Region.Framework.Scenes
 
         public void SetBypassPermissions(bool value)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             SetBypassPermissionsHandler handler = OnSetBypassPermissions;
             if (handler != null)
                 handler(value);
@@ -205,6 +211,9 @@ namespace OpenSim.Region.Framework.Scenes
 
         public bool BypassPermissions()
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             BypassPermissionsHandler handler = OnBypassPermissions;
             if (handler != null)
             {
@@ -220,6 +229,9 @@ namespace OpenSim.Region.Framework.Scenes
 
         public bool PropagatePermissions()
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             PropagatePermissionsHandler handler = OnPropagatePermissions;
             if (handler != null)
             {
@@ -236,6 +248,9 @@ namespace OpenSim.Region.Framework.Scenes
         #region REZ OBJECT
         public bool CanRezObject(int objectCount, UUID owner, Vector3 objectPosition)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             RezObjectHandler handler = OnRezObject;
             if (handler != null)
             {
@@ -254,6 +269,9 @@ namespace OpenSim.Region.Framework.Scenes
         #region DELETE OBJECT
         public bool CanDeleteObject(UUID objectID, UUID deleter)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             bool result = true;
             
             DeleteObjectHandler handler = OnDeleteObject;
@@ -275,6 +293,9 @@ namespace OpenSim.Region.Framework.Scenes
 
         public bool CanTransferObject(UUID objectID, UUID recipient)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             bool result = true;
             
             TransferObjectHandler handler = OnTransferObject;
@@ -299,6 +320,9 @@ namespace OpenSim.Region.Framework.Scenes
         #region TAKE OBJECT
         public bool CanTakeObject(UUID objectID, UUID AvatarTakingUUID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             bool result = true;
             
             TakeObjectHandler handler = OnTakeObject;
@@ -327,6 +351,9 @@ namespace OpenSim.Region.Framework.Scenes
         #region TAKE COPY OBJECT
         public bool CanTakeCopyObject(UUID objectID, UUID userID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             bool result = true;
             
             TakeCopyObjectHandler handler = OnTakeCopyObject;
@@ -355,6 +382,9 @@ namespace OpenSim.Region.Framework.Scenes
         #region DUPLICATE OBJECT
         public bool CanDuplicateObject(int objectCount, UUID objectID, UUID owner, Vector3 objectPosition)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             DuplicateObjectHandler handler = OnDuplicateObject;
             if (handler != null)
             {
@@ -373,6 +403,9 @@ namespace OpenSim.Region.Framework.Scenes
         #region EDIT OBJECT
         public bool CanEditObject(UUID objectID, UUID editorID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             EditObjectHandler handler = OnEditObject;
             if (handler != null)
             {
@@ -388,6 +421,9 @@ namespace OpenSim.Region.Framework.Scenes
 
         public bool CanEditObjectInventory(UUID objectID, UUID editorID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             EditObjectInventoryHandler handler = OnEditObjectInventory;
             if (handler != null)
             {
@@ -406,6 +442,9 @@ namespace OpenSim.Region.Framework.Scenes
         #region MOVE OBJECT
         public bool CanMoveObject(UUID objectID, UUID moverID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             MoveObjectHandler handler = OnMoveObject;
             if (handler != null)
             {
@@ -424,6 +463,9 @@ namespace OpenSim.Region.Framework.Scenes
         #region OBJECT ENTRY
         public bool CanObjectEntry(UUID objectID, bool enteringRegion, Vector3 newPoint)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             ObjectEntryHandler handler = OnObjectEntry;
             if (handler != null)
             {
@@ -442,6 +484,9 @@ namespace OpenSim.Region.Framework.Scenes
         #region RETURN OBJECT
         public bool CanReturnObjects(ILandObject land, UUID user, List<SceneObjectGroup> objects)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             bool result = true;
             
             ReturnObjectsHandler handler = OnReturnObjects;
@@ -470,6 +515,9 @@ namespace OpenSim.Region.Framework.Scenes
         #region INSTANT MESSAGE
         public bool CanInstantMessage(UUID user, UUID target)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             InstantMessageHandler handler = OnInstantMessage;
             if (handler != null)
             {
@@ -488,6 +536,9 @@ namespace OpenSim.Region.Framework.Scenes
         #region INVENTORY TRANSFER
         public bool CanInventoryTransfer(UUID user, UUID target)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             InventoryTransferHandler handler = OnInventoryTransfer;
             if (handler != null)
             {
@@ -506,6 +557,9 @@ namespace OpenSim.Region.Framework.Scenes
         #region VIEW SCRIPT
         public bool CanViewScript(UUID script, UUID objectID, UUID user)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             ViewScriptHandler handler = OnViewScript;
             if (handler != null)
             {
@@ -521,6 +575,9 @@ namespace OpenSim.Region.Framework.Scenes
 
         public bool CanViewNotecard(UUID script, UUID objectID, UUID user)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             ViewNotecardHandler handler = OnViewNotecard;
             if (handler != null)
             {
@@ -539,6 +596,9 @@ namespace OpenSim.Region.Framework.Scenes
         #region EDIT SCRIPT
         public bool CanEditScript(UUID script, UUID objectID, UUID user)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             EditScriptHandler handler = OnEditScript;
             if (handler != null)
             {
@@ -554,6 +614,9 @@ namespace OpenSim.Region.Framework.Scenes
 
         public bool CanEditNotecard(UUID script, UUID objectID, UUID user)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             EditNotecardHandler handler = OnEditNotecard;
             if (handler != null)
             {
@@ -572,6 +635,9 @@ namespace OpenSim.Region.Framework.Scenes
         #region RUN SCRIPT (When Script Placed in Object)
         public bool CanRunScript(UUID script, UUID objectID, UUID user)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             RunScriptHandler handler = OnRunScript;
             if (handler != null)
             {
@@ -590,6 +656,9 @@ namespace OpenSim.Region.Framework.Scenes
         #region COMPILE SCRIPT (When Script needs to get (re)compiled)
         public bool CanCompileScript(UUID ownerUUID, int scriptType)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             CompileScriptHandler handler = OnCompileScript;
             if (handler != null)
             {
@@ -608,6 +677,9 @@ namespace OpenSim.Region.Framework.Scenes
         #region START SCRIPT (When Script run box is Checked after placed in object)
         public bool CanStartScript(UUID script, UUID user)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             StartScriptHandler handler = OnStartScript;
             if (handler != null)
             {
@@ -626,6 +698,9 @@ namespace OpenSim.Region.Framework.Scenes
         #region STOP SCRIPT (When Script run box is unchecked after placed in object)
         public bool CanStopScript(UUID script, UUID user)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             StopScriptHandler handler = OnStopScript;
             if (handler != null)
             {
@@ -644,6 +719,9 @@ namespace OpenSim.Region.Framework.Scenes
         #region RESET SCRIPT
         public bool CanResetScript(UUID prim, UUID script, UUID user)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             ResetScriptHandler handler = OnResetScript;
             if (handler != null)
             {
@@ -662,6 +740,9 @@ namespace OpenSim.Region.Framework.Scenes
         #region TERRAFORM LAND
         public bool CanTerraformLand(UUID user, Vector3 pos)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             TerraformLandHandler handler = OnTerraformLand;
             if (handler != null)
             {
@@ -680,6 +761,9 @@ namespace OpenSim.Region.Framework.Scenes
         #region RUN CONSOLE COMMAND
         public bool CanRunConsoleCommand(UUID user)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             RunConsoleCommandHandler handler = OnRunConsoleCommand;
             if (handler != null)
             {
@@ -698,6 +782,9 @@ namespace OpenSim.Region.Framework.Scenes
         #region CAN ISSUE ESTATE COMMAND
         public bool CanIssueEstateCommand(UUID user, bool ownerCommand)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             IssueEstateCommandHandler handler = OnIssueEstateCommand;
             if (handler != null)
             {
@@ -715,6 +802,9 @@ namespace OpenSim.Region.Framework.Scenes
         #region CAN BE GODLIKE
         public bool IsGod(UUID user)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
 			if (m_log.IsDebugEnabled) {
 				m_log.DebugFormat ("IsGod(UUID user: {0})", user.ToString());
 			}
@@ -734,6 +824,9 @@ namespace OpenSim.Region.Framework.Scenes
 
         public bool IsGridGod(UUID user)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             IsGridGodHandler handler = OnIsGridGod;
             if (handler != null)
             {
@@ -749,6 +842,9 @@ namespace OpenSim.Region.Framework.Scenes
 
         public bool IsAdministrator(UUID user)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             IsAdministratorHandler handler = OnIsAdministrator;
             if (handler != null)
             {
@@ -767,6 +863,9 @@ namespace OpenSim.Region.Framework.Scenes
 
         public bool CanEditParcelProperties(UUID user, ILandObject parcel, GroupPowers p)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             EditParcelPropertiesHandler handler = OnEditParcelProperties;
             if (handler != null)
             {
@@ -784,6 +883,9 @@ namespace OpenSim.Region.Framework.Scenes
         #region SELL PARCEL
         public bool CanSellParcel(UUID user, ILandObject parcel)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             SellParcelHandler handler = OnSellParcel;
             if (handler != null)
             {
@@ -801,6 +903,9 @@ namespace OpenSim.Region.Framework.Scenes
         #region ABANDON PARCEL
         public bool CanAbandonParcel(UUID user, ILandObject parcel)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             AbandonParcelHandler handler = OnAbandonParcel;
             if (handler != null)
             {
@@ -817,6 +922,9 @@ namespace OpenSim.Region.Framework.Scenes
 
         public bool CanReclaimParcel(UUID user, ILandObject parcel)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             ReclaimParcelHandler handler = OnReclaimParcel;
             if (handler != null)
             {
@@ -832,6 +940,9 @@ namespace OpenSim.Region.Framework.Scenes
 
         public bool CanDeedParcel(UUID user, ILandObject parcel)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             DeedParcelHandler handler = OnDeedParcel;
             if (handler != null)
             {
@@ -847,6 +958,9 @@ namespace OpenSim.Region.Framework.Scenes
 
         public bool CanDeedObject(UUID user, UUID group)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             DeedObjectHandler handler = OnDeedObject;
             if (handler != null)
             {
@@ -862,6 +976,9 @@ namespace OpenSim.Region.Framework.Scenes
 
         public bool CanBuyLand(UUID user, ILandObject parcel)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             BuyLandHandler handler = OnBuyLand;
             if (handler != null)
             {
@@ -877,6 +994,9 @@ namespace OpenSim.Region.Framework.Scenes
 
         public bool CanLinkObject(UUID user, UUID objectID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             LinkObjectHandler handler = OnLinkObject;
             if (handler != null)
             {
@@ -892,6 +1012,9 @@ namespace OpenSim.Region.Framework.Scenes
 
         public bool CanDelinkObject(UUID user, UUID objectID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             DelinkObjectHandler handler = OnDelinkObject;
             if (handler != null)
             {
@@ -916,6 +1039,9 @@ namespace OpenSim.Region.Framework.Scenes
         /// <returns></returns>
         public bool CanCreateObjectInventory(int invType, UUID objectID, UUID userID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             CreateObjectInventoryHandler handler = OnCreateObjectInventory;
             if (handler != null)
             {
@@ -931,6 +1057,9 @@ namespace OpenSim.Region.Framework.Scenes
 
         public bool CanCopyObjectInventory(UUID itemID, UUID objectID, UUID userID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             CopyObjectInventoryHandler handler = OnCopyObjectInventory;
             if (handler != null)
             {
@@ -946,6 +1075,9 @@ namespace OpenSim.Region.Framework.Scenes
 
         public bool CanDeleteObjectInventory(UUID itemID, UUID objectID, UUID userID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             DeleteObjectInventoryHandler handler = OnDeleteObjectInventory;
             if (handler != null)
             {
@@ -961,6 +1093,9 @@ namespace OpenSim.Region.Framework.Scenes
         
         public bool CanTransferObjectInventory(UUID itemID, UUID objectID, UUID userID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             TransferObjectInventoryHandler handler = OnTransferObjectInventory;
             if (handler != null)
             {
@@ -982,6 +1117,9 @@ namespace OpenSim.Region.Framework.Scenes
         /// <returns></returns>
         public bool CanCreateUserInventory(int invType, UUID userID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             CreateUserInventoryHandler handler = OnCreateUserInventory;
             if (handler != null)
             {
@@ -1003,6 +1141,9 @@ namespace OpenSim.Region.Framework.Scenes
         /// <returns></returns>
         public bool CanEditUserInventory(UUID itemID, UUID userID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             EditUserInventoryHandler handler = OnEditUserInventory;
             if (handler != null)
             {
@@ -1024,6 +1165,9 @@ namespace OpenSim.Region.Framework.Scenes
         /// <returns></returns>
         public bool CanCopyUserInventory(UUID itemID, UUID userID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             CopyUserInventoryHandler handler = OnCopyUserInventory;
             if (handler != null)
             {
@@ -1045,6 +1189,9 @@ namespace OpenSim.Region.Framework.Scenes
         /// <returns></returns>
         public bool CanDeleteUserInventory(UUID itemID, UUID userID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             DeleteUserInventoryHandler handler = OnDeleteUserInventory;
             if (handler != null)
             {
@@ -1060,6 +1207,9 @@ namespace OpenSim.Region.Framework.Scenes
         
         public bool CanTransferUserInventory(UUID itemID, UUID userID, UUID recipientID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             TransferUserInventoryHandler handler = OnTransferUserInventory;
             if (handler != null)
             {
@@ -1075,6 +1225,9 @@ namespace OpenSim.Region.Framework.Scenes
         
         public bool CanTeleport(UUID userID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             TeleportHandler handler = OnTeleport;
             if (handler != null)
             {
@@ -1090,6 +1243,9 @@ namespace OpenSim.Region.Framework.Scenes
         
         public bool CanControlPrimMedia(UUID userID, UUID primID, int face)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             ControlPrimMediaHandler handler = OnControlPrimMedia;
             if (handler != null)
             {
@@ -1105,6 +1261,9 @@ namespace OpenSim.Region.Framework.Scenes
         
         public bool CanInteractWithPrimMedia(UUID userID, UUID primID, int face)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             InteractWithPrimMediaHandler handler = OnInteractWithPrimMedia;
             if (handler != null)
             {

@@ -115,6 +115,9 @@ namespace OpenSim.Region.CoreModules.World.Land
 
         public void AddRegion(Scene scene)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             m_scene = scene;
             m_landIDList = new int[m_scene.RegionInfo.RegionSizeX / LandUnit, m_scene.RegionInfo.RegionSizeY / LandUnit];
             landChannel = new LandChannel(scene, this);
@@ -153,6 +156,9 @@ namespace OpenSim.Region.CoreModules.World.Land
 
         public void RegionLoaded(Scene scene)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             m_userManager = m_scene.RequestModuleInterface<IUserManagement>();
             m_groupManager = m_scene.RequestModuleInterface<IGroupsModule>();
             m_primCountModule = m_scene.RequestModuleInterface<IPrimCountModule>();
@@ -173,6 +179,9 @@ namespace OpenSim.Region.CoreModules.World.Land
 
         void EventManagerOnNewClient(IClientAPI client)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             //Register some client events
             client.OnParcelPropertiesRequest += ClientOnParcelPropertiesRequest;
             client.OnParcelDivideRequest += ClientOnParcelDivideRequest;
@@ -203,11 +212,17 @@ namespace OpenSim.Region.CoreModules.World.Land
 
         public void EventMakeChildAgent(ScenePresence avatar)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             avatar.currentParcelUUID = UUID.Zero;
         }
 
         void ClientOnPreAgentUpdate(IClientAPI remoteClient, AgentUpdateArgs agentData)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             //If we are forcing a position for them to go
             if (forcedPosition.ContainsKey(remoteClient.AgentId))
             {
@@ -267,11 +282,17 @@ namespace OpenSim.Region.CoreModules.World.Land
 
         public void EventManagerOnSetAllowedForcefulBan(bool forceful)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             AllowedForcefulBans = forceful;
         }
 
         public void UpdateLandObject(int local_id, LandData data)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             LandData newData = data.Copy();
             newData.LocalID = local_id;
 
@@ -302,6 +323,9 @@ namespace OpenSim.Region.CoreModules.World.Land
         /// </summary>
         public void ResetSimLandObjects()
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             //Remove all the land objects in the sim and add a blank, full sim land object set to public
             m_landListRwLock.AcquireWriterLock(-1);
             try
@@ -322,6 +346,9 @@ namespace OpenSim.Region.CoreModules.World.Land
         /// <returns>The parcel created.</returns>
         protected ILandObject CreateDefaultParcel()
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             m_log.DebugFormat(
                 "[LAND MANAGEMENT MODULE]: Creating default parcel for region {0}", m_scene.RegionInfo.RegionName);
             
@@ -336,6 +363,9 @@ namespace OpenSim.Region.CoreModules.World.Land
 
         public List<ILandObject> AllParcels()
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             m_landListRwLock.AcquireReaderLock(-1);
             try
             {
@@ -349,6 +379,9 @@ namespace OpenSim.Region.CoreModules.World.Land
 
         public List<ILandObject> ParcelsNearPoint(Vector3 position)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             List<ILandObject> parcelsNear = new List<ILandObject>();
             for (int x = -4; x <= 4; x += 4)
             {
@@ -370,6 +403,9 @@ namespace OpenSim.Region.CoreModules.World.Land
 
         public void SendYouAreBannedNotice(ScenePresence avatar)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (AllowedForcefulBans)
             {
                 avatar.ControllingClient.SendAlertMessage(
@@ -384,6 +420,9 @@ namespace OpenSim.Region.CoreModules.World.Land
 
         private void ForceAvatarToPosition(ScenePresence avatar, Vector3? position)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (m_scene.Permissions.IsGod(avatar.UUID)) return;
             if (position.HasValue)
             {
@@ -393,12 +432,18 @@ namespace OpenSim.Region.CoreModules.World.Land
 
         public void SendYouAreRestrictedNotice(ScenePresence avatar)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             avatar.ControllingClient.SendAlertMessage(
                 "You are not allowed on this parcel because the land owner has restricted access.");
         }
 
         public void EventManagerOnAvatarEnteringNewParcel(ScenePresence avatar, int localLandID, UUID regionID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (m_scene.RegionInfo.RegionID == regionID)
             {
                 ILandObject parcelAvatarIsEntering;
@@ -441,6 +486,9 @@ namespace OpenSim.Region.CoreModules.World.Land
 
         public void SendOutNearestBanLine(IClientAPI client)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             ScenePresence sp = m_scene.GetScenePresence(client.AgentId);
             if (sp == null || sp.IsChildAgent)
                 return;
@@ -464,6 +512,9 @@ namespace OpenSim.Region.CoreModules.World.Land
 
         public void SendLandUpdate(ScenePresence avatar, bool force)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             ILandObject over = GetLandObject((int)Math.Min(((int)m_scene.RegionInfo.RegionSizeX - 1), Math.Max(0, Math.Round(avatar.AbsolutePosition.X))),
                                              (int)Math.Min(((int)m_scene.RegionInfo.RegionSizeY - 1), Math.Max(0, Math.Round(avatar.AbsolutePosition.Y))));
 
@@ -494,11 +545,17 @@ namespace OpenSim.Region.CoreModules.World.Land
 
         public void SendLandUpdate(ScenePresence avatar)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             SendLandUpdate(avatar, false);
         }
 
         public void EventManagerOnSignificantClientMovement(ScenePresence clientAvatar)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             SendLandUpdate(clientAvatar);
             SendOutNearestBanLine(clientAvatar.ControllingClient);
             ILandObject parcel = GetLandObject(clientAvatar.AbsolutePosition.X, clientAvatar.AbsolutePosition.Y);
@@ -549,6 +606,9 @@ namespace OpenSim.Region.CoreModules.World.Land
         public void EventManagerOnClientMovement(ScenePresence avatar)
         //
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             ILandObject over = GetLandObject(avatar.AbsolutePosition.X, avatar.AbsolutePosition.Y);
             if (over != null)
             {
@@ -563,6 +623,9 @@ namespace OpenSim.Region.CoreModules.World.Land
         public void ClientOnParcelAccessListRequest(UUID agentID, UUID sessionID, uint flags, int sequenceID,
                                                     int landLocalID, IClientAPI remote_client)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             ILandObject land;
             m_landListRwLock.AcquireReaderLock(-1);
             try
@@ -585,6 +648,9 @@ namespace OpenSim.Region.CoreModules.World.Land
                 int sections, List<LandAccessEntry> entries,
                 IClientAPI remote_client)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             // Flags is the list to update, it can mean either the ban or
             // the access list (WTH is a pass list? Mentioned in ParcelFlags)
             //
@@ -631,6 +697,9 @@ namespace OpenSim.Region.CoreModules.World.Land
         /// </param>
         public ILandObject AddLandObject(ILandObject land)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             ILandObject new_land = land.Copy();
             
             // Only now can we add the prim counts to the land object - we rely on the global ID which is generated
@@ -720,6 +789,9 @@ namespace OpenSim.Region.CoreModules.World.Land
         /// <param name="local_id">Land.localID of the peice of land to remove.</param>
         public void removeLandObject(int local_id)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             ILandObject land;
             m_landListRwLock.AcquireWriterLock(-1);
             try
@@ -754,6 +826,9 @@ namespace OpenSim.Region.CoreModules.World.Land
         /// </summary>        
         public void Clear(bool setupDefaultParcel)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             List<ILandObject> parcels;
             m_landListRwLock.AcquireReaderLock(-1);
             try
@@ -789,6 +864,9 @@ namespace OpenSim.Region.CoreModules.World.Land
 
         private void performFinalLandJoin(ILandObject master, ILandObject slave)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             bool[,] landBitmapSlave = slave.GetLandBitmap();
             m_landListRwLock.AcquireWriterLock(-1);
             try
@@ -815,6 +893,9 @@ namespace OpenSim.Region.CoreModules.World.Land
 
         public ILandObject GetLandObject(int parcelLocalID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             m_landListRwLock.AcquireReaderLock(-1);
             try
             {
@@ -839,7 +920,7 @@ namespace OpenSim.Region.CoreModules.World.Land
         public ILandObject GetLandObject(float x_float, float y_float)
         {
 			if (m_log.IsDebugEnabled) {
-				m_log.DebugFormat ("GetLandObject(float {0}, float {1})", x_float, y_float);
+				m_log.DebugFormat ("GetLandObject(float x_float: {0}, float y_float: {1})", x_float, y_float);
 			}
 
             return GetLandObject((int)x_float, (int)y_float, true /* returnNullIfLandObjectNotFound */);
@@ -905,6 +986,9 @@ namespace OpenSim.Region.CoreModules.World.Land
         // Throws exception if land object is not found
         public ILandObject GetLandObject(int x, int y)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             return GetLandObject(x, y, false /* returnNullIfLandObjectNotFound */);
         }
 
@@ -944,6 +1028,9 @@ namespace OpenSim.Region.CoreModules.World.Land
         // Create a 'parcel is here' bitmap for the parcel identified by the passed landID
         private bool[,] CreateBitmapForID(int landID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             bool[,] ret = new bool[m_landIDList.GetLength(0), m_landIDList.GetLength(1)];
 
             for (int xx = 0; xx < m_landIDList.GetLength(0); xx++)
@@ -960,6 +1047,9 @@ namespace OpenSim.Region.CoreModules.World.Land
 
         public void ResetOverMeRecords()
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             m_landListRwLock.AcquireReaderLock(-1);
             try
             {
@@ -976,6 +1066,9 @@ namespace OpenSim.Region.CoreModules.World.Land
 
         public void EventManagerOnParcelPrimCountAdd(SceneObjectGroup obj)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             Vector3 position = obj.AbsolutePosition;
             ILandObject landUnderPrim = GetLandObject(position.X, position.Y);
             if (landUnderPrim != null)
@@ -986,6 +1079,9 @@ namespace OpenSim.Region.CoreModules.World.Land
 
         public void EventManagerOnObjectBeingRemovedFromScene(SceneObjectGroup obj)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             m_landListRwLock.AcquireReaderLock(-1);
             try
             {
@@ -1002,6 +1098,9 @@ namespace OpenSim.Region.CoreModules.World.Land
 
         public void FinalizeLandPrimCountUpdate()
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             //Get Simwide prim count for owner
             Dictionary<UUID, List<LandObject>> landOwnersAndParcels = new Dictionary<UUID, List<LandObject>>();
             m_landListRwLock.AcquireReaderLock(-1);
@@ -1046,10 +1145,13 @@ namespace OpenSim.Region.CoreModules.World.Land
 
         public void EventManagerOnParcelPrimCountUpdate()
         {
-//            m_log.DebugFormat(
-//                "[LAND MANAGEMENT MODULE]: Triggered EventManagerOnParcelPrimCountUpdate() for {0}", 
-//                m_scene.RegionInfo.RegionName);
-            
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+                //            m_log.DebugFormat(
+                //                "[LAND MANAGEMENT MODULE]: Triggered EventManagerOnParcelPrimCountUpdate() for {0}", 
+                //                m_scene.RegionInfo.RegionName);
+            }
+
             ResetOverMeRecords();
             EntityBase[] entities = m_scene.Entities.GetEntities();
             foreach (EntityBase obj in entities)
@@ -1067,6 +1169,9 @@ namespace OpenSim.Region.CoreModules.World.Land
 
         public void EventManagerOnRequestParcelPrimCountUpdate()
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             ResetOverMeRecords();
             m_scene.EventManager.TriggerParcelPrimCountUpdate();
             FinalizeLandPrimCountUpdate();
@@ -1083,6 +1188,9 @@ namespace OpenSim.Region.CoreModules.World.Land
         /// <returns>Returns true if successful</returns>
         private void subdivide(int start_x, int start_y, int end_x, int end_y, UUID attempting_user_id)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             //First, lets loop through the points and make sure they are all in the same peice of land
             //Get the land object at start
 
@@ -1160,6 +1268,9 @@ namespace OpenSim.Region.CoreModules.World.Land
         /// <returns>Returns true if successful</returns>
         private void join(int start_x, int start_y, int end_x, int end_y, UUID attempting_user_id)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             end_x -= 4;
             end_y -= 4;
 
@@ -1220,11 +1331,17 @@ namespace OpenSim.Region.CoreModules.World.Land
 
         public void Join(int start_x, int start_y, int end_x, int end_y, UUID attempting_user_id)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             join(start_x, start_y, end_x, end_y, attempting_user_id);
         }
 
         public void Subdivide(int start_x, int start_y, int end_x, int end_y, UUID attempting_user_id)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             subdivide(start_x, start_y, end_x, end_y, attempting_user_id);
         }
 
@@ -1238,6 +1355,9 @@ namespace OpenSim.Region.CoreModules.World.Land
         /// <param name="remote_client">The object representing the client</param>
         public void SendParcelOverlay(IClientAPI remote_client)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             const int LAND_BLOCKS_PER_PACKET = 1024;
 
             byte[] byteArray = new byte[LAND_BLOCKS_PER_PACKET];
@@ -1270,6 +1390,9 @@ namespace OpenSim.Region.CoreModules.World.Land
 
         private byte BuildLayerByte(ILandObject currentParcelBlock, int x, int y, IClientAPI remote_client)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             byte tempByte = 0; //This represents the byte for the current 4x4
 
             if (currentParcelBlock != null)
@@ -1336,6 +1459,9 @@ namespace OpenSim.Region.CoreModules.World.Land
         public void ClientOnParcelPropertiesRequest(int start_x, int start_y, int end_x, int end_y, int sequence_id,
                                                     bool snap_selection, IClientAPI remote_client)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             //Get the land objects within the bounds
             List<ILandObject> temp = new List<ILandObject>();
             int inc_x = end_x - start_x;
@@ -1373,6 +1499,9 @@ namespace OpenSim.Region.CoreModules.World.Land
 
         public void ClientOnParcelPropertiesUpdateRequest(LandUpdateArgs args, int localID, IClientAPI remote_client)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             ILandObject land;
             m_landListRwLock.AcquireReaderLock(-1);
             try
@@ -1393,22 +1522,34 @@ namespace OpenSim.Region.CoreModules.World.Land
 
         public void ClientOnParcelDivideRequest(int west, int south, int east, int north, IClientAPI remote_client)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             subdivide(west, south, east, north, remote_client.AgentId);
         }
 
         public void ClientOnParcelJoinRequest(int west, int south, int east, int north, IClientAPI remote_client)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             join(west, south, east, north, remote_client.AgentId);
         }
 
         public void ClientOnParcelSelectObjects(int local_id, int request_type,
                                                 List<UUID> returnIDs, IClientAPI remote_client)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             m_landList[local_id].SendForceObjectSelect(local_id, request_type, returnIDs, remote_client);
         }
 
         public void ClientOnParcelObjectOwnerRequest(int local_id, IClientAPI remote_client)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             ILandObject land;
             m_landListRwLock.AcquireReaderLock(-1);
             try
@@ -1433,6 +1574,9 @@ namespace OpenSim.Region.CoreModules.World.Land
 
         public void ClientOnParcelGodForceOwner(int local_id, UUID ownerID, IClientAPI remote_client)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             ILandObject land;
             m_landListRwLock.AcquireReaderLock(-1);
             try
@@ -1462,6 +1606,9 @@ namespace OpenSim.Region.CoreModules.World.Land
 
         public void ClientOnParcelAbandonRequest(int local_id, IClientAPI remote_client)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             ILandObject land;
             m_landListRwLock.AcquireReaderLock(-1);
             try
@@ -1491,6 +1638,9 @@ namespace OpenSim.Region.CoreModules.World.Land
 
         public void ClientOnParcelReclaim(int local_id, IClientAPI remote_client)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             ILandObject land;
             m_landListRwLock.AcquireReaderLock(-1);
             try
@@ -1528,6 +1678,9 @@ namespace OpenSim.Region.CoreModules.World.Land
 
         public void EventManagerOnLandBuy(Object o, EventManager.LandBuyArgs e)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (e.economyValidated && e.landValidated)
             {
                 ILandObject land;
@@ -1554,6 +1707,9 @@ namespace OpenSim.Region.CoreModules.World.Land
 
         public void EventManagerOnValidateLandBuy(Object o, EventManager.LandBuyArgs e)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (e.landValidated == false)
             {
                 ILandObject lob = null;
@@ -1590,6 +1746,9 @@ namespace OpenSim.Region.CoreModules.World.Land
 
         void ClientOnParcelDeedToGroup(int parcelLocalID, UUID groupID, IClientAPI remote_client)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             ILandObject land;
             m_landListRwLock.AcquireReaderLock(-1);
             try
@@ -1614,8 +1773,11 @@ namespace OpenSim.Region.CoreModules.World.Land
 
         private void EventManagerOnIncomingLandDataFromStorage(List<LandData> data)
         {
-//            m_log.DebugFormat(
-//                "[LAND MANAGMENT MODULE]: Processing {0} incoming parcels on {1}", data.Count, m_scene.Name);
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+                //            m_log.DebugFormat(
+                //                "[LAND MANAGMENT MODULE]: Processing {0} incoming parcels on {1}", data.Count, m_scene.Name);
+            }
 
             // Prevent race conditions from any auto-creation of new parcels for varregions whilst we are still loading
             // the existing parcels.
@@ -1688,6 +1850,9 @@ namespace OpenSim.Region.CoreModules.World.Land
 
         private void IncomingLandObjectFromStorage(LandData data)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             ILandObject new_land = new LandObject(data, m_scene);
             new_land.SetLandBitmapFromByteArray();            
             AddLandObject(new_land);
@@ -1695,6 +1860,9 @@ namespace OpenSim.Region.CoreModules.World.Land
 
         public void ReturnObjectsInParcel(int localID, uint returnType, UUID[] agentIDs, UUID[] taskIDs, IClientAPI remoteClient)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (localID != -1)
             {
                 ILandObject selectedParcel = null;
@@ -1764,6 +1932,9 @@ namespace OpenSim.Region.CoreModules.World.Land
 
         public void EventManagerOnNoLandDataFromStorage()
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             ResetSimLandObjects();
             CreateDefaultParcel();
         }
@@ -1772,6 +1943,9 @@ namespace OpenSim.Region.CoreModules.World.Land
 
         public void setParcelObjectMaxOverride(overrideParcelMaxPrimCountDelegate overrideDel)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             m_landListRwLock.AcquireReaderLock(-1);
             try
             {
@@ -1794,6 +1968,9 @@ namespace OpenSim.Region.CoreModules.World.Land
 
         private void EventManagerOnRegisterCaps(UUID agentID, Caps caps)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             string capsBase = "/CAPS/" + caps.CapsObjectPath;
             caps.RegisterHandler(
                 "RemoteParcelRequest",
@@ -1818,6 +1995,9 @@ namespace OpenSim.Region.CoreModules.World.Land
         }
         private string ProcessPropertiesUpdate(string request, string path, string param, UUID agentID, Caps caps)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             IClientAPI client;
             if (!m_scene.TryGetClient(agentID, out client)) 
             {
@@ -1899,6 +2079,9 @@ namespace OpenSim.Region.CoreModules.World.Land
         // </llsd>
         private string RemoteParcelRequest(string request, string path, string param, UUID agentID, Caps caps)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             UUID parcelID = UUID.Zero;
             try
             {
@@ -1952,6 +2135,9 @@ namespace OpenSim.Region.CoreModules.World.Land
 
         private void ClientOnParcelInfoRequest(IClientAPI remoteClient, UUID parcelID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (parcelID == UUID.Zero)
                 return;
 
@@ -2021,6 +2207,9 @@ namespace OpenSim.Region.CoreModules.World.Land
 
         public void setParcelOtherCleanTime(IClientAPI remoteClient, int localID, int otherCleanTime)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             ILandObject land;
             m_landListRwLock.AcquireReaderLock(-1);
             try
@@ -2046,6 +2235,9 @@ namespace OpenSim.Region.CoreModules.World.Land
 
         public void ClientOnParcelFreezeUser(IClientAPI client, UUID parcelowner, uint flags, UUID target)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             ScenePresence targetAvatar = null;
             ((Scene)client.Scene).TryGetScenePresence(target, out targetAvatar);
             ScenePresence parcelManager = null;
@@ -2080,6 +2272,9 @@ namespace OpenSim.Region.CoreModules.World.Land
 
         private void OnEndParcelFrozen(object avatar)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             ScenePresence targetAvatar = (ScenePresence)avatar;
             targetAvatar.AllowMovement = true;
             System.Threading.Timer Timer;
@@ -2090,6 +2285,9 @@ namespace OpenSim.Region.CoreModules.World.Land
 
         public void ClientOnParcelEjectUser(IClientAPI client, UUID parcelowner, uint flags, UUID target)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             ScenePresence targetAvatar = null;
             ScenePresence parcelManager = null;
 
@@ -2134,6 +2332,9 @@ namespace OpenSim.Region.CoreModules.World.Land
         /// <param name="flags"></param>
         public virtual void ClientOnSetHome(IClientAPI remoteClient, ulong regionHandle, Vector3 position, Vector3 lookAt, uint flags)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             // Let's find the parcel in question
             ILandObject land = landChannel.GetLandObject(position);
             if (land == null || m_scene.GridUserService == null)
@@ -2187,6 +2388,9 @@ namespace OpenSim.Region.CoreModules.World.Land
 
         protected void RegisterCommands()
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             ICommands commands = MainConsole.Instance.Commands;
 
             commands.AddCommand(
@@ -2207,6 +2411,9 @@ namespace OpenSim.Region.CoreModules.World.Land
         
         protected void HandleClearCommand(string module, string[] args)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (!(MainConsole.Instance.ConsoleScene == null || MainConsole.Instance.ConsoleScene == m_scene))
                 return;
 
@@ -2228,6 +2435,9 @@ namespace OpenSim.Region.CoreModules.World.Land
         
         protected void HandleShowCommand(string module, string[] args)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (!(MainConsole.Instance.ConsoleScene == null || MainConsole.Instance.ConsoleScene == m_scene))
                 return;
 
@@ -2267,7 +2477,10 @@ namespace OpenSim.Region.CoreModules.World.Land
         }
 
         private void AppendParcelsSummaryReport(StringBuilder report)
-        {           
+        {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             report.AppendFormat("Land information for {0}\n", m_scene.Name);
 
             ConsoleDisplayTable cdt = new ConsoleDisplayTable();
@@ -2308,6 +2521,9 @@ namespace OpenSim.Region.CoreModules.World.Land
 
         private void AppendParcelReport(StringBuilder report, ILandObject lo)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             LandData ld = lo.LandData;
 
             ConsoleDisplayList cdl = new ConsoleDisplayList();

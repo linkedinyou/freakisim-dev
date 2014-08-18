@@ -736,6 +736,9 @@ namespace OpenSim.Region.Framework.Scenes
                      IConfigSource config, string simulatorVersion)
             : this(regInfo)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} called", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             m_config = config;
             MinFrameTime = 0.089f;
             MinMaintenanceTime = 1;
@@ -1051,6 +1054,10 @@ namespace OpenSim.Region.Framework.Scenes
 
         public Scene(RegionInfo regInfo) : base(regInfo)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
+
             PhysicalPrims = true;
             CollidablePrims = true;
             PhysicsEnabled = true;
@@ -1088,6 +1095,9 @@ namespace OpenSim.Region.Framework.Scenes
 
         protected virtual void RegisterDefaultSceneEvents()
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             IDialogModule dm = RequestModuleInterface<IDialogModule>();
 
             if (dm != null)
@@ -1115,6 +1125,9 @@ namespace OpenSim.Region.Framework.Scenes
         /// <returns>True after all operations complete, throws exceptions otherwise.</returns>
         public override void OtherRegionUp(GridRegion otherRegion)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (RegionInfo.RegionHandle != otherRegion.RegionHandle)
             {
                 float dist = (float)Math.Max(DefaultDrawDistance,
@@ -1163,6 +1176,9 @@ namespace OpenSim.Region.Framework.Scenes
 
         public void AddNeighborRegion(RegionInfo region)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             m_neighboursRwLock.AcquireWriterLock(-1);
             try
             {
@@ -1179,6 +1195,9 @@ namespace OpenSim.Region.Framework.Scenes
 
         private bool CheckNeighborRegionInternal(RegionInfo region)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             bool found = false;
             foreach (RegionInfo reg in m_neighbours)
             {
@@ -1193,6 +1212,9 @@ namespace OpenSim.Region.Framework.Scenes
 
         public bool CheckNeighborRegion(RegionInfo region)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             m_neighboursRwLock.AcquireReaderLock(-1);
             try
             {
@@ -1207,6 +1229,9 @@ namespace OpenSim.Region.Framework.Scenes
         // Alias IncomingHelloNeighbour OtherRegionUp, for now
         public GridRegion IncomingHelloNeighbour(RegionInfo neighbour)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             OtherRegionUp(new GridRegion(neighbour));
             return new GridRegion(RegionInfo);
         }
@@ -1214,6 +1239,9 @@ namespace OpenSim.Region.Framework.Scenes
         // This causes the region to restart immediatley.
         public void RestartNow()
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             IConfig startupConfig = m_config.Configs["Startup"];
             if (startupConfig != null)
             {
@@ -1238,6 +1266,9 @@ namespace OpenSim.Region.Framework.Scenes
         // subsequently the agent will never see the region come back online.
         public void RestartNotifyWaitElapsed(object sender, ElapsedEventArgs e)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             m_restartWaitTimer.Stop();
             lock (m_regionRestartNotifyList)
             {
@@ -1272,6 +1303,10 @@ namespace OpenSim.Region.Framework.Scenes
         // This is the method that shuts down the scene.
         public override void Close()
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
+
             if (m_shuttingDown)
             {
                 m_log.WarnFormat("[SCENE]: Ignoring close request because already closing {0}", Name);
@@ -1343,6 +1378,10 @@ namespace OpenSim.Region.Framework.Scenes
         /// </param> 
         public void Start(bool startScripts)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
+
             m_active = true;
 
 //            m_log.DebugFormat("[SCENE]: Starting Heartbeat timer for {0}", RegionInfo.RegionName);
@@ -1369,6 +1408,10 @@ namespace OpenSim.Region.Framework.Scenes
         /// </summary>
         public void SetModuleInterfaces()
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
+
             m_xmlrpcModule = RequestModuleInterface<IXMLRPC>();
             m_worldCommModule = RequestModuleInterface<IWorldComm>();
             XferManager = RequestModuleInterface<IXfer>();
@@ -1392,6 +1435,10 @@ namespace OpenSim.Region.Framework.Scenes
         /// </summary>
         private void Heartbeat()
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
+
 //            if (!Monitor.TryEnter(m_heartbeatLock))
 //            {
 //                Watchdog.RemoveThread();
@@ -1428,6 +1475,10 @@ namespace OpenSim.Region.Framework.Scenes
 
         private void Maintenance()
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
+
             DoMaintenance(-1);
 
             Watchdog.RemoveThread();
@@ -1435,6 +1486,10 @@ namespace OpenSim.Region.Framework.Scenes
 
         public void DoMaintenance(int runs)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
+
             long? endRun = null;
             int runtc;
             int previousMaintenanceTick;
@@ -1494,6 +1549,10 @@ namespace OpenSim.Region.Framework.Scenes
 
         public override void Update(int frames)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
+
             long? endFrame = null;
 
             if (frames >= 0)
@@ -1686,11 +1745,17 @@ namespace OpenSim.Region.Framework.Scenes
 
         public void AddGroupTarget(SceneObjectGroup grp)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             m_groupsWithTargets[grp.UUID] = grp;
         }
 
         public void RemoveGroupTarget(SceneObjectGroup grp)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             m_groupsWithTargets.Remove(grp.UUID);
         }
 
@@ -1769,6 +1834,9 @@ namespace OpenSim.Region.Framework.Scenes
         /// <returns></returns>
         public void Backup(bool forced)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             lock (m_returns)
             {
                 EventManager.TriggerOnBackup(SimulationDataService, forced);
@@ -1812,6 +1880,9 @@ namespace OpenSim.Region.Framework.Scenes
         /// <param name="group">Object to be backed up</param>
         public void ForceSceneObjectBackup(SceneObjectGroup group)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (group != null)
             {
                 group.HasGroupChanged = true;
@@ -1831,6 +1902,9 @@ namespace OpenSim.Region.Framework.Scenes
         /// <param name="reason">Reasion for object return</param>
         public void AddReturn(UUID agentID, string objectName, Vector3 location, string reason)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             lock (m_returns)
             {
                 if (m_returns.ContainsKey(agentID))
@@ -1860,11 +1934,17 @@ namespace OpenSim.Region.Framework.Scenes
         /// </summary>
         public void SaveTerrain()
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             SimulationDataService.StoreTerrain(Heightmap.GetDoubles(), RegionInfo.RegionID);
         }
 
         public void StoreWindlightProfile(RegionLightShareData wl)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             RegionInfo.WindlightSettings = wl;
             SimulationDataService.StoreRegionWindlightSettings(wl);
             m_eventManager.TriggerOnSaveNewWindlightProfile();
@@ -1872,6 +1952,9 @@ namespace OpenSim.Region.Framework.Scenes
 
         public void LoadWindlightProfile()
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             RegionInfo.WindlightSettings = SimulationDataService.LoadRegionWindlightSettings(RegionInfo.RegionID);
             m_eventManager.TriggerOnSaveNewWindlightProfile();
         }
@@ -1881,6 +1964,9 @@ namespace OpenSim.Region.Framework.Scenes
         /// </summary>
         public override void LoadWorldMap()
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             try
             {
                 TerrainData map = SimulationDataService.LoadTerrain(RegionInfo.RegionID, (int)RegionInfo.RegionSizeX, (int)RegionInfo.RegionSizeY, (int)RegionInfo.RegionSizeZ);
@@ -1931,6 +2017,9 @@ namespace OpenSim.Region.Framework.Scenes
         /// <exception cref="System.Exception">Thrown if registration of the region itself fails.</exception>
         public void RegisterRegionWithGrid()
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             m_sceneGridService.SetScene(this);
 
             //// Unfortunately this needs to be here and it can't be async.
@@ -1954,6 +2043,9 @@ namespace OpenSim.Region.Framework.Scenes
         private string lastEpAddress = string.Empty;
         public void SimulatorIPChanged(System.Net.IPAddress ep)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if(ep.ToString() != lastEpAddress)
             {
                 /* re register region */
@@ -1978,6 +2070,9 @@ namespace OpenSim.Region.Framework.Scenes
         /// <param name="regionID">Unique Identifier of the Region to load parcel data for</param>
         public void loadAllLandObjectsFromStorage(UUID regionID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             m_log.Info("[SCENE]: Loading land objects from storage");
             List<LandData> landData = SimulationDataService.LoadLandObjects(regionID);
 
@@ -2008,6 +2103,9 @@ namespace OpenSim.Region.Framework.Scenes
         /// <param name="regionID"></param>
         public virtual void LoadPrimsFromStorage(UUID regionID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             LoadingPrims = true;
             m_log.Info("[SCENE]: Loading objects from datastore");
 
@@ -2033,6 +2131,9 @@ namespace OpenSim.Region.Framework.Scenes
 
         public bool SupportsRayCastFiltered()
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (PhysicsScene == null)
                 return false;
             return PhysicsScene.SupportsRaycastWorldFiltered();
@@ -2040,6 +2141,9 @@ namespace OpenSim.Region.Framework.Scenes
 
         public object RayCastFiltered(Vector3 position, Vector3 direction, float length, int Count, RayFilterFlags filter)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (PhysicsScene == null)
                 return null;
             return PhysicsScene.RaycastWorld(position, direction, length, Count,filter);
@@ -2060,6 +2164,9 @@ namespace OpenSim.Region.Framework.Scenes
         /// <returns></returns>
         public Vector3 GetNewRezLocation(Vector3 RayStart, Vector3 RayEnd, UUID RayTargetID, Quaternion rot, byte bypassRayCast, byte RayEndIsIntersection, bool frontFacesOnly, Vector3 scale, bool FaceCenter)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             Vector3 pos = Vector3.Zero;
             if (RayEndIsIntersection == (byte)1)
             {
@@ -2165,6 +2272,9 @@ namespace OpenSim.Region.Framework.Scenes
                                        byte bypassRaycast, Vector3 RayStart, UUID RayTargetID,
                                        byte RayEndIsIntersection)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             Vector3 pos = GetNewRezLocation(RayStart, RayEnd, RayTargetID, rot, bypassRaycast, RayEndIsIntersection, true, new Vector3(0.5f, 0.5f, 0.5f), false);
 
             if (Permissions.CanRezObject(1, ownerID, pos))
@@ -2185,6 +2295,9 @@ namespace OpenSim.Region.Framework.Scenes
         public virtual SceneObjectGroup AddNewPrim(
             UUID ownerID, UUID groupID, Vector3 pos, Quaternion rot, PrimitiveBaseShape shape)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             //m_log.DebugFormat(
             //    "[SCENE]: Scene.AddNewPrim() pcode {0} called for {1} in {2}", shape.PCode, ownerID, RegionInfo.RegionName);
 
@@ -2234,6 +2347,9 @@ namespace OpenSim.Region.Framework.Scenes
         public bool AddRestoredSceneObject(
             SceneObjectGroup sceneObject, bool attachToBackup, bool alreadyPersisted, bool sendClientUpdates)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (m_sceneGraph.AddRestoredSceneObject(sceneObject, attachToBackup, alreadyPersisted, sendClientUpdates))
             {
                 EventManager.TriggerObjectAddedToScene(sceneObject);
@@ -2263,6 +2379,9 @@ namespace OpenSim.Region.Framework.Scenes
         public bool AddRestoredSceneObject(
             SceneObjectGroup sceneObject, bool attachToBackup, bool alreadyPersisted)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             return AddRestoredSceneObject(sceneObject, attachToBackup, alreadyPersisted, true);
         }
 
@@ -2277,6 +2396,9 @@ namespace OpenSim.Region.Framework.Scenes
         /// <returns>true if the object was added.  false if not</returns>
         public bool AddNewSceneObject(SceneObjectGroup sceneObject, bool attachToBackup)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             return AddNewSceneObject(sceneObject, attachToBackup, true);
         }
         
@@ -2294,7 +2416,10 @@ namespace OpenSim.Region.Framework.Scenes
         /// </param>
         /// <returns>true if the object was added.  false if not</returns>
         public bool AddNewSceneObject(SceneObjectGroup sceneObject, bool attachToBackup, bool sendClientUpdates)
-        {           
+        {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (m_sceneGraph.AddNewSceneObject(sceneObject, attachToBackup, sendClientUpdates))
             {
                 EventManager.TriggerObjectAddedToScene(sceneObject);
@@ -2319,6 +2444,9 @@ namespace OpenSim.Region.Framework.Scenes
         public bool AddNewSceneObject(
             SceneObjectGroup sceneObject, bool attachToBackup, Vector3? pos, Quaternion? rot, Vector3 vel)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (m_sceneGraph.AddNewSceneObject(sceneObject, attachToBackup, pos, rot, vel))
             {            
                 EventManager.TriggerObjectAddedToScene(sceneObject);
@@ -2333,6 +2461,9 @@ namespace OpenSim.Region.Framework.Scenes
         /// </summary>
         public void DeleteAllSceneObjects()
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             lock (Entities)
             {
                 EntityBase[] entities = Entities.GetEntities();
@@ -2358,6 +2489,9 @@ namespace OpenSim.Region.Framework.Scenes
         /// <param name="silent">Suppress broadcasting changes to other clients.</param>
         public void DeleteSceneObject(SceneObjectGroup group, bool silent)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             DeleteSceneObject(group, silent, true);
         }
 
@@ -2368,8 +2502,10 @@ namespace OpenSim.Region.Framework.Scenes
         /// <param name="silent">Suppress broadcasting changes to other clients.</param>
         /// <param name="removeScripts">If true, then scripts are removed.  If false, then they are only stopped.</para>
         public void DeleteSceneObject(SceneObjectGroup group, bool silent, bool removeScripts)
-        {            
-//            m_log.DebugFormat("[SCENE]: Deleting scene object {0} {1}", group.Name, group.UUID);
+        {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} Group Name: {1} Group UUID: {2}", System.Reflection.MethodBase.GetCurrentMethod ().Name, group.Name, group.UUID);
+            }
 
             if (removeScripts)
                 group.RemoveScriptInstances(true);
@@ -2416,6 +2552,9 @@ namespace OpenSim.Region.Framework.Scenes
         /// <returns>true if the object was in the scene, false if it was not</returns>
         public bool UnlinkSceneObject(SceneObjectGroup so, bool softDelete)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (m_sceneGraph.DeleteSceneObject(so.UUID, softDelete))
             {
                 if (!softDelete)
@@ -2448,6 +2587,9 @@ namespace OpenSim.Region.Framework.Scenes
         /// <param name="grp">the scene object that we're crossing</param>
         public void CrossPrimGroupIntoNewRegion(Vector3 attemptedPosition, SceneObjectGroup grp, bool silent)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (grp == null)
                 return;
             if (grp.IsDeleted)
@@ -2494,6 +2636,9 @@ namespace OpenSim.Region.Framework.Scenes
         // Return 'true' if position inside region.
         public bool PositionIsInCurrentRegion(Vector3 pos)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             bool ret = false;
             int xx = (int)Math.Floor(pos.X);
             int yy = (int)Math.Floor(pos.Y);
@@ -2524,6 +2669,9 @@ namespace OpenSim.Region.Framework.Scenes
         /// <returns></returns>
         public bool IncomingCreateObject(Vector3 newPosition, ISceneObject sog)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             //m_log.DebugFormat(" >>> IncomingCreateObject(sog) <<< {0} deleted? {1} isAttach? {2}", ((SceneObjectGroup)sog).AbsolutePosition,
             //    ((SceneObjectGroup)sog).IsDeleted, ((SceneObjectGroup)sog).RootPart.IsAttachment);
 
@@ -2596,6 +2744,9 @@ namespace OpenSim.Region.Framework.Scenes
         /// <returns>True if the SceneObjectGroup was added, False if it was not</returns>
         public bool AddSceneObject(SceneObjectGroup sceneObject)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             // Force allocation of new LocalId
             //
             SceneObjectPart[] parts = sceneObject.Parts;
@@ -2664,6 +2815,9 @@ namespace OpenSim.Region.Framework.Scenes
 
         public override ISceneAgent AddNewAgent(IClientAPI client, PresenceType type)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             ScenePresence sp;
             bool vialogin;
             bool reallyNew = true;
@@ -2750,6 +2904,9 @@ namespace OpenSim.Region.Framework.Scenes
         /// </summary>
         public string GetAgentHomeURI(UUID agentID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             AgentCircuitData circuit = AuthenticateHandler.GetAgentCircuitData(agentID);
             if (circuit != null && circuit.ServiceURLs != null && circuit.ServiceURLs.ContainsKey("HomeURI"))
                 return circuit.ServiceURLs["HomeURI"].ToString();
@@ -2764,6 +2921,9 @@ namespace OpenSim.Region.Framework.Scenes
         /// <param name="aCircuit"></param>
         private void CacheUserName(ScenePresence sp, AgentCircuitData aCircuit)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (UserManagementModule != null)
             {
                 string first = aCircuit.firstname, last = aCircuit.lastname;
@@ -2796,6 +2956,9 @@ namespace OpenSim.Region.Framework.Scenes
 
         private bool VerifyClient(AgentCircuitData aCircuit, System.Net.IPEndPoint ep, out bool vialogin)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             vialogin = false;
             
             // Do the verification here
@@ -2831,6 +2994,9 @@ namespace OpenSim.Region.Framework.Scenes
         // Called by Caps, on the first HTTP contact from the client
         public override bool CheckClient(UUID agentID, System.Net.IPEndPoint ep)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             AgentCircuitData aCircuit = m_authenticateHandler.GetAgentCircuitData(agentID);
             if (aCircuit != null)
             {
@@ -2877,6 +3043,9 @@ namespace OpenSim.Region.Framework.Scenes
         /// <param name="client">The IClientAPI of the connected client</param>
         public virtual void SubscribeToClientEvents(IClientAPI client)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             SubscribeToClientTerrainEvents(client);
             SubscribeToClientPrimEvents(client);
             SubscribeToClientPrimRezEvents(client);
@@ -2890,11 +3059,17 @@ namespace OpenSim.Region.Framework.Scenes
 
         public virtual void SubscribeToClientTerrainEvents(IClientAPI client)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             client.OnRegionHandShakeReply += SendLayerData;
         }
         
         public virtual void SubscribeToClientPrimEvents(IClientAPI client)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             client.OnUpdatePrimGroupPosition += m_sceneGraph.UpdatePrimGroupPosition;
             client.OnUpdatePrimSinglePosition += m_sceneGraph.UpdatePrimSinglePosition;
 
@@ -2939,12 +3114,18 @@ namespace OpenSim.Region.Framework.Scenes
 
         public virtual void SubscribeToClientPrimRezEvents(IClientAPI client)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             client.OnAddPrim += AddNewPrim;
             client.OnRezObject += RezObject;
         }
 
         public virtual void SubscribeToClientInventoryEvents(IClientAPI client)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             client.OnLinkInventoryItem += HandleLinkInventoryItem;
             client.OnCreateNewInventoryFolder += HandleCreateInventoryFolder;
             client.OnUpdateInventoryFolder += HandleUpdateInventoryFolder;
@@ -2966,11 +3147,17 @@ namespace OpenSim.Region.Framework.Scenes
 
         public virtual void SubscribeToClientTeleportEvents(IClientAPI client)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             client.OnTeleportLocationRequest += RequestTeleportLocation;
         }
 
         public virtual void SubscribeToClientScriptEvents(IClientAPI client)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             client.OnScriptReset += ProcessScriptReset;
             client.OnGetScriptRunning += GetScriptRunning;
             client.OnSetScriptRunning += SetScriptRunning;
@@ -2978,6 +3165,9 @@ namespace OpenSim.Region.Framework.Scenes
 
         public virtual void SubscribeToClientParcelEvents(IClientAPI client)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             client.OnParcelReturnObjectsRequest += LandChannel.ReturnObjectsInParcel;
             client.OnParcelSetOtherCleanTime += LandChannel.SetParcelOtherCleanTime;
             client.OnParcelBuy += ProcessParcelBuy;
@@ -2985,12 +3175,18 @@ namespace OpenSim.Region.Framework.Scenes
 
         public virtual void SubscribeToClientGridEvents(IClientAPI client)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             //client.OnNameFromUUIDRequest += HandleUUIDNameRequest;
             client.OnMoneyTransferRequest += ProcessMoneyTransferRequest;
         }
         
         public virtual void SubscribeToClientNetworkEvents(IClientAPI client)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             client.OnNetworkStatsUpdate += StatsReporter.AddPacketsStats;
             client.OnViewerEffect += ProcessViewerEffect;
         }
@@ -3002,6 +3198,9 @@ namespace OpenSim.Region.Framework.Scenes
         /// <param name="client">The IClientAPI of the client</param>
         public virtual void UnSubscribeToClientEvents(IClientAPI client)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             UnSubscribeToClientTerrainEvents(client);
             UnSubscribeToClientPrimEvents(client);
             UnSubscribeToClientPrimRezEvents(client);
@@ -3015,11 +3214,17 @@ namespace OpenSim.Region.Framework.Scenes
 
         public virtual void UnSubscribeToClientTerrainEvents(IClientAPI client)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             client.OnRegionHandShakeReply -= SendLayerData;
         }
 
         public virtual void UnSubscribeToClientPrimEvents(IClientAPI client)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             client.OnUpdatePrimGroupPosition -= m_sceneGraph.UpdatePrimGroupPosition;
             client.OnUpdatePrimSinglePosition -= m_sceneGraph.UpdatePrimSinglePosition;
 
@@ -3061,12 +3266,18 @@ namespace OpenSim.Region.Framework.Scenes
 
         public virtual void UnSubscribeToClientPrimRezEvents(IClientAPI client)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             client.OnAddPrim -= AddNewPrim;
             client.OnRezObject -= RezObject;
         }
 
         public virtual void UnSubscribeToClientInventoryEvents(IClientAPI client)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             client.OnCreateNewInventoryFolder -= HandleCreateInventoryFolder;
             client.OnUpdateInventoryFolder -= HandleUpdateInventoryFolder;
             client.OnMoveInventoryFolder -= HandleMoveInventoryFolder; // 2; //!!
@@ -3087,6 +3298,9 @@ namespace OpenSim.Region.Framework.Scenes
 
         public virtual void UnSubscribeToClientTeleportEvents(IClientAPI client)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             client.OnTeleportLocationRequest -= RequestTeleportLocation;
             //client.OnTeleportLandmarkRequest -= RequestTeleportLandmark;
             //client.OnTeleportHomeRequest -= TeleportClientHome;
@@ -3094,6 +3308,9 @@ namespace OpenSim.Region.Framework.Scenes
 
         public virtual void UnSubscribeToClientScriptEvents(IClientAPI client)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             client.OnScriptReset -= ProcessScriptReset;
             client.OnGetScriptRunning -= GetScriptRunning;
             client.OnSetScriptRunning -= SetScriptRunning;
@@ -3101,6 +3318,9 @@ namespace OpenSim.Region.Framework.Scenes
 
         public virtual void UnSubscribeToClientParcelEvents(IClientAPI client)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             client.OnParcelReturnObjectsRequest -= LandChannel.ReturnObjectsInParcel;
             client.OnParcelSetOtherCleanTime -= LandChannel.SetParcelOtherCleanTime;
             client.OnParcelBuy -= ProcessParcelBuy;
@@ -3108,12 +3328,18 @@ namespace OpenSim.Region.Framework.Scenes
 
         public virtual void UnSubscribeToClientGridEvents(IClientAPI client)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             //client.OnNameFromUUIDRequest -= HandleUUIDNameRequest;
             client.OnMoneyTransferRequest -= ProcessMoneyTransferRequest;
         }
 
         public virtual void UnSubscribeToClientNetworkEvents(IClientAPI client)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             client.OnNetworkStatsUpdate -= StatsReporter.AddPacketsStats;
             client.OnViewerEffect -= ProcessViewerEffect;
         }
@@ -3125,6 +3351,9 @@ namespace OpenSim.Region.Framework.Scenes
         /// <param name="client">The IClientAPI for the client</param>
         public virtual bool TeleportClientHome(UUID agentId, IClientAPI client)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (EntityTransferModule != null)
             {
                 return EntityTransferModule.TeleportHome(agentId, client);
@@ -3147,6 +3376,9 @@ namespace OpenSim.Region.Framework.Scenes
         /// <param name="GroupID">Group of new object</param>
         public void DuplicateObject(uint originalPrim, Vector3 offset, uint flags, UUID AgentID, UUID GroupID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             SceneObjectGroup copy = SceneGraph.DuplicateObject(originalPrim, offset, flags, AgentID, GroupID, Quaternion.Identity);
             if (copy != null)
                 EventManager.TriggerObjectAddedToScene(copy);
@@ -3171,6 +3403,9 @@ namespace OpenSim.Region.Framework.Scenes
                                            UUID RayTargetObj, Vector3 RayEnd, Vector3 RayStart,
                                            bool BypassRaycast, bool RayEndIsIntersection, bool CopyCenters, bool CopyRotates)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             Vector3 pos;
             const bool frontFacesOnly = true;
             //m_log.Info("HITTARGET: " + RayTargetObj.ToString() + ", COPYTARGET: " + localID.ToString());
@@ -3241,6 +3476,9 @@ namespace OpenSim.Region.Framework.Scenes
         /// <param name="appearance"></param>
         public void GetAvatarAppearance(IClientAPI client, out AvatarAppearance appearance)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             AgentCircuitData aCircuit = m_authenticateHandler.GetAgentCircuitData(client.CircuitCode);
 
             if (aCircuit == null)
@@ -3272,6 +3510,9 @@ namespace OpenSim.Region.Framework.Scenes
         /// </param>
         public void RemoveClient(UUID agentID, bool closeChildAgents)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             AgentCircuitData acd = m_authenticateHandler.GetAgentCircuitData(agentID);
 
             // Shouldn't be necessary since RemoveClient() is currently only called by IClientAPI.Close() which 
@@ -3404,6 +3645,9 @@ namespace OpenSim.Region.Framework.Scenes
         /// <param name="regionslst"></param>
         public void HandleRemoveKnownRegionsFromAvatar(UUID avatarID, List<ulong> regionslst)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             ScenePresence av = GetScenePresence(avatarID);
             if (av != null)
             {
@@ -3423,6 +3667,9 @@ namespace OpenSim.Region.Framework.Scenes
 
         public void SendKillObject(List<uint> localIDs)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             List<uint> deleteIDs = new List<uint>();
 
             foreach (uint localID in localIDs)
@@ -3457,6 +3704,9 @@ namespace OpenSim.Region.Framework.Scenes
         /// also return a reason.</returns>
         public bool NewUserConnection(AgentCircuitData agent, uint teleportFlags, GridRegion source, out string reason)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             return NewUserConnection(agent, teleportFlags, source, out reason, true);
         }
 
@@ -4105,6 +4355,9 @@ namespace OpenSim.Region.Framework.Scenes
         /// <param name="data">Information to update the AgentCircuitData with</param>
         public void UpdateCircuitData(AgentCircuitData data)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             m_authenticateHandler.UpdateAgentData(data);
         }
 
@@ -4116,6 +4369,9 @@ namespace OpenSim.Region.Framework.Scenes
         /// <returns>True if we successfully changed it.  False if we did not</returns>
         public bool ChangeCircuitCode(uint oldcc, uint newcc)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             return m_authenticateHandler.TryChangeCiruitCode(oldcc, newcc);
         }
 
@@ -4192,8 +4448,9 @@ namespace OpenSim.Region.Framework.Scenes
         /// <returns>true if we handled it.</returns>
         public virtual bool IncomingUpdateChildAgent(AgentData cAgentData)
         {
-            m_log.DebugFormat(
-                "[SCENE]: Incoming child agent update for {0} in {1}", cAgentData.AgentID, RegionInfo.RegionName);
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} for {0} in {1}", System.Reflection.MethodBase.GetCurrentMethod ().Name, cAgentData.AgentID, RegionInfo.RegionName);
+            }
 
             // TODO: This check should probably be in QueryAccess().
             ILandObject nearestParcel = GetNearestAllowedParcel(cAgentData.AgentID, RegionInfo.RegionSizeX / 2, RegionInfo.RegionSizeY / 2);
@@ -4259,7 +4516,9 @@ namespace OpenSim.Region.Framework.Scenes
         /// <returns>true if we handled it.</returns>
         public virtual bool IncomingUpdateChildAgent(AgentPosition cAgentData)
         {
-            //m_log.Debug(" XXX Scene IncomingChildAgentDataUpdate POSITION in " + RegionInfo.RegionName);
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             ScenePresence childAgentUpdate = GetScenePresence(cAgentData.AgentID);
             if (childAgentUpdate != null)
             {
@@ -4295,6 +4554,9 @@ namespace OpenSim.Region.Framework.Scenes
         /// <param name='agentID'></param>
         protected virtual ScenePresence WaitGetScenePresence(UUID agentID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             int ntimes = 20;
             ScenePresence sp = null;
             while ((sp = GetScenePresence(agentID)) == null && (ntimes-- > 0))
@@ -4317,7 +4579,10 @@ namespace OpenSim.Region.Framework.Scenes
         /// <returns></returns>
         public bool CloseAgent(UUID agentID, bool force, string auth_token)
         {
-            //m_log.DebugFormat("[SCENE]: Processing incoming close agent {0} in region {1} with auth_token {2}", agentID, RegionInfo.RegionName, auth_token);
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+                //m_log.DebugFormat("[SCENE]: Processing incoming close agent {0} in region {1} with auth_token {2}", agentID, RegionInfo.RegionName, auth_token);
+            }
 
             // Check that the auth_token is valid
             AgentCircuitData acd = AuthenticateHandler.GetAgentCircuitData(agentID);
@@ -4357,6 +4622,9 @@ namespace OpenSim.Region.Framework.Scenes
         /// was not in a state where it could transition to pre-close.</returns>
         public bool IncomingPreCloseClient(ScenePresence sp)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             lock (m_removeClientLock)
             {
                 // We need to avoid a race condition where in, for example, an A B C D region layout, an avatar may
@@ -4399,6 +4667,9 @@ namespace OpenSim.Region.Framework.Scenes
         /// </param>
         public override bool CloseAgent(UUID agentID, bool force)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             ScenePresence sp;
 
             lock (m_removeClientLock)
@@ -4465,6 +4736,9 @@ namespace OpenSim.Region.Framework.Scenes
         public void RequestTeleportLocation(IClientAPI remoteClient, string regionName, Vector3 position,
                                             Vector3 lookat, uint teleportFlags)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             GridRegion region = GridService.GetRegionByName(RegionInfo.ScopeID, regionName);
 
             if (region == null)
@@ -4488,6 +4762,9 @@ namespace OpenSim.Region.Framework.Scenes
         public void RequestTeleportLocation(IClientAPI remoteClient, ulong regionHandle, Vector3 position,
                                             Vector3 lookAt, uint teleportFlags)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             ScenePresence sp = GetScenePresence(remoteClient.AgentId);
             if (sp != null)
             {
@@ -4505,6 +4782,9 @@ namespace OpenSim.Region.Framework.Scenes
 
         public bool CrossAgentToNewRegion(ScenePresence agent, bool isFlying)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (EntityTransferModule != null)
             {
                 return EntityTransferModule.Cross(agent, isFlying);
@@ -4519,6 +4799,9 @@ namespace OpenSim.Region.Framework.Scenes
 
         public void SendOutChildAgentUpdates(AgentPosition cadu, ScenePresence presence)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             m_sceneGridService.SendChildAgentDataUpdate(cadu, presence);
         }
 
@@ -4528,6 +4811,9 @@ namespace OpenSim.Region.Framework.Scenes
 
         protected override IConfigSource GetConfig()
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             return m_config;
         }
 
@@ -4535,6 +4821,9 @@ namespace OpenSim.Region.Framework.Scenes
 
         public void HandleObjectPermissionsUpdate(IClientAPI controller, UUID agentID, UUID sessionID, byte field, uint localId, uint mask, byte set)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             // Check for spoofing..  since this is permissions we're talking about here!
             if ((controller.SessionId == sessionID) && (controller.AgentId == agentID))
             {
@@ -4555,6 +4844,9 @@ namespace OpenSim.Region.Framework.Scenes
         /// </summary>
         public void ForceClientUpdate()
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             EntityBase[] entityList = GetEntities();
             foreach (EntityBase ent in entityList)
             {
@@ -4572,6 +4864,9 @@ namespace OpenSim.Region.Framework.Scenes
         /// <param name="cmdparams"></param>
         public void HandleEditCommand(string[] cmdparams)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             m_log.DebugFormat("Searching for Primitive: '{0}'", cmdparams[2]);
 
             EntityBase[] entityList = GetEntities();
@@ -4603,11 +4898,17 @@ namespace OpenSim.Region.Framework.Scenes
         /// <param name="args"></param>
         public void SendCommandToPlugins(string[] args)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             m_eventManager.TriggerOnPluginConsole(args);
         }
 
         public LandData GetLandData(float x, float y)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             return LandChannel.GetLandObject(x, y).LandData;
         }
 
@@ -4618,12 +4919,17 @@ namespace OpenSim.Region.Framework.Scenes
         /// <returns></returns>
         public LandData GetLandData(Vector3 pos)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             return GetLandData(pos.X, pos.Y);
         }
 
         public LandData GetLandData(uint x, uint y)
         {
-            m_log.DebugFormat("[SCENE]: returning land for {0},{1}", x, y);
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} (uint x: {}, uint y: {2})", System.Reflection.MethodBase.GetCurrentMethod ().Name,x,y);
+            }  
             return LandChannel.GetLandObject((int)x, (int)y).LandData;
         }
 
@@ -4680,6 +4986,9 @@ namespace OpenSim.Region.Framework.Scenes
 
         public bool ScriptDanger(uint localID, Vector3 pos)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             SceneObjectPart part = GetSceneObjectPart(localID);
             if (part != null)
             {
@@ -4693,6 +5002,9 @@ namespace OpenSim.Region.Framework.Scenes
 
         public bool PipeEventsForScript(uint localID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             SceneObjectPart part = GetSceneObjectPart(localID);
 
             if (part != null)
@@ -4717,31 +5029,49 @@ namespace OpenSim.Region.Framework.Scenes
         /// <returns></returns>
         public UUID ConvertLocalIDToFullID(uint localID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             return m_sceneGraph.ConvertLocalIDToFullID(localID);
         }
 
         public void SwapRootAgentCount(bool rootChildChildRootTF)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             m_sceneGraph.SwapRootChildAgent(rootChildChildRootTF);
         }
 
         public void AddPhysicalPrim(int num)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             m_sceneGraph.AddPhysicalPrim(num);
         }
 
         public void RemovePhysicalPrim(int num)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             m_sceneGraph.RemovePhysicalPrim(num);
         }
 
         public int GetRootAgentCount()
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             return m_sceneGraph.GetRootAgentCount();
         }
 
         public int GetChildAgentCount()
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             return m_sceneGraph.GetChildAgentCount();
         }
 
@@ -4752,6 +5082,9 @@ namespace OpenSim.Region.Framework.Scenes
         /// <returns>null if the presence was not found</returns>
         public ScenePresence GetScenePresence(UUID agentID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             return m_sceneGraph.GetScenePresence(agentID);
         }
 
@@ -4763,6 +5096,9 @@ namespace OpenSim.Region.Framework.Scenes
         /// <returns>null if the presence was not found</returns>
         public ScenePresence GetScenePresence(string firstName, string lastName)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             return m_sceneGraph.GetScenePresence(firstName, lastName);
         }
 
@@ -4773,6 +5109,9 @@ namespace OpenSim.Region.Framework.Scenes
         /// <returns>null if the presence was not found</returns>
         public ScenePresence GetScenePresence(uint localID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             return m_sceneGraph.GetScenePresence(localID);
         }
 
@@ -4790,6 +5129,9 @@ namespace OpenSim.Region.Framework.Scenes
         /// </returns>
         public List<ScenePresence> GetScenePresences()
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             return new List<ScenePresence>(m_sceneGraph.GetScenePresences());
         }
 
@@ -4800,6 +5142,9 @@ namespace OpenSim.Region.Framework.Scenes
         /// <param name="action"></param>
         public void ForEachRootScenePresence(Action<ScenePresence> action)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             m_sceneGraph.ForEachAvatar(action);
         }
 
@@ -4809,6 +5154,9 @@ namespace OpenSim.Region.Framework.Scenes
         /// <param name="action"></param>
         public void ForEachScenePresence(Action<ScenePresence> action)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             m_sceneGraph.ForEachScenePresence(action);
         }
 
@@ -4820,6 +5168,9 @@ namespace OpenSim.Region.Framework.Scenes
         /// </returns>
         public List<SceneObjectGroup> GetSceneObjectGroups()
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             return m_sceneGraph.GetSceneObjectGroups();
         }
 
@@ -4830,6 +5181,9 @@ namespace OpenSim.Region.Framework.Scenes
         /// <returns>null if no group with that id exists</returns>
         public SceneObjectGroup GetSceneObjectGroup(UUID fullID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             return m_sceneGraph.GetSceneObjectGroup(fullID);
         }
 
@@ -4841,6 +5195,9 @@ namespace OpenSim.Region.Framework.Scenes
         /// <returns>null if no group with that id exists</returns>
         public SceneObjectGroup GetSceneObjectGroup(uint localID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             return m_sceneGraph.GetSceneObjectGroup(localID);
         }
 
@@ -4852,6 +5209,9 @@ namespace OpenSim.Region.Framework.Scenes
         /// <returns>null if no group with that name exists</returns>
         public SceneObjectGroup GetSceneObjectGroup(string name)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             return m_sceneGraph.GetSceneObjectGroup(name);
         }
 
@@ -4863,6 +5223,9 @@ namespace OpenSim.Region.Framework.Scenes
         /// <returns></returns>
         public bool TryGetSceneObjectGroup(UUID fullID, out SceneObjectGroup sog)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             sog = GetSceneObjectGroup(fullID);
             return sog != null;
         }
@@ -4875,6 +5238,9 @@ namespace OpenSim.Region.Framework.Scenes
         /// <returns></returns>
         public SceneObjectPart GetSceneObjectPart(string name)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             return m_sceneGraph.GetSceneObjectPart(name);
         }
 
@@ -4885,6 +5251,9 @@ namespace OpenSim.Region.Framework.Scenes
         /// <returns></returns>
         public SceneObjectPart GetSceneObjectPart(uint localID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             return m_sceneGraph.GetSceneObjectPart(localID);
         }
 
@@ -4895,6 +5264,9 @@ namespace OpenSim.Region.Framework.Scenes
         /// <returns></returns>
         public SceneObjectPart GetSceneObjectPart(UUID fullID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             return m_sceneGraph.GetSceneObjectPart(fullID);
         }
 
@@ -4906,6 +5278,9 @@ namespace OpenSim.Region.Framework.Scenes
         /// <returns></returns>
         public bool TryGetSceneObjectPart(UUID fullID, out SceneObjectPart sop)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             sop = GetSceneObjectPart(fullID);
             return sop != null;
         }
@@ -4917,6 +5292,9 @@ namespace OpenSim.Region.Framework.Scenes
         /// <returns>null if no scene object group containing that prim is found</returns>        
         public SceneObjectGroup GetGroupByPrim(uint localID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             return m_sceneGraph.GetGroupByPrim(localID);
         }
 
@@ -4927,16 +5305,25 @@ namespace OpenSim.Region.Framework.Scenes
         /// <returns>null if no scene object group containing that prim is found</returns>     
         public SceneObjectGroup GetGroupByPrim(UUID fullID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             return m_sceneGraph.GetGroupByPrim(fullID);
         }
 
         public override bool TryGetScenePresence(UUID agentID, out ScenePresence sp)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             return m_sceneGraph.TryGetScenePresence(agentID, out sp);
         }
 
         public bool TryGetAvatarByName(string avatarName, out ScenePresence avatar)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             return m_sceneGraph.TryGetAvatarByName(avatarName, out avatar);
         }
 
@@ -4946,6 +5333,9 @@ namespace OpenSim.Region.Framework.Scenes
         /// <param name="action"></param>
         public void ForEachRootClient(Action<IClientAPI> action)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             ForEachRootScenePresence(delegate(ScenePresence presence)
             {
                 action(presence.ControllingClient);
@@ -4958,21 +5348,33 @@ namespace OpenSim.Region.Framework.Scenes
         /// <param name="action"></param>
         public void ForEachClient(Action<IClientAPI> action)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             m_clientManager.ForEachSync(action);
         }
 
         public bool TryGetClient(UUID avatarID, out IClientAPI client)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             return m_clientManager.TryGetValue(avatarID, out client);
         }
 
         public bool TryGetClient(System.Net.IPEndPoint remoteEndPoint, out IClientAPI client)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             return m_clientManager.TryGetValue(remoteEndPoint, out client);
         }
 
         public void ForEachSOG(Action<SceneObjectGroup> action)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             m_sceneGraph.ForEachSOG(action);
         }
 
@@ -4983,6 +5385,9 @@ namespace OpenSim.Region.Framework.Scenes
         /// <returns></returns>
         public EntityBase[] GetEntities()
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             return m_sceneGraph.GetEntities();
         }
 
@@ -5001,6 +5406,9 @@ namespace OpenSim.Region.Framework.Scenes
 
         public void CleanTempObjects()
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             EntityBase[] entities = GetEntities();
             foreach (EntityBase obj in entities)
             {
@@ -5023,11 +5431,17 @@ namespace OpenSim.Region.Framework.Scenes
 
         public void DeleteFromStorage(UUID uuid)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             SimulationDataService.RemoveObject(uuid, RegionInfo.RegionID);
         }
 
         public int GetHealth()
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             // Returns:
             // 1 = sim is up and accepting http requests. The heartbeat has
             // stopped and the sim is probably locked up, but a remote
@@ -5068,6 +5482,9 @@ namespace OpenSim.Region.Framework.Scenes
 
         protected internal void jointMoved(PhysicsJoint joint)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             // m_parentScene.PhysicsScene.DumpJointInfo(); // non-thread-locked version; we should already be in a lock (OdeLock) when this callback is invoked
             SceneObjectPart jointProxyObject = GetSceneObjectPart(joint.ObjectNameInScene);
             if (jointProxyObject == null)
@@ -5130,6 +5547,9 @@ namespace OpenSim.Region.Framework.Scenes
         // from within the OdePhysicsScene.
         protected internal void jointDeactivated(PhysicsJoint joint)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             //m_log.Debug("[NINJA] SceneGraph.jointDeactivated, joint:" + joint.ObjectNameInScene);
             SceneObjectPart jointProxyObject = GetSceneObjectPart(joint.ObjectNameInScene);
             if (jointProxyObject == null)
@@ -5155,6 +5575,9 @@ namespace OpenSim.Region.Framework.Scenes
         // from within the OdePhysicsScene.
         public void jointErrorMessage(PhysicsJoint joint, string message)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (joint != null)
             {
                 if (joint.ErrorMessageCount > PhysicsJoint.maxErrorMessages)
@@ -5193,6 +5616,9 @@ namespace OpenSim.Region.Framework.Scenes
 
         public Scene ConsoleScene()
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (MainConsole.Instance == null)
                 return null;
             if (MainConsole.Instance.ConsoleScene is Scene)
@@ -5202,6 +5628,9 @@ namespace OpenSim.Region.Framework.Scenes
 
         public float GetGroundHeight(float x, float y)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (x < 0)
                 x = 0;
             if (x >= Heightmap.Width)
@@ -5252,6 +5681,9 @@ namespace OpenSim.Region.Framework.Scenes
 
         public override ISceneObject DeserializeObject(string representation)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             return SceneObjectSerializer.FromXml2Format(representation);
         }
 
@@ -5262,11 +5694,17 @@ namespace OpenSim.Region.Framework.Scenes
 
         public Vector3 GetNearestAllowedPosition(ScenePresence avatar)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             return GetNearestAllowedPosition(avatar, null);
         }
 
         public Vector3 GetNearestAllowedPosition(ScenePresence avatar, ILandObject excludeParcel)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             ILandObject nearestParcel = GetNearestAllowedParcel(avatar.UUID, avatar.AbsolutePosition.X, avatar.AbsolutePosition.Y, excludeParcel);
 
             if (nearestParcel != null)
@@ -5333,11 +5771,17 @@ namespace OpenSim.Region.Framework.Scenes
 
         public ILandObject GetNearestAllowedParcel(UUID avatarId, float x, float y)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             return GetNearestAllowedParcel(avatarId, x, y, null);
         }
 
         public ILandObject GetNearestAllowedParcel(UUID avatarId, float x, float y, ILandObject excludeParcel)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             List<ILandObject> all = AllParcels();
             float minParcelDistance = float.MaxValue;
             ILandObject nearestParcel = null;
@@ -5448,6 +5892,9 @@ namespace OpenSim.Region.Framework.Scenes
 
         public List<UUID> GetEstateRegions(int estateID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             IEstateDataService estateDataService = EstateDataService;
             if (estateDataService == null)
                 return new List<UUID>(0);
@@ -5457,6 +5904,9 @@ namespace OpenSim.Region.Framework.Scenes
 
         public void ReloadEstateData()
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             IEstateDataService estateDataService = EstateDataService;
             if (estateDataService != null)
             {
@@ -5467,11 +5917,17 @@ namespace OpenSim.Region.Framework.Scenes
 
         public void TriggerEstateSunUpdate()
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             EventManager.TriggerEstateToolsSunUpdate(RegionInfo.RegionHandle);
         }
 
         private void HandleReloadEstate(string module, string[] cmd)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (MainConsole.Instance.ConsoleScene == null ||
                 (MainConsole.Instance.ConsoleScene is Scene &&
                 (Scene)MainConsole.Instance.ConsoleScene == this))
@@ -5495,6 +5951,9 @@ namespace OpenSim.Region.Framework.Scenes
            List<SceneObjectGroup> objects, 
            out float minX, out float maxX, out float minY, out float maxY, out float minZ, out float maxZ)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             minX = float.MaxValue;
             maxX = float.MinValue;
             minY = float.MaxValue;
@@ -5591,6 +6050,9 @@ namespace OpenSim.Region.Framework.Scenes
         /// <returns></returns>
         public bool QueryAccess(UUID agentID, string agentHomeURI, Vector3 position, out string reason)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             reason = "You are banned from the region";
 
             if (Permissions.IsGod(agentID))
@@ -5784,6 +6246,9 @@ namespace OpenSim.Region.Framework.Scenes
         // manage and select spawn points in sequence
         public int SpawnPoint()
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             int spawnpoints = RegionInfo.RegionSettings.SpawnPoints().Count;
 
             if (spawnpoints == 0)
@@ -5808,11 +6273,17 @@ namespace OpenSim.Region.Framework.Scenes
         /// <param name="callback"></param>
         public void PhysicsRequestAsset(UUID assetID, AssetReceivedDelegate callback)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             AssetService.Get(assetID.ToString(), callback, PhysicsAssetReceived);
         }
 
         private void PhysicsAssetReceived(string id, Object sender, AssetBase asset)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             AssetReceivedDelegate callback = (AssetReceivedDelegate)sender;
 
             callback(asset);
@@ -5820,6 +6291,9 @@ namespace OpenSim.Region.Framework.Scenes
 
         public string GetExtraSetting(string name)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (m_extraSettings == null)
                 return String.Empty;
 
@@ -5833,6 +6307,9 @@ namespace OpenSim.Region.Framework.Scenes
 
         public void StoreExtraSetting(string name, string val)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (m_extraSettings == null)
                 return;
 
@@ -5853,6 +6330,9 @@ namespace OpenSim.Region.Framework.Scenes
 
         public void RemoveExtraSetting(string name)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (m_extraSettings == null)
                 return;
 

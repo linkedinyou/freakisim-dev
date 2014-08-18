@@ -53,18 +53,24 @@ namespace OpenSim.Server.Handlers.Simulation
 
         public AgentHandler(ISimulationService sim)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             m_SimulationService = sim;
         }
 
         public Hashtable Handler(Hashtable request)
         {
-//            m_log.Debug("[CONNECTION DEBUGGING]: AgentHandler Called");
-//
-//            m_log.Debug("---------------------------");
-//            m_log.Debug(" >> uri=" + request["uri"]);
-//            m_log.Debug(" >> content-type=" + request["content-type"]);
-//            m_log.Debug(" >> http-method=" + request["http-method"]);
-//            m_log.Debug("---------------------------\n");
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+                //            m_log.Debug("[CONNECTION DEBUGGING]: AgentHandler Called");
+                //
+                //            m_log.Debug("---------------------------");
+                //            m_log.Debug(" >> uri=" + request["uri"]);
+                //            m_log.Debug(" >> content-type=" + request["content-type"]);
+                //            m_log.Debug(" >> http-method=" + request["http-method"]);
+                //            m_log.Debug("---------------------------\n");
+            }
 
             Hashtable responsedata = new Hashtable();
             responsedata["content_type"] = "text/html";
@@ -112,6 +118,10 @@ namespace OpenSim.Server.Handlers.Simulation
 
         protected virtual void DoQueryAccess(Hashtable request, Hashtable responsedata, UUID agentID, UUID regionID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
+
             if (m_SimulationService == null)
             {
                 m_log.Debug("[AGENT HANDLER]: Agent QUERY called. Harmless but useless.");
@@ -160,6 +170,10 @@ namespace OpenSim.Server.Handlers.Simulation
 
         protected void DoAgentDelete(Hashtable request, Hashtable responsedata, UUID id, string action, UUID regionID, string auth_token)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
+
             if (string.IsNullOrEmpty(action))
                 m_log.DebugFormat("[AGENT HANDLER]: >>> DELETE <<< RegionID: {0}; from: {1}; auth_code: {2}", regionID, Util.GetCallerIP(request), auth_token);
             else
@@ -195,12 +209,18 @@ namespace OpenSim.Server.Handlers.Simulation
         public AgentPostHandler(ISimulationService service) :
                 base("POST", "/agent")
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             m_SimulationService = service;
         }
 
         public AgentPostHandler(string path) :
                 base("POST", path)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             m_SimulationService = null;
         }
 
@@ -347,11 +367,17 @@ namespace OpenSim.Server.Handlers.Simulation
 
         protected virtual AgentDestinationData CreateAgentDestinationData()
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             return new AgentDestinationData();
         }
 
         protected virtual void UnpackData(OSDMap args, AgentDestinationData data, Hashtable request)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             // retrieve the input arguments
             if (args.ContainsKey("destination_x") && args["destination_x"] != null)
                 Int32.TryParse(args["destination_x"].AsString(), out data.x);
@@ -376,6 +402,9 @@ namespace OpenSim.Server.Handlers.Simulation
 
         protected string GetCallerIP(Hashtable request)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (!m_Proxy)
                 return Util.GetCallerIP(request);
 
@@ -410,6 +439,9 @@ namespace OpenSim.Server.Handlers.Simulation
         protected virtual bool CreateAgent(GridRegion source, GridRegion gatekeeper, GridRegion destination,
             AgentCircuitData aCircuit, uint teleportFlags, bool fromLogin, out string reason)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             return m_SimulationService.CreateAgent(source, destination, aCircuit, teleportFlags, out reason);
         }
     }
@@ -424,19 +456,28 @@ namespace OpenSim.Server.Handlers.Simulation
         public AgentPutHandler(ISimulationService service) :
                 base("PUT", "/agent")
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             m_SimulationService = service;
         }
 
         public AgentPutHandler(string path) :
                 base("PUT", path)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             m_SimulationService = null;
         }
 
         protected override byte[] ProcessRequest(string path, Stream request,
                 IOSHttpRequest httpRequest, IOSHttpResponse httpResponse)
         {
-//            m_log.DebugFormat("[SIMULATION]: Stream handler called");
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+                //            m_log.DebugFormat("[SIMULATION]: Stream handler called");
+            }
 
             Hashtable keysvals = new Hashtable();
             Hashtable headervals = new Hashtable();
@@ -495,6 +536,9 @@ namespace OpenSim.Server.Handlers.Simulation
 
         protected void DoAgentPut(Hashtable request, Hashtable responsedata)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             OSDMap args = Utils.GetOSDMap((string)request["body"]);
             if (args == null)
             {
@@ -577,6 +621,9 @@ namespace OpenSim.Server.Handlers.Simulation
         // subclasses can override this
         protected virtual bool UpdateAgent(GridRegion destination, AgentData agent)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             return m_SimulationService.UpdateAgent(destination, agent);
         }
     }

@@ -165,6 +165,9 @@ namespace OpenSim.Region.CoreModules.World.Land
         /// <returns>Returns true if the piece of land contains the specified point</returns>
         public bool ContainsPoint(int x, int y)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (x >= 0 && y >= 0 && x < m_scene.RegionInfo.RegionSizeX && y < m_scene.RegionInfo.RegionSizeY)
             {
                 return LandBitmap[x / landUnit, y / landUnit];
@@ -411,9 +414,9 @@ namespace OpenSim.Region.CoreModules.World.Land
 
         public void UpdateLandSold(UUID avatarID, UUID groupID, bool groupOwned, uint AuctionID, int claimprice, int area)
         {
-			if (m_log.IsDebugEnabled) {
-				m_log.Debug ("");
-			}
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
 
             LandData newData = LandData.Copy();
             newData.OwnerID = avatarID;
