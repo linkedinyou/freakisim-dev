@@ -134,7 +134,10 @@ namespace OpenSim.Framework
 
         public AvatarAppearance()
         {
-            if(m_log.IsDebugEnabled) m_log.DebugFormat("create empty appearance");
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+                m_log.DebugFormat("create empty appearance");
+            }
 
             m_serial = 0;
             SetDefaultWearables();
@@ -146,7 +149,10 @@ namespace OpenSim.Framework
 
         public AvatarAppearance(OSDMap map)
         {
-            if(m_log.IsDebugEnabled) m_log.DebugFormat("create appearance from OSDMap");
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+                m_log.DebugFormat("create appearance from OSDMap");
+            }
 
             Unpack(map);
 //            SetHeight(); done in Unpack
@@ -154,7 +160,10 @@ namespace OpenSim.Framework
 
         public AvatarAppearance(AvatarWearable[] wearables, Primitive.TextureEntry textureEntry, byte[] visualParams)
         {
-            if(m_log.IsDebugEnabled) m_log.WarnFormat("create initialized appearance");
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+                m_log.DebugFormat("create initialized appearance");
+            }
 
             m_serial = 0;
 
@@ -184,7 +193,10 @@ namespace OpenSim.Framework
 
         public AvatarAppearance(AvatarAppearance appearance, bool copyWearables)
         {
-            if(m_log.IsDebugEnabled) m_log.DebugFormat("Create from an existing appearance");
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+                m_log.DebugFormat("Create from an existing appearance");
+            }
 
             if (appearance == null)
             {
@@ -230,6 +242,9 @@ namespace OpenSim.Framework
 
         public void GetAssetsFrom(AvatarAppearance app)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             for (int i = 0; i < AvatarWearable.MAX_WEARABLES; i++)
             {
                 for (int j = 0; j < m_wearables[i].Count; j++)
@@ -245,12 +260,18 @@ namespace OpenSim.Framework
 
         public void ClearWearables()
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             for (int i = 0; i < AvatarWearable.MAX_WEARABLES; i++)
                 m_wearables[i].Clear();
         }
 
         protected virtual void SetDefaultWearables()
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             m_wearables = AvatarWearable.DefaultWearables;
         }
 
@@ -260,8 +281,10 @@ namespace OpenSim.Framework
         /// </summary>
         public virtual void ResetAppearance()
         {
-            if(m_log.IsDebugEnabled) m_log.DebugFormat("Reset appearance");
-            
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
+
             m_serial = 0;
 
             SetDefaultTexture();
@@ -275,6 +298,9 @@ namespace OpenSim.Framework
         
         protected virtual void SetDefaultParams()
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             m_visualparams = new byte[] { 33,61,85,23,58,127,63,85,63,42,0,85,63,36,85,95,153,63,34,0,63,109,88,132,63,136,81,85,103,136,127,0,150,150,150,127,0,0,0,0,0,127,0,0,255,127,114,127,99,63,127,140,127,127,0,0,0,191,0,104,0,0,0,0,0,0,0,0,0,145,216,133,0,127,0,127,170,0,0,127,127,109,85,127,127,63,85,42,150,150,150,150,150,150,150,25,150,150,150,0,127,0,0,144,85,127,132,127,85,0,127,127,127,127,127,127,59,127,85,127,127,106,47,79,127,127,204,2,141,66,0,0,127,127,0,0,0,0,127,0,159,0,0,178,127,36,85,131,127,127,127,153,95,0,140,75,27,127,127,0,150,150,198,0,0,63,30,127,165,209,198,127,127,153,204,51,51,255,255,255,204,0,255,150,150,150,150,150,150,150,150,150,150,0,150,150,150,150,150,0,127,127,150,150,150,150,150,150,150,150,0,0,150,51,132,150,150,150 };
 //            for (int i = 0; i < VISUALPARAM_COUNT; i++)
 //            {
@@ -288,6 +314,9 @@ namespace OpenSim.Framework
         /// </summary>
         public virtual void ResetBakedTextures()
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             SetDefaultTexture();
             
             //for (int i = 0; i < BAKE_INDICES.Length; i++)
@@ -314,6 +343,9 @@ namespace OpenSim.Framework
         /// </returns>
         public virtual bool SetTextureEntries(Primitive.TextureEntry textureEntry)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (textureEntry == null)
                 return false;
 
@@ -354,6 +386,9 @@ namespace OpenSim.Framework
         /// </returns>
         public virtual bool SetVisualParams(byte[] visualParams)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (visualParams == null)
                 return false;
 
@@ -394,6 +429,9 @@ namespace OpenSim.Framework
 
         public virtual void SetAppearance(Primitive.TextureEntry textureEntry, byte[] visualParams)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             SetTextureEntries(textureEntry);
             SetVisualParams(visualParams);
         }
@@ -403,6 +441,9 @@ namespace OpenSim.Framework
         /// </summary>
         public virtual void SetHeight()
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} IS EMPTY", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
 /*
             // Start with shortest possible female avatar height
             m_avatarHeight = 1.14597f;
@@ -421,6 +462,9 @@ namespace OpenSim.Framework
 
         public void SetSize(Vector3 avSize)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0}(Vector3 avSize) ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (avSize.X > 32f)
                 avSize.X = 32f;
             else if (avSize.X < 0.1f)
@@ -449,7 +493,10 @@ namespace OpenSim.Framework
 
         public virtual void SetWearable(int wearableId, AvatarWearable wearable)
         {
-            if(m_log.IsDebugEnabled) m_log.DebugFormat("set wearable {0}",wearableId);
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+                m_log.DebugFormat("set wearable {0}",wearableId);
+            }
             m_wearables[wearableId].Clear();
             for (int i = 0; i < wearable.Count; i++)
                 m_wearables[wearableId].Add(wearable[i].ItemID, wearable[i].AssetID);
@@ -488,6 +535,9 @@ namespace OpenSim.Framework
         /// </remarks>
         public List<AvatarAttachment> GetAttachments()
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             List<AvatarAttachment> alist = new List<AvatarAttachment>();
             m_attachments.ForEach(delegate(KeyValuePair<int, ThreadedClasses.RwLockedList<AvatarAttachment>> kvp)
             {
@@ -545,7 +595,8 @@ namespace OpenSim.Framework
         public bool SetAttachment(int attachpoint, UUID item, UUID asset)
         {
 			if (m_log.IsDebugEnabled) {
-				m_log.DebugFormat (
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+                m_log.DebugFormat (
 					"Setting attachment at {0} with item ID {1}, asset ID {2}",
 					attachpoint, item, asset);
 			}
@@ -612,6 +663,9 @@ namespace OpenSim.Framework
         /// <returns>Returns null if this item is not attached.</returns>
         public AvatarAttachment GetAttachmentForItem(UUID itemID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             try
             {
                 m_attachments.ForEach(delegate(KeyValuePair<int, ThreadedClasses.RwLockedList<AvatarAttachment>> kvp)
@@ -635,6 +689,9 @@ namespace OpenSim.Framework
 
         public int GetAttachpoint(UUID itemID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             try
             {
                 m_attachments.ForEach(delegate(KeyValuePair<int, ThreadedClasses.RwLockedList<AvatarAttachment>> kvp)
@@ -657,6 +714,9 @@ namespace OpenSim.Framework
 
         public bool DetachAttachment(UUID itemID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }   
             try
             {
                 m_attachments.ForEach(delegate(KeyValuePair<int, ThreadedClasses.RwLockedList<AvatarAttachment>> kvp)
@@ -682,6 +742,9 @@ namespace OpenSim.Framework
 
         public void ClearAttachments()
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             m_attachments.Clear();
         }
 
@@ -692,6 +755,9 @@ namespace OpenSim.Framework
         /// </summary>
         public OSDMap Pack()
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             OSDMap data = new OSDMap();
 
             data["serial"] = OSD.FromInteger(m_serial);
@@ -733,6 +799,9 @@ namespace OpenSim.Framework
         /// </summary>
         public void Unpack(OSDMap data)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if ((data != null) && (data["serial"] != null))
                 m_serial = data["serial"].AsInteger();
             if ((data != null) && (data["height"] != null))

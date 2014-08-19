@@ -29,12 +29,14 @@ using OpenMetaverse;
 using OpenSim.Framework;
 using System;
 using System.Collections.Generic;
+using log4net;
+using System.Reflection;
 
 namespace OpenSim.Region.Framework.Scenes
 {
     public class EntityManager
     {
-//        private static readonly ILog m_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog m_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         
         private readonly ThreadedClasses.RwLockedDoubleDictionary<UUID, uint, EntityBase> m_entities
             = new ThreadedClasses.RwLockedDoubleDictionary<UUID, uint, EntityBase>();
@@ -46,36 +48,57 @@ namespace OpenSim.Region.Framework.Scenes
 
         public void Add(EntityBase entity)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             m_entities.Add(entity.UUID, entity.LocalId, entity);
         }
 
         public void Clear()
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             m_entities.Clear();
         }
 
         public bool ContainsKey(UUID id)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             return m_entities.ContainsKey(id);
         }
 
         public bool ContainsKey(uint localID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             return m_entities.ContainsKey(localID);
         }
 
         public bool Remove(uint localID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             return m_entities.Remove(localID);
         }
 
         public bool Remove(UUID id)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             return m_entities.Remove(id);
         }
 
         public EntityBase[] GetAllByType<T>()
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0}<T>() ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             List<EntityBase> tmp = new List<EntityBase>();
 
             ForEach(
@@ -91,6 +114,9 @@ namespace OpenSim.Region.Framework.Scenes
 
         public EntityBase[] GetEntities()
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             List<EntityBase> tmp = new List<EntityBase>(m_entities.Count);
             ForEach(delegate(EntityBase entity) { tmp.Add(entity); });
             return tmp.ToArray();
@@ -98,11 +124,17 @@ namespace OpenSim.Region.Framework.Scenes
 
         public void ForEach(Action<EntityBase> action)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             m_entities.ForEach(action);
         }
 
         public EntityBase Find(Predicate<EntityBase> predicate)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             try
             {
                 m_entities.ForEach(delegate(EntityBase eb)
@@ -124,6 +156,9 @@ namespace OpenSim.Region.Framework.Scenes
         {
             get
             {
+                if (m_log.IsDebugEnabled) {
+                    m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+                }
                 EntityBase entity;
                 m_entities.TryGetValue(id, out entity);
                 return entity;
@@ -138,6 +173,9 @@ namespace OpenSim.Region.Framework.Scenes
         {
             get
             {
+                if (m_log.IsDebugEnabled) {
+                    m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+                }
                 EntityBase entity;
                 m_entities.TryGetValue(localID, out entity);
                 return entity;
@@ -150,11 +188,17 @@ namespace OpenSim.Region.Framework.Scenes
 
         public bool TryGetValue(UUID key, out EntityBase obj)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             return m_entities.TryGetValue(key, out obj);
         }
 
         public bool TryGetValue(uint key, out EntityBase obj)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             return m_entities.TryGetValue(key, out obj);
         }
     }

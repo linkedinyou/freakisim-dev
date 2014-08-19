@@ -58,6 +58,9 @@ namespace OpenSim.Services.Base
 
         public T LoadPlugin<T>(string dllName, string className, Object[] args) where T:class
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             string interfaceName = typeof(T).ToString();
 
             try

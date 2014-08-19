@@ -48,6 +48,9 @@ namespace OpenSim.Framework.RegionLoader.Web
 
         public RegionInfo[] LoadRegions()
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (m_configSource == null)
             {
                 m_log.Error("[WEBLOADER]: Unable to load configuration source!");

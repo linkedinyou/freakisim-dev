@@ -130,11 +130,17 @@ namespace OpenSim
         /// <param name="configSource"></param>
         public OpenSimBase(IConfigSource configSource) : base()
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             LoadConfigSettings(configSource);
         }
 
         protected virtual void LoadConfigSettings(IConfigSource configSource)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             m_configLoader = new ConfigurationLoader();
             ConfigSource = m_configLoader.LoadConfigSettings(configSource, envConfigSource, out m_configSettings, out m_networkServersInfo);
             Config = ConfigSource.Source;
@@ -143,6 +149,9 @@ namespace OpenSim
 
         protected virtual void ReadExtraConfigSettings()
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             IConfig networkConfig = Config.Configs["Network"];
             if (networkConfig != null)
             {
@@ -159,6 +168,9 @@ namespace OpenSim
 
         protected virtual void LoadPlugins()
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             IConfig startupConfig = Config.Configs["Startup"];
             string registryLocation = (startupConfig != null) ? startupConfig.GetString("RegistryLocation", String.Empty) : String.Empty;
 
@@ -185,6 +197,9 @@ namespace OpenSim
 
         protected override List<string> GetHelpTopics()
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             List<string> topics = base.GetHelpTopics();
             Scene s = SceneManager.CurrentOrFirstScene;
             if (s != null && s.GetCommanders() != null)
@@ -199,6 +214,9 @@ namespace OpenSim
         /// </summary>
         protected override void StartupSpecific()
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             IConfig startupConfig = Config.Configs["Startup"];
             if (startupConfig != null)
             {
@@ -256,6 +274,9 @@ namespace OpenSim
 
         protected virtual void AddPluginCommands(ICommandConsole console)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             List<string> topics = GetHelpTopics();
 
             foreach (string topic in topics)
@@ -298,11 +319,17 @@ namespace OpenSim
 
         private void HandleCommanderCommand(string module, string[] cmd)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             SceneManager.SendCommandToPluginModules(cmd);
         }
 
         private void HandleCommanderHelp(string module, string[] cmd)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             // Only safe for the interactive console, since it won't
             // let us come here unless both scene and commander exist
             //
@@ -313,6 +340,9 @@ namespace OpenSim
 
         protected override void Initialize()
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             // Called from base.StartUp()
 
             m_httpServerPort = m_networkServersInfo.HttpListenerPort;
@@ -335,6 +365,9 @@ namespace OpenSim
         /// <returns></returns>
         public List<IClientNetworkServer> CreateRegion(RegionInfo regionInfo, bool portadd_flag, out IScene scene)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             return CreateRegion(regionInfo, portadd_flag, false, out scene);
         }
 
@@ -345,6 +378,9 @@ namespace OpenSim
         /// <returns></returns>
         public List<IClientNetworkServer> CreateRegion(RegionInfo regionInfo, out IScene scene)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             return CreateRegion(regionInfo, false, true, out scene);
         }
 
@@ -357,6 +393,9 @@ namespace OpenSim
         /// <returns></returns>
         public List<IClientNetworkServer> CreateRegion(RegionInfo regionInfo, bool portadd_flag, bool do_post_init, out IScene mscene)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             int port = regionInfo.InternalEndPoint.Port;
 
             // set initial RegionID to originRegionID in RegionInfo. (it needs for loding prims)
@@ -455,6 +494,9 @@ namespace OpenSim
         /// <param name="scene"></param>
         private void SetUpEstateOwner(Scene scene)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             RegionInfo regionInfo = scene.RegionInfo;
 
             string estateOwnerFirstName = null;
@@ -566,6 +608,9 @@ namespace OpenSim
 
         public void RemoveRegion(Scene scene, bool cleanup)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             // only need to check this if we are not at the
             // root level
             if ((SceneManager.CurrentScene != null) &&
@@ -620,6 +665,9 @@ namespace OpenSim
 
         public void RemoveRegion(string name, bool cleanUp)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             Scene target;
             if (SceneManager.TryGetScene(name, out target))
                 RemoveRegion(target, cleanUp);
@@ -632,6 +680,9 @@ namespace OpenSim
         /// <returns></returns>
         public void CloseRegion(Scene scene)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             // only need to check this if we are not at the
             // root level
             if ((SceneManager.CurrentScene != null) &&
@@ -651,6 +702,9 @@ namespace OpenSim
         /// <returns></returns>
         public void CloseRegion(string name)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             Scene target;
             if (SceneManager.TryGetScene(name, out target))
                 CloseRegion(target);
@@ -678,6 +732,9 @@ namespace OpenSim
         protected Scene SetupScene(
             RegionInfo regionInfo, int proxyOffset, IConfigSource configSource, out List<IClientNetworkServer> clientServer)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             List<IClientNetworkServer> clientNetworkServers = null;
 
             AgentCircuitManager circuitManager = new AgentCircuitManager();
@@ -723,12 +780,18 @@ namespace OpenSim
 
         protected override ClientStackManager CreateClientStackManager()
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             return new ClientStackManager(m_configSettings.ClientstackDll);
         }
 
         protected override Scene CreateScene(RegionInfo regionInfo, ISimulationDataService simDataService,
             IEstateDataService estateDataService, AgentCircuitManager circuitManager)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             SceneCommunicationService sceneGridService = new SceneCommunicationService();
 
             return new Scene(
@@ -739,6 +802,9 @@ namespace OpenSim
         
         protected void ShutdownClientServer(RegionInfo whichRegion)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             // Close and remove the clientserver for a region
             bool foundClientServer = false;
             int clientServerElement = 0;
@@ -777,6 +843,9 @@ namespace OpenSim
 
         protected override PhysicsScene GetPhysicsScene(string osSceneIdentifier, Vector3 regionExtent)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             return GetPhysicsScene(
                 m_configSettings.PhysicsEngine, m_configSettings.MeshEngineName, Config, osSceneIdentifier, regionExtent);
         }
@@ -864,6 +933,9 @@ namespace OpenSim
         /// </summary>
         protected override void ShutdownSpecific()
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (proxyUrl.Length > 0)
             {
                 Util.XmlRpcCommand(proxyUrl, "Stop");
@@ -927,6 +999,9 @@ namespace OpenSim
         /// <returns>true if the estate was created, false otherwise</returns>
         public bool CreateEstate(RegionInfo regInfo, Dictionary<string, EstateSettings> estatesByName, string estateName)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             // Create a new estate
             regInfo.EstateSettings = EstateDataService.LoadEstateSettings(regInfo.RegionID, true);
 
@@ -960,6 +1035,9 @@ namespace OpenSim
         /// <param name="regInfo"></param>
         public bool PopulateRegionEstateInfo(RegionInfo regInfo)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (EstateDataService != null)
                 regInfo.EstateSettings = EstateDataService.LoadEstateSettings(regInfo.RegionID, false);
 

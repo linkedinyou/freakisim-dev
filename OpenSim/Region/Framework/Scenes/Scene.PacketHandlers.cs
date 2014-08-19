@@ -50,6 +50,9 @@ namespace OpenSim.Region.Framework.Scenes
         protected void SimChat(byte[] message, ChatTypeEnum type, int channel, Vector3 fromPos, string fromName,
                                UUID fromID, UUID targetID, bool fromAgent, bool broadcast)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             OSChatMessage args = new OSChatMessage();
 
             args.Message = Utils.BytesToString(message);
@@ -148,6 +151,9 @@ namespace OpenSim.Region.Framework.Scenes
         /// <param name="remoteClient"></param>
         public void RequestPrim(uint primLocalID, IClientAPI remoteClient)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             SceneObjectGroup sog = GetGroupByPrim(primLocalID);
 
             if (sog != null)
@@ -161,6 +167,9 @@ namespace OpenSim.Region.Framework.Scenes
         /// <param name="remoteClient"></param>
         public void SelectPrim(uint primLocalID, IClientAPI remoteClient)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             SceneObjectPart part = GetSceneObjectPart(primLocalID);
 
             if (null == part)
@@ -195,6 +204,9 @@ namespace OpenSim.Region.Framework.Scenes
         private void HandleObjectGroupUpdate(
             IClientAPI remoteClient, UUID groupID, uint objectLocalID, UUID Garbage)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (m_groupsModule == null)
                 return;
 
@@ -231,6 +243,9 @@ namespace OpenSim.Region.Framework.Scenes
         /// <param name="remoteClient"></param>
         public void DeselectPrim(uint primLocalID, IClientAPI remoteClient)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             SceneObjectPart part = GetSceneObjectPart(primLocalID);
             if (part == null)
                 return;
@@ -267,6 +282,9 @@ namespace OpenSim.Region.Framework.Scenes
         public virtual void ProcessMoneyTransferRequest(UUID source, UUID destination, int amount, 
                                                         int transactiontype, string description)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             EventManager.MoneyTransferArgs args = new EventManager.MoneyTransferArgs(source, destination, amount, 
                                                                                      transactiontype, description);
 
@@ -276,6 +294,9 @@ namespace OpenSim.Region.Framework.Scenes
         public virtual void ProcessParcelBuy(UUID agentId, UUID groupId, bool final, bool groupOwned,
                 bool removeContribution, int parcelLocalID, int parcelArea, int parcelPrice, bool authenticated)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             EventManager.LandBuyArgs args = new EventManager.LandBuyArgs(agentId, groupId, final, groupOwned, 
                                                                          removeContribution, parcelLocalID, parcelArea, 
                                                                          parcelPrice, authenticated);
@@ -289,6 +310,9 @@ namespace OpenSim.Region.Framework.Scenes
 
         public virtual void ProcessObjectGrab(uint localID, Vector3 offsetPos, IClientAPI remoteClient, List<SurfaceTouchEventArgs> surfaceArgs)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             SceneObjectPart part = GetSceneObjectPart(localID);
             
             if (part == null)
@@ -322,6 +346,9 @@ namespace OpenSim.Region.Framework.Scenes
         public virtual void ProcessObjectGrabUpdate(
             UUID objectID, Vector3 offset, Vector3 pos, IClientAPI remoteClient, List<SurfaceTouchEventArgs> surfaceArgs)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             SceneObjectPart part = GetSceneObjectPart(objectID);
             if (part == null)
                 return;
@@ -348,6 +375,9 @@ namespace OpenSim.Region.Framework.Scenes
 
         public virtual void ProcessObjectDeGrab(uint localID, IClientAPI remoteClient, List<SurfaceTouchEventArgs> surfaceArgs)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             SceneObjectPart part = GetSceneObjectPart(localID);
             if (part == null)
                 return;
@@ -369,6 +399,9 @@ namespace OpenSim.Region.Framework.Scenes
         public void ProcessScriptReset(IClientAPI remoteClient, UUID objectID,
                 UUID itemID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             SceneObjectPart part=GetSceneObjectPart(objectID);
             if (part == null)
                 return;
@@ -381,6 +414,9 @@ namespace OpenSim.Region.Framework.Scenes
 
         void ProcessViewerEffect(IClientAPI remoteClient, List<ViewerEffectEventHandlerArg> args)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             // TODO: don't create new blocks if recycling an old packet
             bool discardableEffects = true;
             ViewerEffectPacket.EffectBlock[] effectBlockArray = new ViewerEffectPacket.EffectBlock[args.Count];
@@ -434,9 +470,12 @@ namespace OpenSim.Region.Framework.Scenes
         public void HandleFetchInventoryDescendents(IClientAPI remoteClient, UUID folderID, UUID ownerID,
                                                     bool fetchFolders, bool fetchItems, int sortOrder)
         {
-//            m_log.DebugFormat(
-//                "[USER INVENTORY]: HandleFetchInventoryDescendents() for {0}, folder={1}, fetchFolders={2}, fetchItems={3}, sortOrder={4}",
-//                remoteClient.Name, folderID, fetchFolders, fetchItems, sortOrder);
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+                //            m_log.DebugFormat(
+                //                "[USER INVENTORY]: HandleFetchInventoryDescendents() for {0}, folder={1}, fetchFolders={2}, fetchItems={3}, sortOrder={4}",
+                //                remoteClient.Name, folderID, fetchFolders, fetchItems, sortOrder);
+            }
 
             if (folderID == UUID.Zero)
                 return;
@@ -469,11 +508,17 @@ namespace OpenSim.Region.Framework.Scenes
 
         void SendInventoryAsync(IClientAPI remoteClient, UUID folderID, UUID ownerID, bool fetchFolders, bool fetchItems, int sortOrder)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             SendInventoryUpdate(remoteClient, new InventoryFolderBase(folderID), fetchFolders, fetchItems);
         }
 
         void SendInventoryComplete(IAsyncResult iar)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             SendInventoryDelegate d = (SendInventoryDelegate)iar.AsyncState;
             d.EndInvoke(iar);
         }
@@ -489,6 +534,9 @@ namespace OpenSim.Region.Framework.Scenes
         public void HandleCreateInventoryFolder(IClientAPI remoteClient, UUID folderID, ushort folderType,
                                                 string folderName, UUID parentID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             InventoryFolderBase folder = new InventoryFolderBase(folderID, folderName, remoteClient.AgentId, (short)folderType, parentID, 1);
             if (!InventoryService.AddFolder(folder))
             {
@@ -514,8 +562,11 @@ namespace OpenSim.Region.Framework.Scenes
         public void HandleUpdateInventoryFolder(IClientAPI remoteClient, UUID folderID, ushort type, string name,
                                                 UUID parentID)
         {
-//            m_log.DebugFormat(
-//                "[AGENT INVENTORY]: Updating inventory folder {0} {1} for {2} {3}", folderID, name, remoteClient.Name, remoteClient.AgentId);
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+                //            m_log.DebugFormat(
+                //                "[AGENT INVENTORY]: Updating inventory folder {0} {1} for {2} {3}", folderID, name, remoteClient.Name, remoteClient.AgentId);
+            }
 
             InventoryFolderBase folder = new InventoryFolderBase(folderID, remoteClient.AgentId);
             folder = InventoryService.GetFolder(folder);
@@ -535,6 +586,9 @@ namespace OpenSim.Region.Framework.Scenes
         
         public void HandleMoveInventoryFolder(IClientAPI remoteClient, UUID folderID, UUID parentID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             InventoryFolderBase folder = new InventoryFolderBase(folderID, remoteClient.AgentId);
             folder = InventoryService.GetFolder(folder);
             if (folder != null)
@@ -560,6 +614,9 @@ namespace OpenSim.Region.Framework.Scenes
         /// <param name="folderID"></param>
         public void HandlePurgeInventoryDescendents(IClientAPI remoteClient, UUID folderID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             PurgeFolderDelegate d = PurgeFolderAsync;
             try
             {
@@ -573,6 +630,9 @@ namespace OpenSim.Region.Framework.Scenes
 
         private void PurgeFolderAsync(UUID userID, UUID folderID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             InventoryFolderBase folder = new InventoryFolderBase(folderID, userID);
 
             if (InventoryService.PurgeFolder(folder))
@@ -583,6 +643,9 @@ namespace OpenSim.Region.Framework.Scenes
 
         private void PurgeFolderCompleted(IAsyncResult iar)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             PurgeFolderDelegate d = (PurgeFolderDelegate)iar.AsyncState;
             d.EndInvoke(iar);
         }

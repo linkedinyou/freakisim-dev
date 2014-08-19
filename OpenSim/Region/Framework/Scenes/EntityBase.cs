@@ -27,12 +27,14 @@
 
 using OpenMetaverse;
 using OpenSim.Framework;
+using log4net;
+using System.Reflection;
 
 namespace OpenSim.Region.Framework.Scenes
 {
     public abstract class EntityBase : ISceneEntity
     {
-//        private static readonly ILog m_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog m_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         /// <summary>
         /// The scene to which this entity belongs
@@ -125,6 +127,9 @@ namespace OpenSim.Region.Framework.Scenes
         /// <returns></returns>
         public virtual EntityBase Copy()
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             return (EntityBase) MemberwiseClone();
         }
     }

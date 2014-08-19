@@ -31,12 +31,14 @@ using System.Collections.Generic;
 using System.Net;
 using System.Text;
 using System.Threading;
+using log4net;
+using System.Reflection;
 
 namespace OpenSim.Framework.Servers
 {
     public class MainServer
     {
-//        private static readonly ILog m_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog m_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         private static BaseHttpServer instance = null;
         private static ThreadedClasses.RwLockedDictionary<uint, BaseHttpServer> m_Servers = new ThreadedClasses.RwLockedDictionary<uint, BaseHttpServer>();
@@ -107,6 +109,9 @@ namespace OpenSim.Framework.Servers
 
         public static void RegisterHttpConsoleCommands(ICommandConsole console)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             console.Commands.AddCommand(
                 "Comms", false, "show http-handlers",
                 "show http-handlers",
@@ -138,6 +143,9 @@ namespace OpenSim.Framework.Servers
         /// <param name="args"></param>
         private static void HandleDebugHttpCommand(string module, string[] cmdparams)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (cmdparams.Length < 3)
             {
                 MainConsole.Instance.Output("Usage: debug http <in|out|all> 0..6");
@@ -209,6 +217,9 @@ namespace OpenSim.Framework.Servers
 
         private static void HandleShowHttpHandlersCommand(string module, string[] args)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (args.Length != 2)
             {
                 MainConsole.Instance.Output("Usage: show http-handlers");
@@ -262,6 +273,9 @@ namespace OpenSim.Framework.Servers
         /// <param name='server'></param>
         public static void AddHttpServer(BaseHttpServer server)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             m_Servers.AddIfNotExists(server.Port, delegate() { return server; });
         }
 
@@ -275,6 +289,9 @@ namespace OpenSim.Framework.Servers
         /// <returns></returns>
         public static bool RemoveHttpServer(uint port)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (instance != null && instance.Port == port)
             {
                 instance = null;
@@ -292,6 +309,9 @@ namespace OpenSim.Framework.Servers
         /// <returns>true if a server with the given port is registered, false otherwise.</returns>
         public static bool ContainsHttpServer(uint port)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             return m_Servers.ContainsKey(port);
         }
 
@@ -305,6 +325,9 @@ namespace OpenSim.Framework.Servers
         /// <param name='port'>If 0 then the default HTTP server is returned.</param>
         public static IHttpServer GetHttpServer(uint port)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             return GetHttpServer(port, null);
         }
 
@@ -320,6 +343,9 @@ namespace OpenSim.Framework.Servers
         /// <param name='ipaddr'>A specific IP address to bind to.  If null then the default IP address is used.</param>
         public static IHttpServer GetHttpServer(uint port, IPAddress ipaddr)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (port == 0)
                 return instance;
             

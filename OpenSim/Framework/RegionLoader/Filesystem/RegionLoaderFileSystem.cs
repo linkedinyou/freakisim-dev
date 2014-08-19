@@ -47,6 +47,9 @@ namespace OpenSim.Framework.RegionLoader.Filesystem
 
         public RegionInfo[] LoadRegions()
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             string regionConfigPath = Path.Combine(Util.configDir(), "Regions");
             bool allowRegionless = false;
 

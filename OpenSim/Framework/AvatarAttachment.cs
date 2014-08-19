@@ -27,17 +27,24 @@
 
 using OpenMetaverse;
 using OpenMetaverse.StructuredData;
+using log4net;
+using System.Reflection;
 
 namespace OpenSim.Framework
 {
     public class AvatarAttachment
     {
+        private static readonly ILog m_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
         public int AttachPoint;
         public UUID ItemID;
         public UUID AssetID;
 
         public AvatarAttachment(AvatarAttachment attach)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             AttachPoint = attach.AttachPoint;
             ItemID = attach.ItemID;
             AssetID = attach.AssetID;
@@ -45,6 +52,9 @@ namespace OpenSim.Framework
 
         public AvatarAttachment(int point, UUID item, UUID asset)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             AttachPoint = point;
             ItemID = item;
             AssetID = asset;
@@ -52,11 +62,17 @@ namespace OpenSim.Framework
 
         public AvatarAttachment(OSDMap args)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             Unpack(args);
         }
 
         public OSDMap Pack()
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             OSDMap attachdata = new OSDMap();
             attachdata["point"] = OSD.FromInteger(AttachPoint);
             attachdata["item"] = OSD.FromUUID(ItemID);
@@ -67,6 +83,9 @@ namespace OpenSim.Framework
 
         public void Unpack(OSDMap args)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (args["point"] != null)
                 AttachPoint = args["point"].AsInteger();
 

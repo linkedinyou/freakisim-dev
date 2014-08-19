@@ -301,6 +301,9 @@ namespace OpenSim.Region.Framework.Scenes
         /// <param name="filename"></param>
         public void SaveCurrentSceneToXml(string filename)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             IRegionSerialiserModule serialiser = CurrentOrFirstScene.RequestModuleInterface<IRegionSerialiserModule>();
             if (serialiser != null)
                 serialiser.SavePrimsToXml(CurrentOrFirstScene, filename);
@@ -314,6 +317,9 @@ namespace OpenSim.Region.Framework.Scenes
         /// <param name="loadOffset"></param>
         public void LoadCurrentSceneFromXml(string filename, bool generateNewIDs, Vector3 loadOffset)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             IRegionSerialiserModule serialiser = CurrentOrFirstScene.RequestModuleInterface<IRegionSerialiserModule>();
             if (serialiser != null)
                 serialiser.LoadPrimsFromXml(CurrentOrFirstScene, filename, generateNewIDs, loadOffset);
@@ -325,6 +331,9 @@ namespace OpenSim.Region.Framework.Scenes
         /// <param name="filename"></param>
         public void SaveCurrentSceneToXml2(string filename)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             IRegionSerialiserModule serialiser = CurrentOrFirstScene.RequestModuleInterface<IRegionSerialiserModule>();
             if (serialiser != null)
                 serialiser.SavePrimsToXml2(CurrentOrFirstScene, filename);
@@ -332,6 +341,9 @@ namespace OpenSim.Region.Framework.Scenes
 
         public void SaveNamedPrimsToXml2(string primName, string filename)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             IRegionSerialiserModule serialiser = CurrentOrFirstScene.RequestModuleInterface<IRegionSerialiserModule>();
             if (serialiser != null)
                 serialiser.SaveNamedPrimsToXml2(CurrentOrFirstScene, primName, filename);
@@ -342,6 +354,9 @@ namespace OpenSim.Region.Framework.Scenes
         /// </summary>
         public void LoadCurrentSceneFromXml2(string filename)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             IRegionSerialiserModule serialiser = CurrentOrFirstScene.RequestModuleInterface<IRegionSerialiserModule>();
             if (serialiser != null)
                 serialiser.LoadPrimsFromXml2(CurrentOrFirstScene, filename);
@@ -354,6 +369,9 @@ namespace OpenSim.Region.Framework.Scenes
         /// <param name="cmdparams"></param>
         public void SaveCurrentSceneToArchive(string[] cmdparams)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             IRegionArchiverModule archiver = CurrentOrFirstScene.RequestModuleInterface<IRegionArchiverModule>();
             if (archiver != null)
                 archiver.HandleSaveOarConsoleCommand(string.Empty, cmdparams);
@@ -366,6 +384,9 @@ namespace OpenSim.Region.Framework.Scenes
         /// <param name="cmdparams"></param>
         public void LoadArchiveToCurrentScene(string[] cmdparams)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             IRegionArchiverModule archiver = CurrentOrFirstScene.RequestModuleInterface<IRegionArchiverModule>();
             if (archiver != null)
                 archiver.HandleLoadOarConsoleCommand(string.Empty, cmdparams);
@@ -373,26 +394,41 @@ namespace OpenSim.Region.Framework.Scenes
 
         public string SaveCurrentSceneMapToXmlString()
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             return CurrentOrFirstScene.Heightmap.SaveToXmlString();
         }
 
         public void LoadCurrenSceneMapFromXmlString(string mapData)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             CurrentOrFirstScene.Heightmap.LoadFromXmlString(mapData);
         }
 
         public void SendCommandToPluginModules(string[] cmdparams)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             ForEachSelectedScene(delegate(Scene scene) { scene.SendCommandToPlugins(cmdparams); });
         }
 
         public void SetBypassPermissionsOnCurrentScene(bool bypassPermissions)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             ForEachSelectedScene(delegate(Scene scene) { scene.Permissions.SetBypassPermissions(bypassPermissions); });
         }
 
         public void ForEachSelectedScene(Action<Scene> func)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (CurrentScene == null)
                 ForEachScene(func);
             else
@@ -401,16 +437,25 @@ namespace OpenSim.Region.Framework.Scenes
 
         public void RestartCurrentScene()
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             ForEachSelectedScene(delegate(Scene scene) { scene.RestartNow(); });
         }
 
         public void BackupCurrentScene()
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             ForEachSelectedScene(delegate(Scene scene) { scene.Backup(true); });
         }
 
         public bool TrySetCurrentScene(string regionName)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if ((String.Compare(regionName, "root") == 0) 
                 || (String.Compare(regionName, "..") == 0)
                 || (String.Compare(regionName, "/") == 0))
@@ -443,7 +488,10 @@ namespace OpenSim.Region.Framework.Scenes
 
         public bool TrySetCurrentScene(UUID regionID)
         {
-            m_log.Debug("Searching for Region: '" + regionID + "'");
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+                m_log.Debug("Searching for Region: '" + regionID + "'");
+            }
 
             m_localScenesRwLock.AcquireReaderLock(-1);
             try
@@ -467,6 +515,9 @@ namespace OpenSim.Region.Framework.Scenes
 
         public bool TryGetScene(string regionName, out Scene scene)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             m_localScenesRwLock.AcquireReaderLock(-1);
             try
             {
@@ -490,6 +541,9 @@ namespace OpenSim.Region.Framework.Scenes
 
         public bool TryGetScene(UUID regionID, out Scene scene)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             m_localScenesRwLock.AcquireReaderLock(-1);
             try
             {
@@ -513,6 +567,9 @@ namespace OpenSim.Region.Framework.Scenes
 
         public bool TryGetScene(uint locX, uint locY, out Scene scene)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             m_localScenesRwLock.AcquireReaderLock(-1);
             try
             {
@@ -537,6 +594,9 @@ namespace OpenSim.Region.Framework.Scenes
 
         public bool TryGetScene(IPEndPoint ipEndPoint, out Scene scene)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             m_localScenesRwLock.AcquireReaderLock(-1);
             try
             {
@@ -561,6 +621,9 @@ namespace OpenSim.Region.Framework.Scenes
 
         public List<ScenePresence> GetCurrentSceneAvatars()
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             List<ScenePresence> avatars = new List<ScenePresence>();
 
             ForEachSelectedScene(
@@ -578,6 +641,9 @@ namespace OpenSim.Region.Framework.Scenes
 
         public List<ScenePresence> GetCurrentScenePresences()
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             List<ScenePresence> presences = new List<ScenePresence>();
 
             ForEachSelectedScene(delegate(Scene scene)
@@ -593,6 +659,9 @@ namespace OpenSim.Region.Framework.Scenes
 
         public RegionInfo GetRegionInfo(UUID regionID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             m_localScenesRwLock.AcquireReaderLock(-1);
             try
             {
@@ -614,16 +683,25 @@ namespace OpenSim.Region.Framework.Scenes
 
         public void ForceCurrentSceneClientUpdate()
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             ForEachSelectedScene(delegate(Scene scene) { scene.ForceClientUpdate(); });
         }
 
         public void HandleEditCommandOnCurrentScene(string[] cmdparams)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             ForEachSelectedScene(delegate(Scene scene) { scene.HandleEditCommand(cmdparams); });
         }
 
         public bool TryGetScenePresence(UUID avatarId, out ScenePresence avatar)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             m_localScenesRwLock.AcquireReaderLock(-1);
             try
             {
@@ -646,6 +724,9 @@ namespace OpenSim.Region.Framework.Scenes
 
         public bool TryGetRootScenePresence(UUID avatarId, out ScenePresence avatar)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             m_localScenesRwLock.AcquireReaderLock(-1);
             try
             {
@@ -668,6 +749,9 @@ namespace OpenSim.Region.Framework.Scenes
 
         public void CloseScene(Scene scene)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             m_localScenesRwLock.AcquireWriterLock(-1);
             try
             {
@@ -683,6 +767,9 @@ namespace OpenSim.Region.Framework.Scenes
 
         public bool TryGetAvatarByName(string avatarName, out ScenePresence avatar)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             m_localScenesRwLock.AcquireReaderLock(-1);
             try
             {
@@ -705,6 +792,9 @@ namespace OpenSim.Region.Framework.Scenes
 
         public bool TryGetRootScenePresenceByName(string firstName, string lastName, out ScenePresence sp)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             m_localScenesRwLock.AcquireReaderLock(-1);
             try
             {
@@ -726,6 +816,9 @@ namespace OpenSim.Region.Framework.Scenes
 
         public void ForEachScene(Action<Scene> action)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             m_localScenesRwLock.AcquireReaderLock(-1);
             try
             {
