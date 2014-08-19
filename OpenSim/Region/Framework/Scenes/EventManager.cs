@@ -33,6 +33,7 @@ using OpenSim.Region.Framework.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Threading;
 using Caps = OpenSim.Framework.Capabilities.Caps;
 using GridRegion = OpenSim.Services.Interfaces.GridRegion;
 
@@ -1288,7 +1289,9 @@ namespace OpenSim.Region.Framework.Scenes
         public void TriggerOnFrame()
         {
             if (m_log.IsDebugEnabled) {
-                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+				if (!Thread.CurrentThread.Name.StartsWith ("Heartbeat")) {
+					m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+				}
             }
             OnFrameDelegate handlerFrame = OnFrame;
             if (handlerFrame != null)
@@ -1429,9 +1432,11 @@ namespace OpenSim.Region.Framework.Scenes
 
         public void TriggerOnBackup(ISimulationDataService dstore, bool forced)
         {
-            if (m_log.IsDebugEnabled) {
-                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
-            }
+			if (m_log.IsDebugEnabled) {
+				if (!Thread.CurrentThread.Name.StartsWith ("BackupWaitCallback")) {
+					m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+				}
+			}
             OnBackupDelegate handlerOnAttach = OnBackup;
             if (handlerOnAttach != null)
             {
@@ -1501,9 +1506,11 @@ namespace OpenSim.Region.Framework.Scenes
 
         public void TriggerTerrainTick()
         {
-            if (m_log.IsDebugEnabled) {
-                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
-            }
+			if (m_log.IsDebugEnabled) {
+				if (!Thread.CurrentThread.Name.StartsWith ("Heartbeat")) {
+					m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+				}
+			}
             OnTerrainTickDelegate handlerTerrainTick = OnTerrainTick;
             if (handlerTerrainTick != null)
             {
@@ -3430,9 +3437,12 @@ namespace OpenSim.Region.Framework.Scenes
 
         public void TriggerRegionHeartbeatStart(Scene scene)
         {
-            if (m_log.IsDebugEnabled) {
-                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
-            }
+			if (m_log.IsDebugEnabled) {
+				if (!Thread.CurrentThread.Name.StartsWith ("Heartbeat")) {
+					m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+				}
+			}
+
             RegionHeartbeatStart handler = OnRegionHeartbeatStart;
 
             if (handler != null)
@@ -3454,9 +3464,12 @@ namespace OpenSim.Region.Framework.Scenes
 
         public void TriggerRegionHeartbeatEnd(Scene scene)
         {
-            if (m_log.IsDebugEnabled) {
-                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
-            }
+			if (m_log.IsDebugEnabled) {
+				if (!Thread.CurrentThread.Name.StartsWith ("Heartbeat")) {
+					m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+				}
+			}
+
             RegionHeartbeatEnd handler = OnRegionHeartbeatEnd;
 
             if (handler != null)

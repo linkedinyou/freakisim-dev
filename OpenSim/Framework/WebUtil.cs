@@ -220,6 +220,10 @@ namespace OpenSim.Framework
 
         private static OSDMap ServiceOSDRequestWorker(string url, OSDMap data, string method, int timeout, bool compressed, bool rpc)
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+			}
+
             int reqnum = RequestNumber++;
 
             if (DebugLevel >= 3)
@@ -405,6 +409,10 @@ namespace OpenSim.Framework
 
         private static OSDMap ServiceFormRequestWorker(string url, NameValueCollection data, int timeout)
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+			}
+
             int reqnum = RequestNumber++;
             string method = (data != null && data["RequestMethod"] != null) ? data["RequestMethod"] : "unknown";
 
@@ -715,6 +723,10 @@ namespace OpenSim.Framework
         /// <returns></returns>
         public static string[] GetPreferredImageTypes(string accept)
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+			}
+
             if (string.IsNullOrEmpty(accept))
                 return new string[0];
 
@@ -772,6 +784,10 @@ namespace OpenSim.Framework
                 string requestUrl, TRequest obj, Action<TResponse> action,
                 int maxConnections)
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+			}
+
             int reqnum = WebUtil.RequestNumber++;
 
             if (WebUtil.DebugLevel >= 3)
@@ -970,6 +986,10 @@ namespace OpenSim.Framework
         /// the request.  You'll want to make sure you deal with this as they're not uncommon</exception>
         public static string MakeRequest(string verb, string requestUrl, string obj, int timeoutsecs)
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+			}
+
             int reqnum = WebUtil.RequestNumber++;
 
             if (WebUtil.DebugLevel >= 3)
@@ -1101,6 +1121,10 @@ namespace OpenSim.Framework
 
         public static TResponse MakeRequest<TRequest, TResponse>(string verb, string requestUrl, TRequest obj, int pTimeout, int maxConnections)
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+			}
+
             int reqnum = WebUtil.RequestNumber++;
 
             if (WebUtil.DebugLevel >= 3)
@@ -1277,6 +1301,10 @@ namespace OpenSim.Framework
 
         public static Hashtable SendRequest(Hashtable ReqParams, string method, string url)
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+			}
+
             int reqnum = WebUtil.RequestNumber++;
 
             if (WebUtil.DebugLevel >= 3)

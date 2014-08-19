@@ -520,10 +520,6 @@ namespace OpenSim.Region.Framework.Scenes
         /// <returns>null if there is no registered module implementing that interface</returns>
         public T RequestModuleInterface<T>()
         {
-			if (m_log.IsDebugEnabled) {
-				m_log.DebugFormat ("{0}<T> ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
-			}
-
             if (ModuleInterfaces.ContainsKey(typeof(T)) &&
                     (ModuleInterfaces[typeof(T)].Count > 0))
                 return (T)ModuleInterfaces[typeof(T)][0];
@@ -537,10 +533,6 @@ namespace OpenSim.Region.Framework.Scenes
         /// <returns>an empty array if there are no registered modules implementing that interface</returns>
         public T[] RequestModuleInterfaces<T>()
         {
-			if (m_log.IsDebugEnabled) {
-				m_log.DebugFormat ("{0}<T>() ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
-			}
-
             if (ModuleInterfaces.ContainsKey(typeof(T)))
             {
                 List<T> ret = new List<T>();

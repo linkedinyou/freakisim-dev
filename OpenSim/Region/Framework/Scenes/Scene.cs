@@ -2633,9 +2633,11 @@ namespace OpenSim.Region.Framework.Scenes
         // Return 'true' if position inside region.
         public bool PositionIsInCurrentRegion(Vector3 pos)
         {
-            if (m_log.IsDebugEnabled) {
-                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
-            }
+			if (m_log.IsDebugEnabled) {
+				if (!Thread.CurrentThread.Name.StartsWith ("Heartbeat")) {
+					m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+				}
+			}
             bool ret = false;
             int xx = (int)Math.Floor(pos.X);
             int yy = (int)Math.Floor(pos.Y);
@@ -5073,9 +5075,11 @@ namespace OpenSim.Region.Framework.Scenes
         /// <returns>null if the presence was not found</returns>
         public ScenePresence GetScenePresence(UUID agentID)
         {
-            if (m_log.IsDebugEnabled) {
-                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
-            }
+			if (m_log.IsDebugEnabled) {
+				if (!Thread.CurrentThread.Name.StartsWith ("Heartbeat")) {
+					m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+				}
+			}
             return m_sceneGraph.GetScenePresence(agentID);
         }
 
@@ -5087,9 +5091,11 @@ namespace OpenSim.Region.Framework.Scenes
         /// <returns>null if the presence was not found</returns>
         public ScenePresence GetScenePresence(string firstName, string lastName)
         {
-            if (m_log.IsDebugEnabled) {
-                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
-            }
+			if (m_log.IsDebugEnabled) {
+				if (!Thread.CurrentThread.Name.StartsWith ("Heartbeat")) {
+					m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+				}
+			}
             return m_sceneGraph.GetScenePresence(firstName, lastName);
         }
 
@@ -5100,9 +5106,11 @@ namespace OpenSim.Region.Framework.Scenes
         /// <returns>null if the presence was not found</returns>
         public ScenePresence GetScenePresence(uint localID)
         {
-            if (m_log.IsDebugEnabled) {
-                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
-            }
+			if (m_log.IsDebugEnabled) {
+				if (!Thread.CurrentThread.Name.StartsWith ("Heartbeat")) {
+					m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+				}
+			}
             return m_sceneGraph.GetScenePresence(localID);
         }
 
@@ -5332,9 +5340,6 @@ namespace OpenSim.Region.Framework.Scenes
 
         public bool TryGetClient(UUID avatarID, out IClientAPI client)
         {
-            if (m_log.IsDebugEnabled) {
-                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
-            }
             return m_clientManager.TryGetValue(avatarID, out client);
         }
 
