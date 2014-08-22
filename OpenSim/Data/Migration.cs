@@ -87,11 +87,19 @@ namespace OpenSim.Data
 
         public Migration(DbConnection conn, Assembly assem, string subtype, string type)
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+			}
+
             Initialize(conn, assem, type, subtype);
         }
 
         public Migration(DbConnection conn, Assembly assem, string type) 
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+			}
+
             Initialize(conn, assem, type, "");
         }
 
@@ -106,6 +114,10 @@ namespace OpenSim.Data
         /// <param name="type"></param>
         public void Initialize (DbConnection conn, Assembly assem, string type, string subtype)
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+			}
+
             _type = type;
             _conn = conn;
             _assem = assem;
@@ -116,6 +128,10 @@ namespace OpenSim.Data
 
         public void InitMigrationsTable()
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+			}
+
             // NOTE: normally when the [migrations] table is created, the version record for 'migrations' is
             // added immediately. However, if for some reason the table is there but empty, we want to handle that as well.
             int ver = FindVersion(_conn, "migrations");
@@ -138,6 +154,10 @@ namespace OpenSim.Data
         /// <param name="script">Array of strings, one-per-batch (often just one)</param>
         protected virtual void ExecuteScript(DbConnection conn, string[] script)
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+			}
+
             using (DbCommand cmd = conn.CreateCommand())
             {
                 cmd.CommandTimeout = 0;
@@ -173,6 +193,10 @@ namespace OpenSim.Data
 
         public void Update()
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+			}
+
             InitMigrationsTable();
 
             int version = FindVersion(_conn, _type);
@@ -236,6 +260,10 @@ namespace OpenSim.Data
 
         protected virtual int FindVersion(DbConnection conn, string type)
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+			}
+
             int version = 0;
             using (DbCommand cmd = conn.CreateCommand())
             {
@@ -284,6 +312,10 @@ namespace OpenSim.Data
         /// <returns>A list of string arrays, representing the scripts.</returns>
         private SortedList<int, string[]> GetMigrationsAfter(int after)
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+			}
+
             SortedList<int, string[]> migrations = new SortedList<int, string[]>();
 
             string[] names = _assem.GetManifestResourceNames();

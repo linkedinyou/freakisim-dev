@@ -71,6 +71,10 @@ namespace OpenSim.Framework.Servers
 
         public ServerBase()
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+			}
+
             m_startuptime = DateTime.Now;
             m_version = VersionInfo.Version;
             EnhanceVersionInformation();
@@ -78,6 +82,10 @@ namespace OpenSim.Framework.Servers
 
         protected void CreatePIDFile(string path)
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+			}
+
             if (File.Exists(path))
                 m_log.ErrorFormat(
                     "[SERVER BASE]: Previous pid file {0} still exists on startup.  Possibly previously unclean shutdown.", 
@@ -105,6 +113,10 @@ namespace OpenSim.Framework.Servers
            
         protected void RemovePIDFile()
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+			}
+
             if (m_pidFile != String.Empty)
             {
                 try
@@ -126,6 +138,10 @@ namespace OpenSim.Framework.Servers
         /// </summary>
         public void LogEnvironmentInformation()
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+			}
+
             // FIXME: This should be done down in ServerBase but we need to sort out and refactor the log4net
             // XmlConfigurator calls first accross servers.
             m_log.InfoFormat("[SERVER BASE]: Starting in {0}", m_startupDirectory);
@@ -142,6 +158,10 @@ namespace OpenSim.Framework.Servers
 
         public void RegisterCommonAppenders(IConfig startupConfig)
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+			}
+
             ILoggerRepository repository = LogManager.GetRepository();
             IAppender[] appenders = repository.GetAppenders();
 
@@ -191,6 +211,10 @@ namespace OpenSim.Framework.Servers
         /// </summary>
         public void RegisterCommonCommands()
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+			}
+
             if (m_console == null)
                 return;
 
@@ -313,6 +337,10 @@ namespace OpenSim.Framework.Servers
 
         public void RegisterCommonComponents(IConfigSource configSource)
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+			}
+
             IConfig networkConfig = configSource.Configs["Network"];
 
             if (networkConfig != null)
@@ -327,11 +355,19 @@ namespace OpenSim.Framework.Servers
 
         private void HandleDebugCommsStatus(string module, string[] args)
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+			}
+
             Notice("serialosdreq is {0}", WebUtil.SerializeOSDRequestsPerEndpoint);
         }
 
         private void HandleDebugCommsSet(string module, string[] args)
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+			}
+
             if (args.Length != 5)
             {
                 Notice("Usage: debug comms set serialosdreq true|false");
@@ -356,6 +392,10 @@ namespace OpenSim.Framework.Servers
 
         private void HandleDebugThreadpoolStatus(string module, string[] args)
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+			}
+
             int workerThreads, iocpThreads;
 
             ThreadPool.GetMinThreads(out workerThreads, out iocpThreads);
@@ -373,6 +413,10 @@ namespace OpenSim.Framework.Servers
 
         private void HandleDebugThreadpoolSet(string module, string[] args)
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+			}
+
             if (args.Length != 6)
             {
                 Notice("Usage: debug threadpool set worker|iocp min|max <n>");
@@ -445,6 +489,10 @@ namespace OpenSim.Framework.Servers
 
         private static void HandleDebugThreadpoolLevel(string module, string[] cmdparams)
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+			}
+
             if (cmdparams.Length < 4)
             {
                 MainConsole.Instance.Output("Usage: debug threadpool level 0.." + Util.MAX_THREADPOOL_LEVEL);
@@ -472,12 +520,20 @@ namespace OpenSim.Framework.Servers
 
         private void HandleForceGc(string module, string[] args)
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+			}
+
             Notice("Manually invoking runtime garbage collection");
             GC.Collect();
         }
 
         public virtual void HandleShow(string module, string[] cmd)
         {
+			if (m_log.IsDebugEnabled) {
+			    m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+			}
+
             List<string> args = new List<string>(cmd);
 
             args.RemoveAt(0);
@@ -511,6 +567,10 @@ namespace OpenSim.Framework.Servers
         /// <param name="cmd"></param>
         private void HandleConfig(string module, string[] cmd)
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+			}
+
             List<string> args = new List<string>(cmd);
             args.RemoveAt(0);
             string[] cmdparams = args.ToArray();
@@ -615,6 +675,10 @@ namespace OpenSim.Framework.Servers
 
         private void HandleSetLogLevel(string module, string[] cmd)
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+			}
+
             if (cmd.Length != 4)
             {
                 Notice("Usage: set log level <level>");
@@ -644,11 +708,19 @@ namespace OpenSim.Framework.Servers
 
         private void ShowLogLevel()
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+			}
+
             Notice("Console log level is {0}", m_consoleAppender.Threshold);
         }
 
         protected virtual void HandleScript(string module, string[] parms)
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+			}
+
             if (parms.Length != 2)
             {
                 Notice("Usage: command-script <path-to-script");
@@ -664,6 +736,10 @@ namespace OpenSim.Framework.Servers
         /// <param name="fileName"></param>
         protected void RunCommandScript(string fileName)
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+			}
+
             if (m_console == null)
                 return;
 
@@ -696,6 +772,10 @@ namespace OpenSim.Framework.Servers
         /// <returns></returns>
         protected string GetUptimeReport()
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+			}
+
             StringBuilder sb = new StringBuilder(String.Format("Time now is {0}\n", DateTime.Now));
             sb.Append(String.Format("Server has been running since {0}, {1}\n", m_startuptime.DayOfWeek, m_startuptime));
             sb.Append(String.Format("That is an elapsed time of {0}\n", DateTime.Now - m_startuptime));
@@ -705,6 +785,10 @@ namespace OpenSim.Framework.Servers
 
         protected void ShowInfo()
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+			}
+
             Notice(GetVersionText());
             Notice("Startup directory: " + m_startupDirectory);                
             if (null != m_consoleAppender)
@@ -716,6 +800,10 @@ namespace OpenSim.Framework.Servers
         /// </summary>
         protected void EnhanceVersionInformation()
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+			}
+
             string buildVersion = string.Empty;
 
             string manualVersionFileName = ".version";
@@ -731,6 +819,10 @@ namespace OpenSim.Framework.Servers
 
         protected string GetVersionText()
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+			}
+
             return String.Format("Version: {0} (interface version {1})", m_version, VersionInfo.MajorInterfaceVersion);
         }
 
@@ -739,6 +831,10 @@ namespace OpenSim.Framework.Servers
         /// </summary>
         protected string GetThreadsReport()
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+			}
+
             // This should be a constant field.
             string reportFormat = "{0,6}   {1,35}   {2,16}   {3,13}   {4,10}   {5,30}";
 
@@ -788,6 +884,10 @@ namespace OpenSim.Framework.Servers
         /// <returns></returns>
         public static string GetThreadPoolReport()
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+			}
+
             string threadPoolUsed = null;
             int maxThreads = 0;
             int minThreads = 0;
@@ -845,6 +945,10 @@ namespace OpenSim.Framework.Servers
 
         public virtual void HandleThreadsAbort(string module, string[] cmd)
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+			}
+
             if (cmd.Length != 3)
             {
                 MainConsole.Instance.Output("Usage: threads abort <thread-id>");
@@ -872,6 +976,10 @@ namespace OpenSim.Framework.Servers
         /// <param name="msg"></param>
         protected void Notice(string msg)
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+			}
+
             if (m_console != null)
             {
                 m_console.Output(msg);
@@ -887,12 +995,20 @@ namespace OpenSim.Framework.Servers
         /// <param name="components"></param>
         protected void Notice(string format, params object[] components)
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+			}
+
             if (m_console != null)
                 m_console.OutputFormat(format, components);
         }
 
         public virtual void Shutdown()
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+			}
+
             m_serverStatsCollector.Close();
             ShutdownSpecific();
         }

@@ -75,6 +75,10 @@ namespace OpenSim.Framework.Servers
         /// </summary>
         protected virtual void StartupSpecific()
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+			}
+
             StatsManager.SimExtraStats = new SimExtraStatsCollector();
             RegisterCommonCommands();
             RegisterCommonComponents(Config);
@@ -116,6 +120,10 @@ namespace OpenSim.Framework.Servers
         /// </summary>
         protected void LogDiagnostics(object source, ElapsedEventArgs e)
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+			}
+
             StringBuilder sb = new StringBuilder("DIAGNOSTICS\n\n");
             sb.Append(GetUptimeReport());
             sb.Append(StatsManager.SimExtraStats.Report());
@@ -129,7 +137,11 @@ namespace OpenSim.Framework.Servers
         /// Performs initialisation of the scene, such as loading configuration from disk.
         /// </summary>
         public virtual void Startup()
-        {            
+        {   
+			if (m_log.IsDebugEnabled) {
+			    m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+			}
+
             StartupSpecific();
             
             TimeSpan timeTaken = DateTime.Now - m_startuptime;
@@ -147,6 +159,10 @@ namespace OpenSim.Framework.Servers
 
         public string StatReport(IOSHttpRequest httpRequest)
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+			}
+
             // If we catch a request for "callback", wrap the response in the value for jsonp
             if (httpRequest.Query.ContainsKey("callback"))
             {

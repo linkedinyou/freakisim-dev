@@ -68,6 +68,8 @@ namespace OpenSim.Framework
     /// </summary>
     public class PluginLoader <T> : IDisposable where T : IPlugin
     {
+		private static readonly ILog m_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
         private const int max_loadable_plugins = 10000;
 
         private List<T> loaded = new List<T>();
@@ -101,24 +103,40 @@ namespace OpenSim.Framework
 
         public PluginLoader()
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+			}
+
             Initialiser = new PluginInitialiserBase();
             initialise_plugin_dir_(".");
         }
 
         public PluginLoader(PluginInitialiserBase init)
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.DebugFormat ("{0}(PluginInitialiserBase init) ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+			}
+
             Initialiser = init;
             initialise_plugin_dir_(".");
         }
 
         public PluginLoader(PluginInitialiserBase init, string dir)
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.DebugFormat ("{0}(PluginInitialiserBase init, string dir: {1}) ", System.Reflection.MethodBase.GetCurrentMethod ().Name, dir);
+			}
+
             Initialiser = init;
             initialise_plugin_dir_(dir);
         }
 
         public void Add(string extpoint)
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.DebugFormat ("{0}(string extpoint: {1}) ", System.Reflection.MethodBase.GetCurrentMethod ().Name, extpoint);
+			}
+
             if (extpoints.Contains(extpoint))
                 return;
 
@@ -127,34 +145,57 @@ namespace OpenSim.Framework
 
         public void Add(string extpoint, IPluginConstraint cons)
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.DebugFormat ("{0}(string extpoint: {1}, IPluginConstraint cons) ", System.Reflection.MethodBase.GetCurrentMethod ().Name, extpoint);
+			}
+
             Add(extpoint);
             AddConstraint(extpoint, cons);
         }
 
         public void Add(string extpoint, IPluginFilter filter)
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.DebugFormat ("{0}(string extpoint: {1}, IPluginFilter filter) ", System.Reflection.MethodBase.GetCurrentMethod ().Name, extpoint);
+			}
+
             Add(extpoint);
             AddFilter(extpoint, filter);
         }
 
         public void AddConstraint(string extpoint, IPluginConstraint cons)
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.DebugFormat ("{0}(string extpoint: {1}, IPluginConstraint cons) ", System.Reflection.MethodBase.GetCurrentMethod ().Name, extpoint);
+			}
+
             constraints.Add(extpoint, cons);
         }
 
         public void AddFilter(string extpoint, IPluginFilter filter)
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.DebugFormat ("{0}(string extpoint: {1}, IPluginFilter filter) ", System.Reflection.MethodBase.GetCurrentMethod ().Name, extpoint);
+			}
             filters.Add(extpoint, filter);
         }
 
         public void Load(string extpoint)
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.DebugFormat ("{0}(string extpoint: {1}) ", System.Reflection.MethodBase.GetCurrentMethod ().Name, extpoint);
+			}
+
             Add(extpoint);
             Load();
         }
 
         public void Load()
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+			}
+
             foreach (string ext in extpoints)
             {
                 log.Info("[PLUGINS]: Loading extension point " + ext);
@@ -201,12 +242,20 @@ namespace OpenSim.Framework
         /// </summary>
         public void Dispose()
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+			}
+
             AddinManager.AddinLoadError -= on_addinloaderror_;
             AddinManager.AddinLoaded -= on_addinloaded_;
         }
 
         private void initialise_plugin_dir_(string dir)
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.DebugFormat ("{0}(string dir: {1}) ", System.Reflection.MethodBase.GetCurrentMethod ().Name, dir);
+			}
+
             if (AddinManager.IsInitialized == true)
                 return;
 
@@ -241,6 +290,10 @@ namespace OpenSim.Framework
 
         private void clear_registry_(string dir)
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.DebugFormat ("{0}(string dir: {1}) ", System.Reflection.MethodBase.GetCurrentMethod ().Name, dir);
+			}
+
             // The Mono addin manager (in Mono.Addins.dll version 0.2.0.0)
             // occasionally seems to corrupt its addin cache
             // Hence, as a temporary solution we'll remove it before each startup
@@ -323,7 +376,9 @@ namespace OpenSim.Framework
     /// </summary>
     public class PluginCountConstraint : IPluginConstraint
     {
-        private int min;
+		private static readonly ILog m_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
+		private int min;
         private int max;
 
         public PluginCountConstraint(int exact)
@@ -349,6 +404,10 @@ namespace OpenSim.Framework
 
         public bool Apply (string extpoint)
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.DebugFormat ("{0}(string extpoint: {1}) ", System.Reflection.MethodBase.GetCurrentMethod ().Name, extpoint);
+			}
+
             int count = AddinManager.GetExtensionNodes(extpoint).Count;
 
             if ((count < min) || (count > max))
@@ -364,6 +423,8 @@ namespace OpenSim.Framework
     /// </summary>
     public class PluginProviderFilter : IPluginFilter
     {
+		private static readonly ILog m_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
         private string[] m_filters;
 
         /// <summary>
@@ -374,6 +435,10 @@ namespace OpenSim.Framework
         /// </param>
         public PluginProviderFilter(string p)
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.DebugFormat ("{0}(string p: {1}) ", System.Reflection.MethodBase.GetCurrentMethod ().Name, p);
+			}
+
             m_filters = p.Split(',');
 
             for (int i = 0; i < m_filters.Length; i++)
@@ -389,6 +454,10 @@ namespace OpenSim.Framework
         /// <returns>true if the plugin's name matched one of the filters, false otherwise.</returns>
         public bool Apply (PluginExtensionNode plugin)
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+			}
+
             for (int i = 0; i < m_filters.Length; i++)
             {
                 if (m_filters[i] == plugin.Provider)
@@ -406,6 +475,8 @@ namespace OpenSim.Framework
     /// </summary>
     public class PluginIdFilter : IPluginFilter
     {
+		private static readonly ILog m_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
         private string[] m_filters;
 
         /// <summary>
@@ -416,6 +487,10 @@ namespace OpenSim.Framework
         /// </param>
         public PluginIdFilter(string p)
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.DebugFormat ("{0}(string p: {1}) ", System.Reflection.MethodBase.GetCurrentMethod ().Name,p);
+			}
+
             m_filters = p.Split(',');
 
             for (int i = 0; i < m_filters.Length; i++)
@@ -431,6 +506,10 @@ namespace OpenSim.Framework
         /// <returns>true if the plugin's ID matches one of the filters, false otherwise.</returns>
         public bool Apply (PluginExtensionNode plugin)
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+			}
+
             for (int i = 0; i < m_filters.Length; i++)
             {
                 if (m_filters[i] == plugin.ID)

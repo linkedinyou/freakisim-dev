@@ -74,6 +74,10 @@ namespace OpenSim.Region.ClientStack
 
         protected override void StartupSpecific()
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+			}
+
             SceneManager = SceneManager.Instance;
             m_clientStackManager = CreateClientStackManager();
 
@@ -123,6 +127,10 @@ namespace OpenSim.Region.ClientStack
         protected PhysicsScene GetPhysicsScene(
             string engine, string meshEngine, IConfigSource config, string osSceneIdentifier, Vector3 regionExtent)
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+			}
+
             PhysicsPluginManager physicsPluginManager;
             physicsPluginManager = new PhysicsPluginManager();
             physicsPluginManager.LoadPluginsFromAssemblies("Physics");

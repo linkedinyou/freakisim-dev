@@ -26,6 +26,8 @@
  */
 
 using System;
+using log4net;
+using System.Reflection;
 
 namespace OpenSim.Framework
 {
@@ -68,11 +70,17 @@ namespace OpenSim.Framework
     /// </summary>
     public class PluginInitialiserBase
     {
+		private static readonly ILog m_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
         // this would be a lot simpler if C# supported currying or typedefs
 
         // default initialisation
         public virtual void Initialise (IPlugin plugin)
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+			}
+
             plugin.Initialise();
         }
     }

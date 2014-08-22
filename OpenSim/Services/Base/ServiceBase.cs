@@ -44,6 +44,10 @@ namespace OpenSim.Services.Base
 
         public T LoadPlugin<T>(string dllName, Object[] args) where T:class
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.DebugFormat ("{0} string dllName: {1}, Object[] args", System.Reflection.MethodBase.GetCurrentMethod ().Name, dllName);
+			}
+
             string[] parts = dllName.Split(new char[] {':'});
 
             dllName = parts[0];
@@ -59,8 +63,9 @@ namespace OpenSim.Services.Base
         public T LoadPlugin<T>(string dllName, string className, Object[] args) where T:class
         {
             if (m_log.IsDebugEnabled) {
-                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+				m_log.DebugFormat ("{0} string dllName: {1}, string className: {2}, Object[] args", System.Reflection.MethodBase.GetCurrentMethod ().Name, dllName, className);
             }
+
             string interfaceName = typeof(T).ToString();
 
             try
