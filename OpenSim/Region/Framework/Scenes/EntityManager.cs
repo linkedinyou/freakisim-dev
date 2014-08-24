@@ -31,6 +31,7 @@ using System;
 using System.Collections.Generic;
 using log4net;
 using System.Reflection;
+using System.Threading;
 
 namespace OpenSim.Region.Framework.Scenes
 {
@@ -114,9 +115,6 @@ namespace OpenSim.Region.Framework.Scenes
 
         public EntityBase[] GetEntities()
         {
-            if (m_log.IsDebugEnabled) {
-                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
-            }
             List<EntityBase> tmp = new List<EntityBase>(m_entities.Count);
             ForEach(delegate(EntityBase entity) { tmp.Add(entity); });
             return tmp.ToArray();
@@ -124,9 +122,6 @@ namespace OpenSim.Region.Framework.Scenes
 
         public void ForEach(Action<EntityBase> action)
         {
-            if (m_log.IsDebugEnabled) {
-                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
-            }
             m_entities.ForEach(action);
         }
 

@@ -52,6 +52,10 @@ namespace OpenSimProfile.Modules.OpenProfile
         #region IRegionModuleBase implementation
         public void Initialise(IConfigSource config)
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+			}
+
             IConfig profileConfig = config.Configs["Profile"];
 
             if (profileConfig == null)
@@ -78,6 +82,10 @@ namespace OpenSimProfile.Modules.OpenProfile
 
         public void AddRegion(Scene scene)
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+			}
+
             if (!m_Enabled)
                 return;
 
@@ -90,6 +98,10 @@ namespace OpenSimProfile.Modules.OpenProfile
 
         public void RemoveRegion(Scene scene)
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+			}
+
             if (!m_Enabled)
                 return;
 
@@ -100,6 +112,10 @@ namespace OpenSimProfile.Modules.OpenProfile
 
         public void RegionLoaded(Scene scene)
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+			}
+
             if(!m_Enabled)
             {
                 return;
@@ -129,6 +145,10 @@ namespace OpenSimProfile.Modules.OpenProfile
 
         private ScenePresence FindPresence(UUID clientID)
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+			}
+
             ScenePresence p;
 
             foreach (Scene s in m_Scenes)
@@ -143,6 +163,10 @@ namespace OpenSimProfile.Modules.OpenProfile
         /// New Client Event Handler
         private void OnNewClient(IClientAPI client)
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+			}
+
             // Subscribe to messages
 
             // Classifieds
@@ -173,6 +197,10 @@ namespace OpenSimProfile.Modules.OpenProfile
         //
         private Hashtable GenericXMLRPCRequest(Hashtable ReqParams, string method, string server)
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+			}
+
             ArrayList SendParams = new ArrayList();
             SendParams.Add(ReqParams);
 
@@ -236,6 +264,10 @@ namespace OpenSimProfile.Modules.OpenProfile
         // Classifieds Handler
         public void HandleAvatarClassifiedsRequest(Object sender, string method, List<String> args)
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+			}
+
             if (!(sender is IClientAPI))
                 return;
 
@@ -288,6 +320,10 @@ namespace OpenSimProfile.Modules.OpenProfile
                                          uint queryParentEstate, UUID querySnapshotID, Vector3 queryGlobalPos, byte queryclassifiedFlags,
                                          int queryclassifiedPrice, IClientAPI remoteClient)
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+			}
+
             Hashtable ReqHash = new Hashtable();
 
             Scene s = (Scene) remoteClient.Scene;
@@ -361,6 +397,10 @@ namespace OpenSimProfile.Modules.OpenProfile
         // Classifieds Delete
         public void ClassifiedDelete(UUID queryClassifiedID, IClientAPI remoteClient)
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+			}
+
             Hashtable ReqHash = new Hashtable();
 
             string serverURI = string.Empty;
@@ -381,6 +421,10 @@ namespace OpenSimProfile.Modules.OpenProfile
         // Picks Handler
         public void HandleAvatarPicksRequest(Object sender, string method, List<String> args)
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+			}
+
             if (!(sender is IClientAPI))
                 return;
 
@@ -437,6 +481,10 @@ namespace OpenSimProfile.Modules.OpenProfile
         // Picks Request
         public void HandlePickInfoRequest(Object sender, string method, List<String> args)
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+			}
+
             if (!(sender is IClientAPI))
                 return;
 
@@ -498,6 +546,10 @@ namespace OpenSimProfile.Modules.OpenProfile
         // Picks Update
         public void PickInfoUpdate(IClientAPI remoteClient, UUID pickID, UUID creatorID, bool topPick, string name, string desc, UUID snapshotID, int sortOrder, bool enabled)
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+			}
+
             Hashtable ReqHash = new Hashtable();
 
             ReqHash["agent_id"] = remoteClient.AgentId.ToString();
@@ -545,6 +597,10 @@ namespace OpenSimProfile.Modules.OpenProfile
         // Picks Delete
         public void PickDelete(IClientAPI remoteClient, UUID queryPickID)
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+			}
+
             Hashtable ReqHash = new Hashtable();
 
             ReqHash["pick_id"] = queryPickID.ToString();
@@ -565,6 +621,10 @@ namespace OpenSimProfile.Modules.OpenProfile
         // Notes Handler
         public void HandleAvatarNotesRequest(Object sender, string method, List<String> args)
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+			}
+
             string targetid;
             string notes = "";
 
@@ -608,6 +668,10 @@ namespace OpenSimProfile.Modules.OpenProfile
         // Notes Update
         public void AvatarNotesUpdate(IClientAPI remoteClient, UUID queryTargetID, string queryNotes)
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+			}
+
             Hashtable ReqHash = new Hashtable();
 
             ReqHash["avatar_id"] = remoteClient.AgentId.ToString();
@@ -630,6 +694,10 @@ namespace OpenSimProfile.Modules.OpenProfile
         // Standard Profile bits
         public void AvatarInterestsUpdate(IClientAPI remoteClient, uint wantmask, string wanttext, uint skillsmask, string skillstext, string languages)
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+			}
+
             Hashtable ReqHash = new Hashtable();
 
             ReqHash["avatar_id"] = remoteClient.AgentId.ToString();
@@ -654,6 +722,10 @@ namespace OpenSimProfile.Modules.OpenProfile
 
         public void UserPreferencesRequest(IClientAPI remoteClient)
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+			}
+
             Hashtable ReqHash = new Hashtable();
 
             ReqHash["avatar_id"] = remoteClient.AgentId.ToString();
@@ -690,6 +762,10 @@ namespace OpenSimProfile.Modules.OpenProfile
 
         public void UpdateUserPreferences(bool imViaEmail, bool visible, IClientAPI remoteClient)
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+			}
+
             Hashtable ReqHash = new Hashtable();
 
             ReqHash["avatar_id"] = remoteClient.AgentId.ToString();
@@ -712,6 +788,10 @@ namespace OpenSimProfile.Modules.OpenProfile
         // Profile data like the WebURL
         private Hashtable GetProfileData(UUID userID)
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+			}
+
             Hashtable ReqHash = new Hashtable();
 
             // Can't handle NPC yet...
@@ -759,6 +839,10 @@ namespace OpenSimProfile.Modules.OpenProfile
 
         public void RequestAvatarProperties(IClientAPI remoteClient, UUID avatarID)
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+			}
+
             if ( String.IsNullOrEmpty(avatarID.ToString()) || String.IsNullOrEmpty(remoteClient.AgentId.ToString()))
             {
                 // Looking for a reason that some viewers are sending null Id's
@@ -892,6 +976,10 @@ namespace OpenSimProfile.Modules.OpenProfile
 
         public void UpdateAvatarProperties(IClientAPI remoteClient, UserProfileData newProfile)
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+			}
+
             // if it's the profile of the user requesting the update, then we change only a few things.
             if (remoteClient.AgentId == newProfile.ID)
             {
@@ -922,6 +1010,10 @@ namespace OpenSimProfile.Modules.OpenProfile
 
         private bool GetUserProfileServerURI(UUID userID, out string serverURI)
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+			}
+
             IUserManagement uManage = UserManagementModule;
 
             if (!uManage.IsLocalGridUser(userID))
@@ -943,6 +1035,10 @@ namespace OpenSimProfile.Modules.OpenProfile
         //
         private bool GetUserProfileData(UUID userID, out Dictionary<string, object> userInfo)
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+			}
+
             IUserManagement uManage = UserManagementModule;
             Dictionary<string,object> info = new Dictionary<string, object>();
 

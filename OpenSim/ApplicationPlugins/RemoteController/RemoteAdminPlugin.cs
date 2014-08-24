@@ -79,12 +79,20 @@ namespace OpenSim.ApplicationPlugins.RemoteController
 
         public void Initialise()
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+			}
+
             m_log.Error("[RADMIN]: " + Name + " cannot be default-initialized!");
             throw new PluginNotInitialisedException(Name);
         }
 
         public void Initialise(OpenSimBase openSim)
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+			}
+
             m_configSource = openSim.ConfigSource.Source;
             try
             {
@@ -192,6 +200,10 @@ namespace OpenSim.ApplicationPlugins.RemoteController
 
         public void PostInitialise()
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+			}
+
             if (!CreateDefaultAvatars())
             {
                 m_log.Info("[RADMIN]: Default avatars not loaded");
@@ -205,6 +217,10 @@ namespace OpenSim.ApplicationPlugins.RemoteController
         private XmlRpcResponse InvokeXmlRpcMethod(
             XmlRpcRequest request, IPEndPoint remoteClient, Action<XmlRpcRequest, XmlRpcResponse, IPEndPoint> method)
         {
+			if (m_log.IsDebugEnabled) {
+			    m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+			}
+
             XmlRpcResponse response = new XmlRpcResponse();
             Hashtable responseData = new Hashtable();
             response.Value = responseData;
@@ -233,6 +249,10 @@ namespace OpenSim.ApplicationPlugins.RemoteController
 
         private void FailIfRemoteAdminNotAllowed(string password, Hashtable responseData, string check_ip_address)
         {
+			if (m_log.IsDebugEnabled) {
+				m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+			}
+
             if (m_accessIP.Count > 0 && !m_accessIP.Contains(check_ip_address))
             {
                 m_log.WarnFormat("[RADMIN]: Unauthorized access blocked from IP {0}", check_ip_address);
