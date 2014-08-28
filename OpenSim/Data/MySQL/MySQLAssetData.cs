@@ -67,6 +67,9 @@ namespace OpenSim.Data.MySQL
         /// <param name="connect">connect string</param>
         public override void Initialise(string connect)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0}(string connect: {1}) ", System.Reflection.MethodBase.GetCurrentMethod ().Name, connect);
+            }
             m_connectionString = connect;
 
             using (MySqlConnection dbcon = new MySqlConnection(m_connectionString))
@@ -104,6 +107,9 @@ namespace OpenSim.Data.MySQL
         /// <remarks>On failure : throw an exception and attempt to reconnect to database</remarks>
         override public AssetBase GetAsset(UUID assetID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             AssetBase asset = null;
             using (MySqlConnection dbcon = new MySqlConnection(m_connectionString))
             {
@@ -153,6 +159,10 @@ namespace OpenSim.Data.MySQL
         /// <remarks>On failure : Throw an exception and attempt to reconnect to database</remarks>
         override public void StoreAsset(AssetBase asset)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
+
             using (MySqlConnection dbcon = new MySqlConnection(m_connectionString))
             {
                 dbcon.Open();
@@ -235,6 +245,9 @@ namespace OpenSim.Data.MySQL
 
         private void UpdateAccessTime(AssetBase asset)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             using (MySqlConnection dbcon = new MySqlConnection(m_connectionString))
             {
                 dbcon.Open();
@@ -272,6 +285,9 @@ namespace OpenSim.Data.MySQL
         /// <returns>For each asset: true if it exists, false otherwise</returns>
         public override bool[] AssetsExist(UUID[] uuids)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (uuids.Length == 0)
                 return new bool[0];
 
@@ -313,6 +329,9 @@ namespace OpenSim.Data.MySQL
         /// <returns>A list of AssetMetadata objects.</returns>
         public override List<AssetMetadata> FetchAssetMetadataSet(int start, int count)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             List<AssetMetadata> retList = new List<AssetMetadata>(count);
 
             using (MySqlConnection dbcon = new MySqlConnection(m_connectionString))
@@ -365,6 +384,9 @@ namespace OpenSim.Data.MySQL
 
         public override bool Delete(string id)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             using (MySqlConnection dbcon = new MySqlConnection(m_connectionString))
             {
                 dbcon.Open();

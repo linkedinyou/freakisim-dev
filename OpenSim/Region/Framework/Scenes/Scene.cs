@@ -2633,11 +2633,6 @@ namespace OpenSim.Region.Framework.Scenes
         // Return 'true' if position inside region.
         public bool PositionIsInCurrentRegion(Vector3 pos)
         {
-			if (m_log.IsDebugEnabled) {
-				if (!Thread.CurrentThread.Name.StartsWith ("Heartbeat")) {
-					m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
-				}
-			}
             bool ret = false;
             int xx = (int)Math.Floor(pos.X);
             int yy = (int)Math.Floor(pos.Y);
@@ -5346,8 +5341,11 @@ namespace OpenSim.Region.Framework.Scenes
         public bool TryGetClient(System.Net.IPEndPoint remoteEndPoint, out IClientAPI client)
         {
             if (m_log.IsDebugEnabled) {
-                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+                if (!Thread.CurrentThread.Name.StartsWith ("Threadpool")) {
+                    m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+                }
             }
+
             return m_clientManager.TryGetValue(remoteEndPoint, out client);
         }
 

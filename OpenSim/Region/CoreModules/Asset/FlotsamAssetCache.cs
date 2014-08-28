@@ -97,6 +97,9 @@ namespace OpenSim.Region.CoreModules.Asset
 
         public FlotsamAssetCache()
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             m_InvalidChars.AddRange(Path.GetInvalidPathChars());
             m_InvalidChars.AddRange(Path.GetInvalidFileNameChars());
         }
@@ -113,6 +116,9 @@ namespace OpenSim.Region.CoreModules.Asset
 
         public void Initialise(IConfigSource source)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             IConfig moduleConfig = source.Configs["Modules"];
             
             if (moduleConfig != null)
@@ -200,6 +206,9 @@ namespace OpenSim.Region.CoreModules.Asset
 
         public void AddRegion(Scene scene)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (m_Enabled)
             {
                 scene.RegisterModuleInterface<IImprovedAssetCache>(this);
@@ -210,6 +219,9 @@ namespace OpenSim.Region.CoreModules.Asset
 
         public void RemoveRegion(Scene scene)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (m_Enabled)
             {
                 scene.UnregisterModuleInterface<IImprovedAssetCache>(this);
@@ -219,6 +231,9 @@ namespace OpenSim.Region.CoreModules.Asset
 
         public void RegionLoaded(Scene scene)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (m_Enabled && m_AssetService == null)
                 m_AssetService = scene.RequestModuleInterface<IAssetService>();
         }
@@ -229,11 +244,17 @@ namespace OpenSim.Region.CoreModules.Asset
 
         private void UpdateMemoryCache(string key, AssetBase asset)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             m_MemoryCache.AddOrUpdate(key, asset, m_MemoryExpiration);
         }
 
         private void UpdateFileCache(string key, AssetBase asset)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             string filename = GetFileName(key);
 
             try
@@ -307,6 +328,9 @@ namespace OpenSim.Region.CoreModules.Asset
 
         public void Cache(AssetBase asset)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             // TODO: Spawn this off to some seperate thread to do the actual writing
             if (asset != null)
             {
@@ -327,6 +351,9 @@ namespace OpenSim.Region.CoreModules.Asset
         /// <returns></returns>
         private AssetBase GetFromMemoryCache(string id)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             AssetBase asset = null;
 
             if (m_MemoryCache.TryGetValue(id, out asset))
@@ -337,6 +364,9 @@ namespace OpenSim.Region.CoreModules.Asset
 
         private bool CheckFromMemoryCache(string id)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             return m_MemoryCache.ContainsKey(id);
         }
 
@@ -346,7 +376,10 @@ namespace OpenSim.Region.CoreModules.Asset
         /// <param name="id"></param>
         /// <returns>An asset retrieved from the file cache.  null if there was a problem retrieving an asset.</returns>
         private AssetBase GetFromFileCache(string id)
-        {          
+        {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             string filename = GetFileName(id);
 
             // Track how often we have the problem that an asset is requested while
@@ -405,6 +438,9 @@ namespace OpenSim.Region.CoreModules.Asset
 
         private bool CheckFromFileCache(string id)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             bool found = false;
 
             string filename = GetFileName(id);
@@ -432,6 +468,9 @@ namespace OpenSim.Region.CoreModules.Asset
 
         public AssetBase Get(string id)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             m_Requests++;
 
             AssetBase asset = null;
@@ -459,6 +498,9 @@ namespace OpenSim.Region.CoreModules.Asset
 
         public bool Check(string id)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (m_MemoryCacheEnabled && CheckFromMemoryCache(id))
                 return true;
 
@@ -469,11 +511,17 @@ namespace OpenSim.Region.CoreModules.Asset
 
         public AssetBase GetCached(string id)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             return Get(id);
         }
 
         public void Expire(string id)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (m_LogLevel >= 2)
                 m_log.DebugFormat("[FLOTSAM ASSET CACHE]: Expiring Asset {0}", id);
 
@@ -501,6 +549,9 @@ namespace OpenSim.Region.CoreModules.Asset
 
         public void Clear()
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (m_LogLevel >= 2)
                 m_log.Debug("[FLOTSAM ASSET CACHE]: Clearing caches.");
 
@@ -518,8 +569,9 @@ namespace OpenSim.Region.CoreModules.Asset
 
         private void CleanupExpiredFiles(object source, ElapsedEventArgs e)
         {
-            if (m_LogLevel >= 2)
-                m_log.DebugFormat("[FLOTSAM ASSET CACHE]: Checking for expired files older then {0}.", m_FileExpiration);
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
 
             // Purge all files last accessed prior to this point
             DateTime purgeLine = DateTime.Now - m_FileExpiration;
@@ -544,6 +596,9 @@ namespace OpenSim.Region.CoreModules.Asset
         /// <param name="purgeLine"></param>
         private void CleanExpiredFiles(string dir, DateTime purgeLine)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             try
             {
                 foreach (string file in Directory.GetFiles(dir))
@@ -587,6 +642,9 @@ namespace OpenSim.Region.CoreModules.Asset
         /// <returns></returns>
         private string GetFileName(string id)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             // Would it be faster to just hash the darn thing?
             foreach (char c in m_InvalidChars)
             {
@@ -611,6 +669,9 @@ namespace OpenSim.Region.CoreModules.Asset
         /// <param name="asset"></param>
         private void WriteFileCache(string filename, AssetBase asset)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             Stream stream = null;
 
             // Make sure the target cache directory exists
@@ -697,6 +758,9 @@ namespace OpenSim.Region.CoreModules.Asset
         /// <returns></returns>
         private int GetFileCacheCount(string dir)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             int count = Directory.GetFiles(dir).Length;
 
             foreach (string subdir in Directory.GetDirectories(dir))
@@ -713,6 +777,9 @@ namespace OpenSim.Region.CoreModules.Asset
         /// <param name="regionID"></param>
         private void StampRegionStatusFile(UUID regionID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             string RegionCacheStatusFile = Path.Combine(m_CacheDirectory, "RegionStatus_" + regionID.ToString() + ".fac");
 
             try 
@@ -749,6 +816,9 @@ namespace OpenSim.Region.CoreModules.Asset
         /// <returns>Number of distinct asset references found in the scene.</returns>
         private int TouchAllSceneAssets(bool storeUncached)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             UuidGatherer gatherer = new UuidGatherer(m_AssetService);
 
             HashSet<UUID> uniqueUuids = new HashSet<UUID>();
@@ -795,6 +865,9 @@ namespace OpenSim.Region.CoreModules.Asset
         /// </summary>
         private void ClearFileCache()
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             foreach (string dir in Directory.GetDirectories(m_CacheDirectory))
             {
                 try

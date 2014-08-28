@@ -47,7 +47,7 @@ namespace OpenSim.Data.MSSQL
         private const string _migrationStore = "RegionStore";
 
         // private static FileSystemDataStore Instance = new FileSystemDataStore();
-        private static readonly ILog _Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog m_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         private static string LogHeader = "[REGION DB MSSQL]";
 
         /// <summary>
@@ -75,6 +75,9 @@ namespace OpenSim.Data.MSSQL
         /// <param name="connectionString">The connection string.</param>
         public void Initialise(string connectionString)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0}(string connectionString: {1}) ", System.Reflection.MethodBase.GetCurrentMethod ().Name, connectionString);
+            }
             m_connectionString = connectionString;
             _Database = new MSSQLManager(connectionString);
 
@@ -101,6 +104,10 @@ namespace OpenSim.Data.MSSQL
         /// <returns></returns>
         public List<SceneObjectGroup> LoadObjects(UUID regionUUID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
+
             UUID lastGroupID = UUID.Zero;
 
             Dictionary<UUID, SceneObjectPart> prims = new Dictionary<UUID, SceneObjectPart>();
@@ -147,7 +154,7 @@ namespace OpenSim.Data.MSSQL
                             // deleted).
                             if (sceneObjectPart.UUID != groupID && groupID != UUID.Zero)
                             {
-                                _Log.WarnFormat(
+                                m_log.WarnFormat(
                                     "[REGION DB]: Found root prim {0} {1} at {2} where group was actually {3}.  Forcing UUID to group UUID",
                                     sceneObjectPart.Name, sceneObjectPart.UUID, sceneObjectPart.GroupPosition, groupID);
 
@@ -202,7 +209,7 @@ namespace OpenSim.Data.MSSQL
 
             LoadItems(primsWithInventory);
 
-            _Log.DebugFormat("[REGION DB]: Loaded {0} objects using {1} prims", objects.Count, prims.Count);
+            m_log.DebugFormat("[REGION DB]: Loaded {0} objects using {1} prims", objects.Count, prims.Count);
 
             return new List<SceneObjectGroup>(objects.Values);
         }
@@ -213,6 +220,9 @@ namespace OpenSim.Data.MSSQL
         /// <param name="allPrims">all prims with inventory on a region</param>
         private void LoadItems(List<SceneObjectPart> allPrimsWithInventory)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             string sql = "SELECT * FROM primitems WHERE PrimID = @PrimID";
             using (SqlConnection conn = new SqlConnection(m_connectionString))
             using (SqlCommand command = new SqlCommand(sql, conn))
@@ -249,6 +259,10 @@ namespace OpenSim.Data.MSSQL
         /// <param name="regionUUID"></param>
         public void StoreObject(SceneObjectGroup obj, UUID regionUUID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
+
             uint flags = obj.RootPart.GetEffectiveObjectFlags();
             // Eligibility check
             //
@@ -257,7 +271,7 @@ namespace OpenSim.Data.MSSQL
             if ((flags & (uint)PrimFlags.TemporaryOnRez) != 0)
                 return;
 
-            _Log.DebugFormat("[MSSQL]: Adding/Changing SceneObjectGroup: {0} to region: {1}, object has {2} prims.", obj.UUID, regionUUID, obj.Parts.Length);
+            m_log.DebugFormat("[MSSQL]: Adding/Changing SceneObjectGroup: {0} to region: {1}, object has {2} prims.", obj.UUID, regionUUID, obj.Parts.Length);
 
             using (SqlConnection conn = new SqlConnection(m_connectionString))
             {
@@ -278,7 +292,7 @@ namespace OpenSim.Data.MSSQL
                             }
                             catch (SqlException sqlEx)
                             {
-                                _Log.ErrorFormat("[REGION DB]: Store SceneObjectPrim SQL error: {0} at line {1}", sqlEx.Message, sqlEx.LineNumber);
+                                m_log.ErrorFormat("[REGION DB]: Store SceneObjectPrim SQL error: {0} at line {1}", sqlEx.Message, sqlEx.LineNumber);
                                 throw;
                             }
                         }
@@ -293,7 +307,7 @@ namespace OpenSim.Data.MSSQL
                             }
                             catch (SqlException sqlEx)
                             {
-                                _Log.ErrorFormat("[REGION DB]: Store SceneObjectPrimShapes SQL error: {0} at line {1}", sqlEx.Message, sqlEx.LineNumber);
+                                m_log.ErrorFormat("[REGION DB]: Store SceneObjectPrimShapes SQL error: {0} at line {1}", sqlEx.Message, sqlEx.LineNumber);
                                 throw;
                             }
                         }
@@ -303,7 +317,7 @@ namespace OpenSim.Data.MSSQL
                 }
                 catch (Exception ex)
                 {
-                    _Log.ErrorFormat("[REGION DB]: Store SceneObjectGroup error: {0}, Rolling back...", ex.Message);
+                    m_log.ErrorFormat("[REGION DB]: Store SceneObjectGroup error: {0}, Rolling back...", ex.Message);
                     try
                     {
                         transaction.Rollback();
@@ -311,7 +325,7 @@ namespace OpenSim.Data.MSSQL
                     catch (Exception ex2)
                     {
                         //Show error
-                        _Log.InfoFormat("[REGION DB]: Rollback of SceneObjectGroup store transaction failed with error: {0}", ex2.Message);
+                        m_log.InfoFormat("[REGION DB]: Rollback of SceneObjectGroup store transaction failed with error: {0}", ex2.Message);
 
                     }
                 }
@@ -401,6 +415,9 @@ ELSE
         /// <param name="regionUUID">The region UUID.</param>
         private void StoreSceneObjectPrimShapes(SceneObjectPart sceneObjectPart, SqlCommand sqlCommand, UUID sceneGroupID, UUID regionUUID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             //Big query to or insert or update primshapes
             //Note for SQL Server 2008 this can be simplified
             string queryPrimShapes = @"
@@ -448,7 +465,7 @@ ELSE
         /// <param name="regionUUID">regionUUID (is this used anyway</param>
         public void RemoveObject(UUID objectID, UUID regionUUID)
         {
-            _Log.InfoFormat("[MSSQL]: Removing obj: {0} from region: {1}", objectID, regionUUID);
+            m_log.InfoFormat("[MSSQL]: Removing obj: {0} from region: {1}", objectID, regionUUID);
 
             //Remove from prims and primsitem table
             string sqlPrims = "DELETE FROM PRIMS WHERE SceneGroupID = @objectID";
@@ -483,6 +500,9 @@ ELSE
         /// <param name="items"></param>
         public void StorePrimInventory(UUID primID, ICollection<TaskInventoryItem> items)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             //_Log.InfoFormat("[REGION DB: Persisting Prim Inventory with prim ID {0}", primID);
 
             //Statement from MySQL section!
@@ -530,6 +550,10 @@ ELSE
         /// <returns></returns>
         public double[,] LoadTerrain(UUID regionID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
+
             double[,] ret = null;
             TerrainData terrData = LoadTerrain(regionID, (int)Constants.RegionSize, (int)Constants.RegionSize, (int)Constants.RegionHeight);
             if (terrData != null)
@@ -540,6 +564,10 @@ ELSE
         // Returns 'null' if region not found
         public TerrainData LoadTerrain(UUID regionID, int pSizeX, int pSizeY, int pSizeZ)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
+
             TerrainData terrData = null;
 
             string sql = "select top 1 RegionUUID, Revision, Heightfield from terrain where RegionUUID = @RegionUUID order by Revision desc";
@@ -562,10 +590,10 @@ ELSE
                         }
                         else
                         {
-                            _Log.Info("[REGION DB]: No terrain found for region");
+                            m_log.Info("[REGION DB]: No terrain found for region");
                             return null;
                         }
-                        _Log.Info("[REGION DB]: Loaded terrain revision r" + rev);
+                        m_log.Info("[REGION DB]: Loaded terrain revision r" + rev);
                     }
                 }
             }
@@ -586,6 +614,10 @@ ELSE
         /// <param name="regionID">regionID.</param>
         public void StoreTerrain(TerrainData terrData, UUID regionID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
+
             //Delete old terrain map
             string sql = "delete from terrain where RegionUUID=@RegionUUID";
             using (SqlConnection conn = new SqlConnection(m_connectionString))
@@ -614,7 +646,7 @@ ELSE
                 }
             }
 
-            _Log.InfoFormat("{0} Stored terrain revision r={1}", LogHeader, terrainDBRevision);
+            m_log.InfoFormat("{0} Stored terrain revision r={1}", LogHeader, terrainDBRevision);
         }
 
         /// <summary>
@@ -624,6 +656,10 @@ ELSE
         /// <returns></returns>
         public List<LandData> LoadLandObjects(UUID regionUUID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
+
             List<LandData> LandDataForRegion = new List<LandData>();
 
             string sql = "select * from land where RegionUUID = @RegionUUID";
@@ -672,6 +708,10 @@ ELSE
         /// <param name="parcel">parcel data.</param>
         public void StoreLandObject(ILandObject parcel)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
+
             //As this is only one record in land table I just delete all and then add a new record.
             //As the delete landaccess is already in the mysql code
 
@@ -714,6 +754,10 @@ VALUES
         /// <param name="globalID">UUID of landobject</param>
         public void RemoveLandObject(UUID globalID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
+
             string sql = "delete from land where UUID=@UUID";
             using (SqlConnection conn = new SqlConnection(m_connectionString))
             using (SqlCommand cmd = new SqlCommand(sql, conn))
@@ -731,8 +775,13 @@ VALUES
                 cmd.ExecuteNonQuery();
             }
         }
+
         public RegionLightShareData LoadRegionWindlightSettings(UUID regionUUID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
+
             RegionLightShareData nWP = new RegionLightShareData();
             nWP.OnSave += StoreRegionWindlightSettings;
             string sql = "select * from [regionwindlight] where region_id = @regionID";
@@ -824,6 +873,10 @@ VALUES
 
         public void RemoveRegionWindlightSettings(UUID regionID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
+
             string sql = "delete from [regionwindlight] where region_id = @region_id";
             using (SqlConnection conn = new SqlConnection(m_connectionString))
             using (SqlCommand cmd = new SqlCommand(sql, conn))
@@ -836,6 +889,10 @@ VALUES
 
         public void StoreRegionWindlightSettings(RegionLightShareData wl)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
+
             string sql = "select count (region_id) from regionwindlight where region_id = @region_id";
             bool exists = false;
             using (SqlConnection conn = new SqlConnection(m_connectionString))
@@ -1202,6 +1259,9 @@ VALUES
         #region Environment Settings
         public string LoadRegionEnvironmentSettings(UUID regionUUID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             string sql = "select * from [regionenvironment] where region_id = @region_id";
             using (SqlConnection conn = new SqlConnection(m_connectionString))
             using (SqlCommand cmd = new SqlCommand(sql, conn))
@@ -1225,6 +1285,9 @@ VALUES
         public void StoreRegionEnvironmentSettings(UUID regionUUID, string settings)
         {
             {
+                if (m_log.IsDebugEnabled) {
+                    m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+                }
                 string sql = "DELETE FROM [regionenvironment] WHERE region_id = @region_id";
                 using (SqlConnection conn = new SqlConnection(m_connectionString))
 
@@ -1271,6 +1334,9 @@ VALUES
         /// <returns></returns>
         public RegionSettings LoadRegionSettings(UUID regionUUID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             string sql = "select * from regionsettings where regionUUID = @regionUUID";
             RegionSettings regionSettings;
             using (SqlConnection conn = new SqlConnection(m_connectionString))
@@ -1309,6 +1375,9 @@ VALUES
         /// <param name="regionSettings">region settings.</param>
         public void StoreRegionSettings(RegionSettings regionSettings)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             //Little check if regionUUID already exist in DB
             string regionUUID;
             string sql = "SELECT regionUUID FROM regionsettings WHERE regionUUID = @regionUUID";
@@ -1364,6 +1433,9 @@ VALUES
         /// <param name="regionSettings">The region settings.</param>
         private void StoreNewRegionSettings(RegionSettings regionSettings)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             string sql = @"INSERT INTO [regionsettings]
                                 ([regionUUID],[block_terraform],[block_fly],[allow_damage],[restrict_pushing],[allow_land_resell],[allow_land_join_divide],
                                 [block_show_in_search],[agent_limit],[object_bonus],[maturity],[disable_scripts],[disable_collisions],[disable_physics],
@@ -1396,6 +1468,9 @@ VALUES
         /// <returns></returns>
         private static RegionSettings BuildRegionSettings(IDataRecord row)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             //TODO change this is some more generic code so we doesnt have to change it every time a new field is added?
             RegionSettings newSettings = new RegionSettings();
 
@@ -1460,6 +1535,9 @@ VALUES
         /// <returns></returns>
         private static LandData BuildLandData(IDataRecord row)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             LandData newData = new LandData();
 
             newData.GlobalID = new UUID((Guid)row["UUID"]);
@@ -1539,6 +1617,9 @@ VALUES
         /// <returns></returns>
         private static LandAccessEntry BuildLandAccessData(IDataRecord row)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             LandAccessEntry entry = new LandAccessEntry();
             entry.AgentID = new UUID((Guid)row["AccessUUID"]);
             entry.Flags = (AccessList)Convert.ToInt32(row["Flags"]);
@@ -1553,6 +1634,9 @@ VALUES
         /// <returns></returns>
         private static SceneObjectPart BuildPrim(IDataRecord primRow)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             SceneObjectPart prim = new SceneObjectPart();
 
             prim.UUID = new UUID((Guid)primRow["UUID"]);
@@ -1712,6 +1796,9 @@ VALUES
         /// <returns></returns>
         private static PrimitiveBaseShape BuildShape(IDataRecord shapeRow)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             PrimitiveBaseShape baseShape = new PrimitiveBaseShape();
 
             baseShape.Scale = new Vector3(
@@ -1769,6 +1856,9 @@ VALUES
         /// <returns></returns>
         private static TaskInventoryItem BuildItem(IDataRecord inventoryRow)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             TaskInventoryItem taskItem = new TaskInventoryItem();
 
             taskItem.ItemID = new UUID((Guid)inventoryRow["itemID"]);
@@ -1809,6 +1899,9 @@ VALUES
         /// <returns></returns>
         private SqlParameter[] CreatePrimInventoryParameters(TaskInventoryItem taskItem)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             List<SqlParameter> parameters = new List<SqlParameter>();
 
             parameters.Add(_Database.CreateParameter("itemID", taskItem.ItemID));
@@ -1842,6 +1935,9 @@ VALUES
         /// <returns></returns>
         private SqlParameter[] CreateRegionSettingParameters(RegionSettings settings)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             List<SqlParameter> parameters = new List<SqlParameter>();
 
             parameters.Add(_Database.CreateParameter("regionUUID", settings.RegionUUID));
@@ -1899,6 +1995,9 @@ VALUES
         /// <returns></returns>
         private SqlParameter[] CreateLandParameters(LandData land, UUID regionUUID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             List<SqlParameter> parameters = new List<SqlParameter>();
 
             parameters.Add(_Database.CreateParameter("UUID", land.GlobalID));
@@ -1949,6 +2048,9 @@ VALUES
         /// <returns></returns>
         private SqlParameter[] CreateLandAccessParameters(LandAccessEntry parcelAccessEntry, UUID parcelID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             List<SqlParameter> parameters = new List<SqlParameter>();
 
             parameters.Add(_Database.CreateParameter("LandUUID", parcelID));
@@ -1968,6 +2070,9 @@ VALUES
         /// <returns></returns>
         private SqlParameter[] CreatePrimParameters(SceneObjectPart prim, UUID sceneGroupID, UUID regionUUID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             List<SqlParameter> parameters = new List<SqlParameter>();
 
             parameters.Add(_Database.CreateParameter("UUID", prim.UUID));
@@ -2122,6 +2227,9 @@ VALUES
         /// <returns></returns>
         private SqlParameter[] CreatePrimShapeParameters(SceneObjectPart prim, UUID sceneGroupID, UUID regionUUID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             List<SqlParameter> parameters = new List<SqlParameter>();
 
             PrimitiveBaseShape s = prim.Shape;
@@ -2175,6 +2283,9 @@ VALUES
 
         private void LoadSpawnPoints(RegionSettings rs)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             rs.ClearSpawnPoints();
 
             string sql = "SELECT Yaw, Pitch, Distance FROM spawn_points WHERE RegionUUID = @RegionUUID";
@@ -2201,6 +2312,9 @@ VALUES
 
         private void SaveSpawnPoints(RegionSettings rs)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             string sql = "DELETE FROM spawn_points WHERE RegionUUID = @RegionUUID";
             using (SqlConnection conn = new SqlConnection(m_connectionString))
             using (SqlCommand cmd = new SqlCommand(sql, conn))
