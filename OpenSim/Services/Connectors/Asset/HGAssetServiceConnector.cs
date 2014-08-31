@@ -49,6 +49,9 @@ namespace OpenSim.Services.Connectors
 
         public HGAssetServiceConnector(IConfigSource source)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             IConfig moduleConfig = source.Configs["Modules"];
             if (moduleConfig != null)
             {
@@ -67,6 +70,9 @@ namespace OpenSim.Services.Connectors
 
         private IAssetService GetConnector(string url)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0}(string url: {1}) ", System.Reflection.MethodBase.GetCurrentMethod ().Name, url);
+            }
             IAssetService connector = null;
             m_connectorsRwLock.AcquireReaderLock(-1);
             try
@@ -116,6 +122,10 @@ namespace OpenSim.Services.Connectors
 
         public AssetBase Get(string id)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0}(string id: {1}) ", System.Reflection.MethodBase.GetCurrentMethod ().Name, id);
+            }
+
             string url = string.Empty;
             string assetID = string.Empty;
 
@@ -130,6 +140,10 @@ namespace OpenSim.Services.Connectors
 
         public AssetBase GetCached(string id)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0}(string id: {1}) ", System.Reflection.MethodBase.GetCurrentMethod ().Name, id);
+            }
+
             string url = string.Empty;
             string assetID = string.Empty;
 
@@ -144,6 +158,10 @@ namespace OpenSim.Services.Connectors
 
         public AssetMetadata GetMetadata(string id)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0}(string id: {1}) ", System.Reflection.MethodBase.GetCurrentMethod ().Name, id);
+            }
+
             string url = string.Empty;
             string assetID = string.Empty;
 
@@ -163,6 +181,10 @@ namespace OpenSim.Services.Connectors
 
         public bool Get(string id, Object sender, AssetRetrieved handler)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0}(string id: {1}, Object sender, AssetRetrieved handler) ", System.Reflection.MethodBase.GetCurrentMethod ().Name, id);
+            }
+
             string url = string.Empty;
             string assetID = string.Empty;
 
@@ -190,6 +212,10 @@ namespace OpenSim.Services.Connectors
 
         public virtual bool[] AssetsExist(string[] ids)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
+
             // This method is a bit complicated because it works even if the assets belong to different
             // servers; that requires sending separate requests to each server.
 
@@ -236,6 +262,9 @@ namespace OpenSim.Services.Connectors
 
         public string Store(AssetBase asset)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             string url = string.Empty;
             string assetID = string.Empty;
 

@@ -59,6 +59,9 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Avatar
 
         public override void Initialise(IConfigSource source)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             IConfig moduleConfig = source.Configs["Modules"];
             if (moduleConfig != null)
             {
@@ -68,7 +71,7 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Avatar
                     IConfig userConfig = source.Configs["AvatarService"];
                     if (userConfig == null)
                     {
-                        m_log.Error("[AVATAR CONNECTOR]: AvatarService missing from OpenSim.ini");
+                        m_log.Error("AvatarService missing from OpenSim.ini");
                         return;
                     }
 
@@ -76,7 +79,7 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Avatar
 
                     base.Initialise(source);
 
-                    m_log.Info("[AVATAR CONNECTOR]: Remote avatars enabled");
+                    m_log.Info("Remote avatars enabled");
                 }
             }
         }

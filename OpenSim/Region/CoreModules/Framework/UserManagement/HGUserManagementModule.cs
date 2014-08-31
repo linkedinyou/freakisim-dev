@@ -46,6 +46,9 @@ namespace OpenSim.Region.CoreModules.Framework.UserManagement
 
         public new void Initialise(IConfigSource config)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             string umanmod = config.Configs["Modules"].GetString("UserManagementModule", null);
             if (umanmod == Name)
             {
@@ -64,6 +67,9 @@ namespace OpenSim.Region.CoreModules.Framework.UserManagement
 
         protected override void AddAdditionalUsers(string query, List<UserData> users)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (query.Contains("@"))  // First.Last@foo.com, maybe?
             {
                 string[] words = query.Split(new char[] { '@' });

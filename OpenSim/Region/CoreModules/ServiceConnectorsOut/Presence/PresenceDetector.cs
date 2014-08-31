@@ -27,23 +27,31 @@
 using OpenSim.Framework;
 using OpenSim.Region.Framework.Scenes;
 using OpenSim.Services.Interfaces;
+using log4net;
+using System.Reflection;
 
 namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Presence
 {
     public class PresenceDetector 
     {
-//        private static readonly ILog m_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog m_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         private IPresenceService m_PresenceService;
         private Scene m_aScene;
 
         public PresenceDetector(IPresenceService presenceservice)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             m_PresenceService = presenceservice;
         }
 
         public void AddRegion(Scene scene)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             scene.EventManager.OnMakeRootAgent += OnMakeRootAgent;
             scene.EventManager.OnNewClient += OnNewClient;
 
@@ -55,6 +63,9 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Presence
 
         public void RemoveRegion(Scene scene)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             scene.EventManager.OnMakeRootAgent -= OnMakeRootAgent;
             scene.EventManager.OnNewClient -= OnNewClient;
 
@@ -63,17 +74,26 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Presence
 
         public void OnMakeRootAgent(ScenePresence sp)
         {
-//            m_log.DebugFormat("[PRESENCE DETECTOR]: Detected root presence {0} in {1}", sp.UUID, sp.Scene.RegionInfo.RegionName);
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+                //            m_log.DebugFormat("[PRESENCE DETECTOR]: Detected root presence {0} in {1}", sp.UUID, sp.Scene.RegionInfo.RegionName);
+            }
             m_PresenceService.ReportAgent(sp.ControllingClient.SessionId, sp.Scene.RegionInfo.RegionID);
         }
 
         public void OnNewClient(IClientAPI client)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             client.OnConnectionClosed += OnConnectionClose;
         }
 
         public void OnConnectionClose(IClientAPI client)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (client != null && client.SceneAgent != null && !client.SceneAgent.IsChildAgent)
             {
 //                m_log.DebugFormat("[PRESENCE DETECTOR]: Detected client logout {0} in {1}", client.AgentId, client.Scene.RegionInfo.RegionName);

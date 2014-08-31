@@ -41,12 +41,18 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.GridUser
 
         public ActivityDetector(IGridUserService guservice)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             m_GridUserService = guservice;
-            m_log.DebugFormat("[ACTIVITY DETECTOR]: starting ");
+            m_log.DebugFormat("starting ");
         }
 
         public void AddRegion(Scene scene)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             // For now the only events we listen to are these
             // But we could trigger the position update more often
             scene.EventManager.OnMakeRootAgent += OnMakeRootAgent;
@@ -55,12 +61,18 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.GridUser
 
         public void RemoveRegion(Scene scene)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             scene.EventManager.OnMakeRootAgent -= OnMakeRootAgent;
             scene.EventManager.OnNewClient -= OnNewClient;
         }
 
         public void OnMakeRootAgent(ScenePresence sp)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (sp.PresenceType != PresenceType.Npc)
             {
                 string userid;
@@ -76,11 +88,17 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.GridUser
 
         public void OnNewClient(IClientAPI client)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             client.OnConnectionClosed += OnConnectionClose;
         }
 
         public void OnConnectionClose(IClientAPI client)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (client == null)
                 return;
             if (client.SceneAgent == null)

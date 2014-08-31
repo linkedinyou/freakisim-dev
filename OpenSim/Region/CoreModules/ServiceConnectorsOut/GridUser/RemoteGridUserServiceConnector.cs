@@ -64,6 +64,9 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.GridUser
 
         public void Initialise(IConfigSource source)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             IConfig moduleConfig = source.Configs["Modules"];
             if (moduleConfig != null)
             {
@@ -76,7 +79,7 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.GridUser
 
                     m_ActivityDetector = new ActivityDetector(this);
 
-                    m_log.Info("[REMOTE GRID USER CONNECTOR]: Remote grid user enabled");
+                    m_log.Info("Remote grid user enabled");
                 }
             }
 
@@ -92,18 +95,24 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.GridUser
 
         public void AddRegion(Scene scene)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (!m_Enabled)
                 return;
 
             scene.RegisterModuleInterface<IGridUserService>(this);
             m_ActivityDetector.AddRegion(scene);
 
-            m_log.InfoFormat("[REMOTE GRID USER CONNECTOR]: Enabled remote grid user for region {0}", scene.RegionInfo.RegionName);
+            m_log.InfoFormat("Enabled remote grid user for region {0}", scene.RegionInfo.RegionName);
 
         }
 
         public void RemoveRegion(Scene scene)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (!m_Enabled)
                 return;
 
@@ -123,12 +132,15 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.GridUser
 
         public GridUserInfo LoggedIn(string userID)
         {
-            m_log.Warn("[REMOTE GRID USER CONNECTOR]: LoggedIn not implemented at the simulators");
+            m_log.Warn("LoggedIn not implemented at the simulators");
             return null;
         }
 
         public bool LoggedOut(string userID, UUID sessionID, UUID region, Vector3 position, Vector3 lookat)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             m_Infos.Remove(userID);
 
             return m_RemoteConnector.LoggedOut(userID, sessionID, region, position, lookat);
@@ -137,6 +149,9 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.GridUser
 
         public bool SetHome(string userID, UUID regionID, Vector3 position, Vector3 lookAt)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (m_RemoteConnector.SetHome(userID, regionID, position, lookAt))
             {
                 // Update the cache too
@@ -155,6 +170,9 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.GridUser
 
         public bool SetLastPosition(string userID, UUID sessionID, UUID regionID, Vector3 position, Vector3 lookAt)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (m_RemoteConnector.SetLastPosition(userID, sessionID, regionID, position, lookAt))
             {
                 // Update the cache too
@@ -173,6 +191,9 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.GridUser
 
         public GridUserInfo GetGridUserInfo(string userID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             GridUserInfo info = null;
             if (m_Infos.TryGetValue(userID, out info))
                 return info;

@@ -70,6 +70,9 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.UserAccounts
 
         public void Initialise(IConfigSource source)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             IConfig moduleConfig = source.Configs["Modules"];
             if (moduleConfig != null)
             {
@@ -79,7 +82,7 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.UserAccounts
                     IConfig userConfig = source.Configs["UserAccountService"];
                     if (userConfig == null)
                     {
-                        m_log.Error("[LOCAL USER ACCOUNT SERVICE CONNECTOR]: UserAccountService missing from OpenSim.ini");
+                        m_log.Error("UserAccountService missing from OpenSim.ini");
                         return;
                     }
 
@@ -87,7 +90,7 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.UserAccounts
 
                     if (serviceDll == String.Empty)
                     {
-                        m_log.Error("[LOCAL USER ACCOUNT SERVICE CONNECTOR]: No LocalServiceModule named in section UserService");
+                        m_log.Error("No LocalServiceModule named in section UserService");
                         return;
                     }
 
@@ -97,13 +100,13 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.UserAccounts
                     if (UserAccountService == null)
                     {
                         m_log.ErrorFormat(
-                            "[LOCAL USER ACCOUNT SERVICE CONNECTOR]: Cannot load user account service specified as {0}", serviceDll);
+                            "Cannot load user account service specified as {0}", serviceDll);
                         return;
                     }
                     m_Enabled = true;
                     m_Cache = new UserAccountCache();
 
-                    m_log.Info("[LOCAL USER ACCOUNT SERVICE CONNECTOR]: Local user connector enabled");
+                    m_log.Info("Local user connector enabled");
                 }
             }
         }
@@ -122,6 +125,9 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.UserAccounts
 
         public void AddRegion(Scene scene)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (!m_Enabled)
                 return;
 
@@ -141,7 +147,7 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.UserAccounts
             if (!m_Enabled)
                 return;
 
-            m_log.InfoFormat("[LOCAL USER ACCOUNT SERVICE CONNECTOR]: Enabled local user accounts for region {0}", scene.RegionInfo.RegionName);
+            m_log.InfoFormat("Enabled local user accounts for region {0}", scene.RegionInfo.RegionName);
         }
 
         #endregion
@@ -150,6 +156,9 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.UserAccounts
 
         public UserAccount GetUserAccount(UUID scopeID, UUID userID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             bool inCache = false;
             UserAccount account = m_Cache.Get(userID, out inCache);
             if (inCache)
@@ -163,6 +172,9 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.UserAccounts
 
         public UserAccount GetUserAccount(UUID scopeID, string firstName, string lastName)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             bool inCache = false;
             UserAccount account = m_Cache.Get(firstName + " " + lastName, out inCache);
             if (inCache)
@@ -177,11 +189,17 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.UserAccounts
 
         public UserAccount GetUserAccount(UUID scopeID, string Email)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             return UserAccountService.GetUserAccount(scopeID, Email);
         }
 
         public List<UserAccount> GetUserAccounts(UUID scopeID, string query)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             return UserAccountService.GetUserAccounts(scopeID, query);
         }
 
@@ -189,6 +207,9 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.UserAccounts
         //
         public bool StoreUserAccount(UserAccount data)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             bool ret = UserAccountService.StoreUserAccount(data);
             if (ret)
                 m_Cache.Cache(data.PrincipalID, data);
@@ -197,6 +218,9 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.UserAccounts
 
         public void InvalidateCache(UUID userID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             m_Cache.Invalidate(userID);
         }
 

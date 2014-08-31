@@ -50,6 +50,9 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Presence
 
         public void Initialise(IConfigSource source)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             IConfig moduleConfig = source.Configs["Modules"];
             if (moduleConfig != null)
             {
@@ -59,7 +62,7 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Presence
                     IConfig inventoryConfig = source.Configs["PresenceService"];
                     if (inventoryConfig == null)
                     {
-                        m_log.Error("[LOCAL PRESENCE CONNECTOR]: PresenceService missing from OpenSim.ini");
+                        m_log.Error("PresenceService missing from OpenSim.ini");
                         return;
                     }
 
@@ -67,18 +70,18 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Presence
 
                     if (serviceDll == String.Empty)
                     {
-                        m_log.Error("[LOCAL PRESENCE CONNECTOR]: No LocalServiceModule named in section PresenceService");
+                        m_log.Error("No LocalServiceModule named in section PresenceService");
                         return;
                     }
 
                     Object[] args = new Object[] { source };
-                    m_log.DebugFormat("[LOCAL PRESENCE CONNECTOR]: Service dll = {0}", serviceDll);
+                    m_log.DebugFormat("Service dll = {0}", serviceDll);
 
                     m_PresenceService = ServerUtils.LoadPlugin<IPresenceService>(serviceDll, args);
 
                     if (m_PresenceService == null)
                     {
-                        m_log.Error("[LOCAL PRESENCE CONNECTOR]: Can't load presence service");
+                        m_log.Error("Can't load presence service");
                         //return;
                         throw new Exception("Unable to proceed. Please make sure your ini files in config-include are updated according to .example's");
                     }
@@ -88,7 +91,7 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Presence
                     m_PresenceDetector = new PresenceDetector(this);
 
                     m_Enabled = true;
-                    m_log.Info("[LOCAL PRESENCE CONNECTOR]: Local presence connector enabled");
+                    m_log.Info("Local presence connector enabled");
                 }
             }
         }

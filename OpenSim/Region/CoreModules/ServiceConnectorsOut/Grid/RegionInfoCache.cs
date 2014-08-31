@@ -26,6 +26,8 @@
  */
 using OpenMetaverse;
 using GridRegion = OpenSim.Services.Interfaces.GridRegion;
+using log4net;
+using System.Reflection;
 
 namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Grid
 {
@@ -33,9 +35,7 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Grid
     {
         private const double CACHE_EXPIRATION_SECONDS = 300.0; // 5 minutes
 
-//        private static readonly ILog m_log =
-//                LogManager.GetLogger(
-//                MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog m_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         
         internal struct ScopedRegionUUID
         {
@@ -76,6 +76,9 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Grid
 
         public RegionInfoCache()
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             m_UUIDCache = new ThreadedClasses.ExpiringCache<ScopedRegionUUID, GridRegion>(30);
             m_NameCache = new ThreadedClasses.ExpiringCache<ScopedRegionName, ScopedRegionUUID>(30);
             m_PositionCache = new ThreadedClasses.ExpiringCache<ScopedRegionPosition, GridRegion>(30);
@@ -83,12 +86,18 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Grid
 
         public void Cache(GridRegion rinfo)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (rinfo != null)
                 this.Cache(rinfo.ScopeID,rinfo.RegionID,rinfo);
         }
         
         public void Cache(UUID scopeID, UUID regionID, GridRegion rinfo)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             // for now, do not cache negative results; this is because
             // we need to figure out how to handle regions coming online
             // in a timely way
@@ -111,6 +120,9 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Grid
 
         public GridRegion Get(UUID scopeID, UUID regionID, out bool inCache)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             inCache = false;
 
             GridRegion rinfo = null;
@@ -126,6 +138,9 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Grid
 
         public GridRegion Get(UUID scopeID, ulong handle, out bool inCache)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             inCache = false;
 
             GridRegion rinfo = null;
@@ -142,6 +157,9 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Grid
 
         public GridRegion Get(UUID scopeID, string name, out bool inCache)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             inCache = false;
 
             ScopedRegionName sname = new ScopedRegionName(scopeID,name);

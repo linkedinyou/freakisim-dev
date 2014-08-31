@@ -79,6 +79,9 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.MapImage
         ///</summary>
         public void Initialise(IConfigSource source)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             IConfig moduleConfig = source.Configs["Modules"];
             if (moduleConfig != null)
             {
@@ -96,14 +99,14 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.MapImage
             // if refresh is less than zero, disable the module
             if (refreshminutes < 0)
             {
-                m_log.WarnFormat("[MAP IMAGE SERVICE MODULE]: Negative refresh time given in config. Module disabled.");
+                m_log.WarnFormat("Negative refresh time given in config. Module disabled.");
                 return;
             }
 
             string service = config.GetString("LocalServiceModule", string.Empty);
             if (service == string.Empty)
             {
-                m_log.WarnFormat("[MAP IMAGE SERVICE MODULE]: No service dll given in config. Unable to proceed.");
+                m_log.WarnFormat("No service dll given in config. Unable to proceed.");
                 return;
             }
 
@@ -111,7 +114,7 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.MapImage
             m_MapService = ServerUtils.LoadPlugin<IMapImageService>(service, args);
             if (m_MapService == null)
             {
-                m_log.WarnFormat("[MAP IMAGE SERVICE MODULE]: Unable to load LocalServiceModule from {0}. MapService module disabled. Please fix the configuration.", service);
+                m_log.WarnFormat("Unable to load LocalServiceModule from {0}. MapService module disabled. Please fix the configuration.", service);
                 return;
             }
    
@@ -126,12 +129,12 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.MapImage
                 m_refreshTimer.Interval = m_refreshtime;
                 m_refreshTimer.Elapsed += new ElapsedEventHandler(HandleMaptileRefresh);
 
-                m_log.InfoFormat("[MAP IMAGE SERVICE MODULE]: enabled with refresh time {0} min and service object {1}",
+                m_log.InfoFormat("enabled with refresh time {0} min and service object {1}",
                              refreshminutes, service);
             }
             else 
             {
-                m_log.InfoFormat("[MAP IMAGE SERVICE MODULE]: enabled with no refresh and service object {0}", service);
+                m_log.InfoFormat("enabled with no refresh and service object {0}", service);
             }
             m_enabled = true;
         }
@@ -141,6 +144,9 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.MapImage
         ///</summary>
         public void AddRegion(Scene scene)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (!m_enabled)
                 return;
 
@@ -156,6 +162,9 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.MapImage
         ///</summary>
         public void RemoveRegion(Scene scene)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (! m_enabled)
                 return;
 
@@ -169,13 +178,16 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.MapImage
         ///</summary>
         private void HandleMaptileRefresh(object sender, EventArgs ea)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             // this approach is a bit convoluted becase we want to wait for the
             // first upload to happen on startup but after all the objects are
             // loaded and initialized
             if (m_lastrefresh > 0 && Environment.TickCount - m_lastrefresh < m_refreshtime)
                 return;
 
-            m_log.DebugFormat("[MAP IMAGE SERVICE MODULE]: map refresh!");
+            m_log.DebugFormat("map refresh!");
             m_scenes.ForEach(delegate(Scene scene)
             {
                 try
@@ -184,7 +196,7 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.MapImage
                 }
                 catch (Exception ex)
                 {
-                    m_log.WarnFormat("[MAP IMAGE SERVICE MODULE]: something bad happened {0}", ex.Message);
+                    m_log.WarnFormat("something bad happened {0}", ex.Message);
                 }
             });
 
@@ -196,7 +208,10 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.MapImage
         ///</summary>
         private void UploadMapTile(IScene scene)
         {
-            m_log.DebugFormat("{0} Upload maptile for {1}", LogHeader, scene.RegionInfo.RegionName);
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+                m_log.DebugFormat("{0} Upload maptile for {1}", LogHeader, scene.RegionInfo.RegionName);
+            }
             string regionName = scene.RegionInfo.RegionName;
 
             // Create a JPG map tile and upload it to the AddMapTile API
@@ -256,6 +271,9 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.MapImage
 
         private void ConvertAndUploadMaptile(Image tileImage, uint locX, uint locY, string regionName)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             byte[] jpgData = Utils.EmptyBytes;
 
             using (MemoryStream stream = new MemoryStream())

@@ -1595,7 +1595,7 @@ VALUES
             {
                 newData.UserLocation = Vector3.Zero;
                 newData.UserLookAt = Vector3.Zero;
-                _Log.ErrorFormat("[PARCEL]: unable to get parcel telehub settings for {1}", newData.Name);
+                m_log.ErrorFormat("[PARCEL]: unable to get parcel telehub settings for {1}", newData.Name);
             }
 
             newData.ParcelAccessList = new List<LandAccessEntry>();

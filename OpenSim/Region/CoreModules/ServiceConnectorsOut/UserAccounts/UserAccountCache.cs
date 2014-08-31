@@ -26,6 +26,8 @@ using OpenMetaverse;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 using OpenSim.Services.Interfaces;
+using log4net;
+using System.Reflection;
 
 namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.UserAccounts
 {
@@ -33,21 +35,27 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.UserAccounts
     {
         private const double CACHE_EXPIRATION_SECONDS = 120000.0; // 33 hours!
 
-//        private static readonly ILog m_log =
-//                LogManager.GetLogger(
-//                MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog m_log =
+                LogManager.GetLogger(
+                MethodBase.GetCurrentMethod().DeclaringType);
 
         private ThreadedClasses.ExpiringCache<UUID, UserAccount> m_UUIDCache;
         private ThreadedClasses.ExpiringCache<string, UUID> m_NameCache;
 
         public UserAccountCache()
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             m_UUIDCache = new ThreadedClasses.ExpiringCache<UUID, UserAccount>(30);
             m_NameCache = new ThreadedClasses.ExpiringCache<string, UUID>(30); 
         }
 
         public void Cache(UUID userID, UserAccount account)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             // Cache even null accounts
             m_UUIDCache.AddOrUpdate(userID, account, CACHE_EXPIRATION_SECONDS);
             if (account != null)
@@ -58,11 +66,17 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.UserAccounts
 
         public void Invalidate(UUID userID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             m_UUIDCache.Remove(userID);
         }
 
         public UserAccount Get(UUID userID, out bool inCache)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             UserAccount account = null;
             inCache = false;
             if (m_UUIDCache.TryGetValue(userID, out account))
@@ -77,6 +91,9 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.UserAccounts
 
         public UserAccount Get(string name, out bool inCache)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             inCache = false;
             UserAccount account = null;
             UUID uuid = UUID.Zero;

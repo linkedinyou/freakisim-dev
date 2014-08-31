@@ -43,9 +43,7 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Inventory
     [Extension(Path = "/OpenSim/RegionModules", NodeName = "RegionModule", Id = "LocalInventoryServicesConnector")]
     public class LocalInventoryServicesConnector : ISharedRegionModule, IInventoryService
     {
-        private static readonly ILog m_log =
-                LogManager.GetLogger(
-                MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog m_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         /// <summary>
         /// Scene used by this module.  This currently needs to be publicly settable for HGInventoryBroker.
@@ -81,6 +79,9 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Inventory
 
         public void Initialise(IConfigSource source)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             IConfig moduleConfig = source.Configs["Modules"];
             if (moduleConfig != null)
             {
@@ -90,7 +91,7 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Inventory
                     IConfig inventoryConfig = source.Configs["InventoryService"];
                     if (inventoryConfig == null)
                     {
-                        m_log.Error("[LOCAL INVENTORY SERVICES CONNECTOR]: InventoryService missing from OpenSim.ini");
+                        m_log.Error("InventoryService missing from OpenSim.ini");
                         return;
                     }
 
@@ -98,23 +99,23 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Inventory
 
                     if (serviceDll == String.Empty)
                     {
-                        m_log.Error("[LOCAL INVENTORY SERVICES CONNECTOR]: No LocalServiceModule named in section InventoryService");
+                        m_log.Error("No LocalServiceModule named in section InventoryService");
                         return;
                     }
 
                     Object[] args = new Object[] { source };
-                    m_log.DebugFormat("[LOCAL INVENTORY SERVICES CONNECTOR]: Service dll = {0}", serviceDll);
+                    m_log.DebugFormat("Service dll = {0}", serviceDll);
 
                     m_InventoryService = ServerUtils.LoadPlugin<IInventoryService>(serviceDll, args);
 
                     if (m_InventoryService == null)
                     {
-                        m_log.Error("[LOCAL INVENTORY SERVICES CONNECTOR]: Can't load inventory service");
+                        m_log.Error("Can't load inventory service");
                         throw new Exception("Unable to proceed. Please make sure your ini files in config-include are updated according to .example's");
                     }
 
                     m_Enabled = true;
-                    m_log.Info("[LOCAL INVENTORY SERVICES CONNECTOR]: Local inventory connector enabled");
+                    m_log.Info("Local inventory connector enabled");
                 }
             }
         }
@@ -129,6 +130,9 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Inventory
 
         public void AddRegion(Scene scene)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (!m_Enabled)
                 return;
             
@@ -174,6 +178,9 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Inventory
 
         public InventoryCollection GetFolderContent(UUID userID, UUID folderID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             InventoryCollection invCol = m_InventoryService.GetFolderContent(userID, folderID);
 
             if (UserManager != null)

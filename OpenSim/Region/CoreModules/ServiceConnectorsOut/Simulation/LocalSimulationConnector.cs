@@ -68,6 +68,9 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Simulation
 
         public void Initialise(IConfigSource configSource)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             IConfig moduleConfig = configSource.Configs["Modules"];
             if (moduleConfig != null)
             {
@@ -78,13 +81,17 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Simulation
 
                     m_ModuleEnabled = true;
 
-                    m_log.Info("[LOCAL SIMULATION CONNECTOR]: Local simulation enabled.");
+                    m_log.Info("Local simulation enabled.");
                 }
             }
         }
 
         public void InitialiseService(IConfigSource configSource)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
+
             ServiceVersion = "SIMULATION/0.3";
             IConfig config = configSource.Configs["SimulationService"];
             if (config != null)
@@ -99,7 +106,7 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Simulation
                     float.TryParse(versionComponents[1], out m_VersionNumber);
 
                 m_log.InfoFormat(
-                    "[LOCAL SIMULATION CONNECTOR]: Initialized with connector protocol version {0}", ServiceVersion);
+                    "Initialized with connector protocol version {0}", ServiceVersion);
             }
         }
 
@@ -109,6 +116,9 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Simulation
 
         public void AddRegion(Scene scene)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (!m_ModuleEnabled)
                 return;
 
@@ -118,6 +128,9 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Simulation
 
         public void RemoveRegion(Scene scene)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (!m_ModuleEnabled)
                 return;
 
@@ -149,10 +162,13 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Simulation
         /// <param name="scene"></param>
         public void RemoveScene(Scene scene)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if(!m_scenes.Remove(scene.RegionInfo.RegionID))
             {
                 m_log.WarnFormat(
-                    "[LOCAL SIMULATION CONNECTOR]: Tried to remove region {0} but it was not present",
+                    "Tried to remove region {0} but it was not present",
                     scene.RegionInfo.RegionName);
             }
         }
@@ -163,6 +179,9 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Simulation
         /// <param name="scene"></param>
         public void Init(Scene scene)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             try
             {
                 m_scenes.Add(scene.RegionInfo.RegionID, scene);
@@ -170,7 +189,7 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Simulation
             catch
             {
                 m_log.WarnFormat(
-                    "[LOCAL SIMULATION CONNECTOR]: Tried to add region {0} but it is already present",
+                    "Tried to add region {0} but it is already present",
                     scene.RegionInfo.RegionName);
             }
         }
@@ -181,6 +200,10 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Simulation
 
         public IScene GetScene(UUID regionId)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
+
             if (m_scenes.ContainsKey(regionId))
             {
                 return m_scenes[regionId];
@@ -192,7 +215,7 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Simulation
                 Scene s = m_scenes.Values.ToArray()[0];
 
                 m_log.ErrorFormat(
-                    "[LOCAL SIMULATION CONNECTOR]: Region with id {0} not found.  Returning {1} {2} instead",
+                    "Region with id {0} not found.  Returning {1} {2} instead",
                     regionId, s.RegionInfo.RegionName, s.RegionInfo.RegionID);
 
                 return s;
@@ -217,7 +240,7 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Simulation
             if (destination == null)
             {
                 reason = "Given destination was null";
-                m_log.DebugFormat("[LOCAL SIMULATION CONNECTOR]: CreateAgent was given a null destination");
+                m_log.DebugFormat("CreateAgent was given a null destination");
                 return false;
             }
 
@@ -233,6 +256,10 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Simulation
 
         public bool UpdateAgent(GridRegion destination, AgentData cAgentData)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
+
             if (destination == null)
                 return false;
 
@@ -254,6 +281,9 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Simulation
 
         public bool UpdateAgent(GridRegion destination, AgentPosition agentPosition)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (destination == null)
                 return false;
 
@@ -273,6 +303,9 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Simulation
 
         public bool QueryAccess(GridRegion destination, UUID agentID, string agentHomeURI, Vector3 position, string theirversion, out string version, out string reason)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             reason = "Communications failure";
             version = ServiceVersion;
             if (destination == null)
@@ -296,7 +329,7 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Simulation
                 if (theirVersionNumber < 0.3f && size > 256)
                 {
                     reason = "Destination is a variable-sized region, and source is an old simulator. Consider upgrading.";
-                    m_log.DebugFormat("[LOCAL SIMULATION CONNECTOR]: Request to access this variable-sized region from {0} simulator was denied", theirVersionNumber);
+                    m_log.DebugFormat("Request to access this variable-sized region from {0} simulator was denied", theirVersionNumber);
                     return false;
                 }
 
@@ -309,6 +342,9 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Simulation
 
         public bool ReleaseAgent(UUID originId, UUID agentId, string uri)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             Scene scene;
             if (m_scenes.TryGetValue(originId, out scene))
             {
@@ -326,6 +362,9 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Simulation
 
         public bool CloseAgent(GridRegion destination, UUID id, string auth_token)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (destination == null)
                 return false;
 
@@ -350,6 +389,9 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Simulation
 
         public bool CreateObject(GridRegion destination, Vector3 newPosition, ISceneObject sog, bool isLocalCall)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (destination == null)
                 return false;
 

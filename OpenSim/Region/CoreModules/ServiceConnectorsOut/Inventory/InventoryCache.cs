@@ -28,6 +28,8 @@
 using OpenMetaverse;
 using OpenSim.Framework;
 using System.Collections.Generic;
+using log4net;
+using System.Reflection;
 
 namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Inventory
 {
@@ -36,6 +38,8 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Inventory
     /// </summary>
     public class InventoryCache
     {
+        private static readonly ILog m_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
         private const double CACHE_EXPIRATION_SECONDS = 3600.0; // 1 hour
 
         private static ThreadedClasses.ExpiringCache<UUID, InventoryFolderBase> m_RootFolders = new ThreadedClasses.ExpiringCache<UUID, InventoryFolderBase>(30);
@@ -44,11 +48,17 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Inventory
 
         public void Cache(UUID userID, InventoryFolderBase root)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             m_RootFolders.AddOrUpdate(userID, root, CACHE_EXPIRATION_SECONDS);
         }
 
         public InventoryFolderBase GetRootFolder(UUID userID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             InventoryFolderBase root = null;
             if (m_RootFolders.TryGetValue(userID, out root))
                 return root;
@@ -58,6 +68,10 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Inventory
 
         public void Cache(UUID userID, AssetType type, InventoryFolderBase folder)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
+
             ThreadedClasses.RwLockedDictionary<AssetType, InventoryFolderBase> ff = null;
             ff = m_FolderTypes.GetOrAdd(userID, delegate()
             {
@@ -76,6 +90,9 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Inventory
 
         public InventoryFolderBase GetFolderForType(UUID userID, AssetType type)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             ThreadedClasses.RwLockedDictionary<AssetType, InventoryFolderBase> ff = null;
             if (m_FolderTypes.TryGetValue(userID, out ff))
             {
@@ -90,11 +107,18 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Inventory
 
         public void Cache(UUID userID, InventoryCollection inv)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             m_Inventories.AddOrUpdate(userID, inv, 120);
         }
 
         public InventoryCollection GetFolderContent(UUID userID, UUID folderID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
+
             InventoryCollection inv = null;
             InventoryCollection c;
             if (m_Inventories.TryGetValue(userID, out inv))
@@ -117,6 +141,10 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Inventory
 
         public List<InventoryItemBase> GetFolderItems(UUID userID, UUID folderID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
+
             InventoryCollection inv = null;
             if (m_Inventories.TryGetValue(userID, out inv))
             {

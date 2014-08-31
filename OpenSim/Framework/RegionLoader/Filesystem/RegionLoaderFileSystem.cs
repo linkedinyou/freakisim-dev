@@ -79,14 +79,14 @@ namespace OpenSim.Framework.RegionLoader.Filesystem
                 iniFiles = Directory.GetFiles(regionConfigPath, "*.ini");
             }
             
-            m_log.InfoFormat("[REGION LOADER FILE SYSTEM]: Loading config files from {0}", regionConfigPath);
+            m_log.InfoFormat("Loading config files from {0}", regionConfigPath);
 
             List<RegionInfo> regionInfos = new List<RegionInfo>();
 
             int i = 0;
             foreach (string file in iniFiles)
             {
-                m_log.InfoFormat("[REGION LOADER FILE SYSTEM]: Loading config file {0}", file);
+                m_log.InfoFormat("Loading config file {0}", file);
                 
                 IConfigSource source = new IniConfigSource(file);
 
@@ -95,7 +95,7 @@ namespace OpenSim.Framework.RegionLoader.Filesystem
                     RegionInfo regionInfo = new RegionInfo("REGION CONFIG #" + (i + 1), file, false, m_configSource, config.Name);
                     regionInfos.Add(regionInfo);
                     
-                    m_log.InfoFormat("[REGION LOADER FILE SYSTEM]: Loaded config for region {0}", regionInfo.RegionName);
+                    m_log.InfoFormat("Loaded config for region {0}", regionInfo.RegionName);
                     
                     i++;
                 }
@@ -103,12 +103,12 @@ namespace OpenSim.Framework.RegionLoader.Filesystem
 
             foreach (string file in configFiles)
             {
-                m_log.InfoFormat("[REGION LOADER FILE SYSTEM]: Loading config file {0}", file);
+                m_log.InfoFormat("Loading config file {0}", file);
                 
                 RegionInfo regionInfo = new RegionInfo("REGION CONFIG #" + (i + 1), file, false, m_configSource);
                 regionInfos.Add(regionInfo);
                 
-                m_log.InfoFormat("[REGION LOADER FILE SYSTEM]: Loaded config for region {0}", regionInfo.RegionName);
+                m_log.InfoFormat("Loaded config for region {0}", regionInfo.RegionName);
                 
                 i++;
             }

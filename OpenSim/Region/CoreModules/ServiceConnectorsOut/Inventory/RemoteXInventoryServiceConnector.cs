@@ -106,6 +106,9 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Inventory
 
         public void Initialise(IConfigSource source)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             IConfig moduleConfig = source.Configs["Modules"];
             if (moduleConfig != null)
             {
@@ -130,6 +133,9 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Inventory
 
         public void AddRegion(Scene scene)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
 //            m_Scene = scene;
             //m_log.Debug("[XXXX] Adding scene " + m_Scene.RegionInfo.RegionName);
 
@@ -150,10 +156,13 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Inventory
 
         public void RegionLoaded(Scene scene)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (!m_Enabled)
                 return;
 
-            m_log.InfoFormat("[XINVENTORY CONNECTOR]: Enabled remote XInventory for region {0}", scene.RegionInfo.RegionName);
+            m_log.InfoFormat("Enabled remote XInventory for region {0}", scene.RegionInfo.RegionName);
 
         }
 
@@ -183,6 +192,9 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Inventory
 
         public InventoryCollection GetFolderContent(UUID userID, UUID folderID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             InventoryCollection invCol = m_RemoteConnector.GetFolderContent(userID, folderID);
 
             // Commenting this for now, because it's causing more grief than good
@@ -205,11 +217,17 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Inventory
 
         public  List<InventoryItemBase> GetFolderItems(UUID userID, UUID folderID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             return m_RemoteConnector.GetFolderItems(userID, folderID);
         }
 
         public  bool AddFolder(InventoryFolderBase folder)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (folder == null)
                 return false;
 
@@ -218,6 +236,9 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Inventory
 
         public  bool UpdateFolder(InventoryFolderBase folder)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (folder == null)
                 return false;
 
@@ -226,6 +247,9 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Inventory
 
         public  bool MoveFolder(InventoryFolderBase folder)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (folder == null)
                 return false;
 
@@ -234,6 +258,9 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Inventory
 
         public  bool DeleteFolders(UUID ownerID, List<UUID> folderIDs)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (folderIDs == null)
                 return false;
             if (folderIDs.Count == 0)
@@ -245,6 +272,9 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Inventory
 
         public  bool PurgeFolder(InventoryFolderBase folder)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (folder == null)
                 return false;
 
@@ -253,6 +283,9 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Inventory
 
         public  bool AddItem(InventoryItemBase item)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (item == null)
                 return false;
 
@@ -261,6 +294,9 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Inventory
 
         public  bool UpdateItem(InventoryItemBase item)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (item == null)
                 return false;
 
@@ -269,6 +305,9 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Inventory
 
         public  bool MoveItems(UUID ownerID, List<InventoryItemBase> items)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (items == null)
                 return false;
 
@@ -278,6 +317,9 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Inventory
 
         public  bool DeleteItems(UUID ownerID, List<UUID> itemIDs)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (itemIDs == null)
                 return false;
             if (itemIDs.Count == 0)
@@ -288,7 +330,11 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Inventory
 
         public  InventoryItemBase GetItem(InventoryItemBase item)
         {
-            //m_log.DebugFormat("[XINVENTORY CONNECTOR]: GetItem {0}", item.ID);
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+                //m_log.DebugFormat("[XINVENTORY CONNECTOR]: GetItem {0}", item.ID);
+            }
+
             if (item == null)
                 return null;
 
@@ -299,7 +345,11 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Inventory
 
         public  InventoryFolderBase GetFolder(InventoryFolderBase folder)
         {
-            //m_log.DebugFormat("[XINVENTORY CONNECTOR]: GetFolder {0}", folder.ID);
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+                //m_log.DebugFormat("[XINVENTORY CONNECTOR]: GetFolder {0}", folder.ID);
+            }
+
             if (folder == null)
                 return null;
 

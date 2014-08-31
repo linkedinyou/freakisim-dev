@@ -57,6 +57,10 @@ namespace OpenSim.Region.CoreModules.Framework.Library
 
         public void Initialise(IConfigSource config)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
+
             m_Enabled = config.Configs["Modules"].GetBoolean("LibraryModule", m_Enabled);
             if (m_Enabled)
             {
@@ -96,6 +100,9 @@ namespace OpenSim.Region.CoreModules.Framework.Library
 
         public void AddRegion(Scene scene)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (!m_Enabled)
                 return;
 
@@ -109,6 +116,9 @@ namespace OpenSim.Region.CoreModules.Framework.Library
 
         public void RemoveRegion(Scene scene)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (!m_Enabled)
                 return;
 
@@ -117,6 +127,9 @@ namespace OpenSim.Region.CoreModules.Framework.Library
 
         public void RegionLoaded(Scene scene)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (!m_Enabled)
                 return;
 
@@ -135,6 +148,9 @@ namespace OpenSim.Region.CoreModules.Framework.Library
 
         public void Close()
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             m_Scene = null;
         }
 
@@ -145,6 +161,10 @@ namespace OpenSim.Region.CoreModules.Framework.Library
 
         protected void LoadLibrariesFromArchives()
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
+
             InventoryFolderImpl lib = m_Library.LibraryRootFolder;
             if (lib == null)
             {
@@ -199,7 +219,10 @@ namespace OpenSim.Region.CoreModules.Framework.Library
 
         private void FixPerms(InventoryNodeBase node)
         {
-            m_log.DebugFormat("[LIBRARY MODULE]: Fixing perms for {0} {1}", node.Name, node.ID);
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+                m_log.DebugFormat("Fixing perms for {0} {1}", node.Name, node.ID);
+            }
 
             if (node is InventoryItemBase)
             {
@@ -229,6 +252,9 @@ namespace OpenSim.Region.CoreModules.Framework.Library
 
         private void DumpFolder(InventoryFolderImpl folder)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             foreach (InventoryItemBase item in folder.Items.Values)
             {
                 m_log.DebugFormat("   --> item {0}", item.Name);
@@ -242,6 +268,9 @@ namespace OpenSim.Region.CoreModules.Framework.Library
 
         private string GetInventoryPathFromName(string name)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0}(string name: {1}) ", System.Reflection.MethodBase.GetCurrentMethod ().Name, name);
+            }
             string[] parts = name.Split(new char[] { ' ' });
             if (parts.Length == 3)
             {

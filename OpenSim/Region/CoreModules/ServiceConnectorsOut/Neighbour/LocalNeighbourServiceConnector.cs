@@ -73,6 +73,9 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Neighbour
 
         public void Initialise(IConfigSource source)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             IConfig moduleConfig = source.Configs["Modules"];
             if (moduleConfig != null)
             {
@@ -81,7 +84,7 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Neighbour
                 {
                     // m_Enabled rules whether this module registers as INeighbourService or not
                     m_Enabled = true;
-                    m_log.Info("[NEIGHBOUR CONNECTOR]: Local neighbour connector enabled");
+                    m_log.Info("Local neighbour connector enabled");
                 }
             }
         }
@@ -92,6 +95,9 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Neighbour
 
         public void AddRegion(Scene scene)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             m_Scenes.Add(scene);
 
             if (!m_Enabled)
@@ -102,7 +108,7 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Neighbour
 
         public void RegionLoaded(Scene scene)
         {
-            m_log.Info("[NEIGHBOUR CONNECTOR]: Local neighbour connector enabled for region " + scene.RegionInfo.RegionName);
+            m_log.Info("Local neighbour connector enabled for region " + scene.RegionInfo.RegionName);
         }
 
         public void PostInitialise()
@@ -111,6 +117,9 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Neighbour
 
         public void RemoveRegion(Scene scene)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             // Always remove 
             if (m_Scenes.Contains(scene))
                 m_Scenes.Remove(scene);
@@ -122,6 +131,9 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Neighbour
 
         public OpenSim.Services.Interfaces.GridRegion HelloNeighbour(ulong regionHandle, RegionInfo thisRegion)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             uint x, y;
             Util.RegionHandleToRegionLoc(regionHandle, out x, out y);
 
@@ -129,7 +141,7 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Neighbour
             {
                 if (s.RegionInfo.RegionHandle == regionHandle)
                 {
-                    m_log.DebugFormat("[LOCAL NEIGHBOUR SERVICE CONNECTOR]: HelloNeighbour from region {0} to neighbour {1} at {2}-{3}",
+                    m_log.DebugFormat("HelloNeighbour from region {0} to neighbour {1} at {2}-{3}",
                                                 thisRegion.RegionName, s.Name, x, y );
 
                     //m_log.Debug("[NEIGHBOUR CONNECTOR]: Found region to SendHelloNeighbour");

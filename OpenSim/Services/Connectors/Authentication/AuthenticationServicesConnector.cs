@@ -51,6 +51,9 @@ namespace OpenSim.Services.Connectors
 
         public AuthenticationServicesConnector(string serverURI)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0}(string serverURI: {1}) ", System.Reflection.MethodBase.GetCurrentMethod ().Name, serverURI);
+            }
             m_ServerURI = serverURI.TrimEnd('/');
         }
 
@@ -61,10 +64,14 @@ namespace OpenSim.Services.Connectors
 
         public virtual void Initialise(IConfigSource source)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
+
             IConfig assetConfig = source.Configs["AuthenticationService"];
             if (assetConfig == null)
             {
-                m_log.Error("[AUTH CONNECTOR]: AuthenticationService missing from OpenSim.ini");
+                m_log.Error("AuthenticationService missing from OpenSim.ini");
                 throw new Exception("Authentication connector init error");
             }
 
@@ -73,7 +80,7 @@ namespace OpenSim.Services.Connectors
 
             if (serviceURI == String.Empty)
             {
-                m_log.Error("[AUTH CONNECTOR]: No Server URI named in section AuthenticationService");
+                m_log.Error("No Server URI named in section AuthenticationService");
                 throw new Exception("Authentication connector init error");
             }
             m_ServerURI = serviceURI;
@@ -81,6 +88,9 @@ namespace OpenSim.Services.Connectors
 
         public string Authenticate(UUID principalID, string password, int lifetime)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             Dictionary<string, object> sendData = new Dictionary<string, object>();
             sendData["LIFETIME"] = lifetime.ToString();
             sendData["PRINCIPAL"] = principalID.ToString();
@@ -103,6 +113,9 @@ namespace OpenSim.Services.Connectors
 
         public bool Verify(UUID principalID, string token, int lifetime)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             Dictionary<string, object> sendData = new Dictionary<string, object>();
             sendData["LIFETIME"] = lifetime.ToString();
             sendData["PRINCIPAL"] = principalID.ToString();
@@ -125,6 +138,9 @@ namespace OpenSim.Services.Connectors
 
         public bool Release(UUID principalID, string token)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             Dictionary<string, object> sendData = new Dictionary<string, object>();
             sendData["PRINCIPAL"] = principalID.ToString();
             sendData["TOKEN"] = token;

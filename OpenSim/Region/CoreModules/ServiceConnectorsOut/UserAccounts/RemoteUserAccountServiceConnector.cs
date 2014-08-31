@@ -61,6 +61,9 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.UserAccounts
 
         public override void Initialise(IConfigSource source)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             IConfig moduleConfig = source.Configs["Modules"];
             if (moduleConfig != null)
             {
@@ -70,7 +73,7 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.UserAccounts
                     IConfig userConfig = source.Configs["UserAccountService"];
                     if (userConfig == null)
                     {
-                        m_log.Error("[USER CONNECTOR]: UserAccountService missing from OpenSim.ini");
+                        m_log.Error("UserAccountService missing from OpenSim.ini");
                         return;
                     }
 
@@ -79,7 +82,7 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.UserAccounts
                     base.Initialise(source);
                     m_Cache = new UserAccountCache();
 
-                    m_log.Info("[USER CONNECTOR]: Remote users enabled");
+                    m_log.Info("Remote users enabled");
                 }
             }
         }
@@ -98,6 +101,9 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.UserAccounts
 
         public void AddRegion(Scene scene)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (!m_Enabled)
                 return;
 
@@ -120,6 +126,9 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.UserAccounts
 
         public override UserAccount GetUserAccount(UUID scopeID, UUID userID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             bool inCache = false;
             UserAccount account = m_Cache.Get(userID, out inCache);
             if (inCache)
@@ -133,6 +142,9 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.UserAccounts
 
         public override UserAccount GetUserAccount(UUID scopeID, string firstName, string lastName)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             bool inCache = false;
             UserAccount account = m_Cache.Get(firstName + " " + lastName, out inCache);
             if (inCache)

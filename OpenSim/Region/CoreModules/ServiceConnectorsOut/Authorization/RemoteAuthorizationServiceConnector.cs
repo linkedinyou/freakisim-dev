@@ -63,6 +63,9 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Authorization
 
         public override void Initialise(IConfigSource source)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             IConfig moduleConfig = source.Configs["Modules"];
             if (moduleConfig != null)
             {
@@ -72,7 +75,7 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Authorization
                     IConfig authorizationConfig = source.Configs["AuthorizationService"];
                     if (authorizationConfig == null)
                     {
-                        m_log.Info("[REMOTE AUTHORIZATION CONNECTOR]: AuthorizationService missing from OpenSim.ini");
+                        m_log.Info("AuthorizationService missing from OpenSim.ini");
                         return;
                     }
 
@@ -80,7 +83,7 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Authorization
 
                     base.Initialise(source);
 
-                    m_log.Info("[REMOTE AUTHORIZATION CONNECTOR]: Remote authorization enabled");
+                    m_log.Info("Remote authorization enabled");
                 }
             }
         }
@@ -109,18 +112,20 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Authorization
 
         public void RegionLoaded(Scene scene)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (!m_Enabled)
                 return;
 
-            m_log.InfoFormat("[REMOTE AUTHORIZATION CONNECTOR]: Enabled remote authorization for region {0}", scene.RegionInfo.RegionName);
+            m_log.InfoFormat("Enabled remote authorization for region {0}", scene.RegionInfo.RegionName);
 
         }
         
         public bool IsAuthorizedForRegion(
              string userID, string firstName, string lastName, string regionID, out string message)
         {
-            m_log.InfoFormat(
-                "[REMOTE AUTHORIZATION CONNECTOR]: IsAuthorizedForRegion checking {0} for region {1}", userID, regionID);
+            m_log.InfoFormat("IsAuthorizedForRegion checking {0} for region {1}", userID, regionID);
             
             bool isAuthorized = true;
             message = String.Empty;
@@ -163,7 +168,7 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Authorization
             else
             {
                 m_log.ErrorFormat(
-                    "[REMOTE AUTHORIZATION CONNECTOR] IsAuthorizedForRegion, can't find scene to match region id of {0}",
+                    "IsAuthorizedForRegion, can't find scene to match region id of {0}",
                     regionID);
             }
             

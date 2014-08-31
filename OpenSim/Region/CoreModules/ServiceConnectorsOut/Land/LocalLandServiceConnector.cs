@@ -73,6 +73,9 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Land
 
         public void Initialise(IConfigSource source)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             IConfig moduleConfig = source.Configs["Modules"];
             if (moduleConfig != null)
             {
@@ -91,6 +94,10 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Land
 
         public void AddRegion(Scene scene)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
+
             m_Scenes.Add(scene);
 
             if (!m_Enabled)
@@ -109,6 +116,9 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Land
 
         public void RemoveRegion(Scene scene)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (m_Scenes.Contains(scene))
                 m_Scenes.Remove(scene);
         }
@@ -119,6 +129,9 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Land
 
         public LandData GetLandData(UUID scopeID, ulong regionHandle, uint x, uint y, out byte regionAccess)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             regionAccess = 2;
             m_log.DebugFormat("[LAND CONNECTOR]: request for land data in {0} at {1}, {2}",
                   regionHandle, x, y);

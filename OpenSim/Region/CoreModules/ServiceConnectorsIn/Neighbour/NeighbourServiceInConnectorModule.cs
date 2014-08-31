@@ -56,6 +56,9 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsIn.Neighbour
 
         public void Initialise(IConfigSource config)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             m_Config = config;
 
             IConfig moduleConfig = config.Configs["Modules"];
@@ -95,6 +98,9 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsIn.Neighbour
 
         public void AddRegion(Scene scene)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (!m_Enabled)
                 return;
 
@@ -111,6 +117,9 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsIn.Neighbour
 
         public void RemoveRegion(Scene scene)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (m_Enabled && m_Scenes.Contains(scene))
                 m_Scenes.Remove(scene);
         }
@@ -125,11 +134,16 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsIn.Neighbour
 
         public GridRegion HelloNeighbour(ulong regionHandle, RegionInfo thisRegion)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             foreach (Scene s in m_Scenes)
             {
                 if (s.RegionInfo.RegionHandle == regionHandle)
                 {
-                    //m_log.DebugFormat("[NEIGHBOUR IN CONNECTOR]: HelloNeighbour from {0} to {1}", thisRegion.RegionName, s.RegionInfo.RegionName);
+                    if (m_log.IsDebugEnabled) {
+                        m_log.DebugFormat("HelloNeighbour from {0} to {1}", thisRegion.RegionName, s.RegionInfo.RegionName);
+                    }
                     return s.IncomingHelloNeighbour(thisRegion);
                 }
             }

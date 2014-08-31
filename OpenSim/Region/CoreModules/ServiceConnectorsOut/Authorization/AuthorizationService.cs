@@ -59,6 +59,10 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Authorization
 
         public AuthorizationService(IConfig config, Scene scene)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
+
             m_Scene = scene;
             m_UserManagement = scene.RequestModuleInterface<IUserManagement>();
 //            m_GridService = scene.GridService;
@@ -74,10 +78,10 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Authorization
                     }
                     catch (ArgumentException)
                     {
-                        m_log.WarnFormat("[AuthorizationService]: {0} is not a valid access flag", accessStr);
+                        m_log.WarnFormat("{0} is not a valid access flag", accessStr);
                     }
                 }
-                m_log.DebugFormat("[AuthorizationService]: Region {0} access restrictions: {1}", m_Scene.RegionInfo.RegionName, m_accessValue);
+                m_log.DebugFormat("Region {0} access restrictions: {1}", m_Scene.RegionInfo.RegionName, m_accessValue);
             }
 
         }
@@ -85,12 +89,15 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Authorization
         public bool IsAuthorizedForRegion(
             string user, string firstName, string lastName, string regionID, out string message)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             message = "authorized";
 
             // This should not happen
             if (m_Scene.RegionInfo.RegionID.ToString() != regionID)
             {
-                m_log.WarnFormat("[AuthorizationService]: Service for region {0} received request to authorize for region {1}",
+                m_log.WarnFormat("Service for region {0} received request to authorize for region {1}",
                     m_Scene.RegionInfo.RegionID, regionID);
                 return true;
             }

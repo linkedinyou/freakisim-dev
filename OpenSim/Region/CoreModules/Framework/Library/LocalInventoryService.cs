@@ -59,6 +59,9 @@ namespace OpenSim.Region.CoreModules.Framework.Library
         /// <returns></returns>
         public InventoryCollection GetFolderContent(UUID userID, UUID folderID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             InventoryFolderImpl folder = null;
             InventoryCollection inv = new InventoryCollection();
             inv.UserID = m_Library.Owner;
@@ -90,7 +93,10 @@ namespace OpenSim.Region.CoreModules.Framework.Library
         /// <returns>true if the folder was successfully added</returns>
         public bool AddFolder(InventoryFolderBase folder)
         {
-            //m_log.DebugFormat("[LIBRARY MODULE]: Adding folder {0} ({1}) to {2}", folder.Name, folder.ID, folder.ParentID);
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+                m_log.DebugFormat ("Adding folder {0} ({1}) to {2}", folder.Name, folder.ID, folder.ParentID);
+            }
             InventoryFolderImpl parent = m_Library;
             if (m_Library.ID != folder.ParentID)
                 parent = m_Library.FindFolder(folder.ParentID);
@@ -113,7 +119,11 @@ namespace OpenSim.Region.CoreModules.Framework.Library
         /// <returns>true if the item was successfully added</returns>
         public bool AddItem(InventoryItemBase item)
         {
-            //m_log.DebugFormat("[LIBRARY MODULE]: Adding item {0} to {1}", item.Name, item.Folder);
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+                m_log.DebugFormat ("Adding item {0} to {1}", item.Name, item.Folder);
+            }
+
             InventoryFolderImpl folder = m_Library;
             if (m_Library.ID != item.Folder)
                 folder = m_Library.FindFolder(item.Folder);

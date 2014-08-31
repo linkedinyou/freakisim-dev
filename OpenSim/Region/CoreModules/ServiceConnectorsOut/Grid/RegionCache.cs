@@ -56,18 +56,26 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Grid
 
         private void OnRegionUp(GridRegion otherRegion)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             // This shouldn't happen
             if (otherRegion == null)
                 return;
 
-            m_log.DebugFormat("[REGION CACHE]: (on region {0}) Region {1} is up @ {2}-{3}",
-                m_scene.RegionInfo.RegionName, otherRegion.RegionName, Util.WorldToRegionLoc((uint)otherRegion.RegionLocX), Util.WorldToRegionLoc((uint)otherRegion.RegionLocY));
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat("on region {0}) Region {1} is up @ {2}-{3}",
+                    m_scene.RegionInfo.RegionName, otherRegion.RegionName, Util.WorldToRegionLoc((uint)otherRegion.RegionLocX), Util.WorldToRegionLoc((uint)otherRegion.RegionLocY));
+            }
 
             m_neighbours[otherRegion.RegionHandle] = otherRegion;
         }
 
         public void Clear()
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             m_scene.EventManager.OnRegionUp -= OnRegionUp;
             m_neighbours.Clear();
         }
@@ -84,6 +92,9 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Grid
         //     multiples of the legacy region size (256).
         public GridRegion GetRegionByPosition(int x, int y)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             uint xsnap = (uint)(x / Constants.RegionSize) * Constants.RegionSize;
             uint ysnap = (uint)(y / Constants.RegionSize) * Constants.RegionSize;
             ulong handle = Util.RegionWorldLocToHandle(xsnap, ysnap);

@@ -59,6 +59,9 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Authentication
 
         public override void Initialise(IConfigSource source)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             IConfig moduleConfig = source.Configs["Modules"];
             if (moduleConfig != null)
             {
@@ -68,7 +71,7 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Authentication
                     IConfig userConfig = source.Configs["AuthenticationService"];
                     if (userConfig == null)
                     {
-                        m_log.Error("[AUTH CONNECTOR]: AuthenticationService missing from OpenSim.ini");
+                        m_log.Error("AuthenticationService missing from OpenSim.ini");
                         return;
                     }
 
@@ -76,7 +79,7 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Authentication
 
                     base.Initialise(source);
 
-                    m_log.Info("[AUTH CONNECTOR]: Remote Authentication enabled");
+                    m_log.Info("Remote Authentication enabled");
                 }
             }
         }

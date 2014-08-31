@@ -78,14 +78,17 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Asset
 
         public void Initialise(IConfigSource source)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             // AKIDO get the Surabaya Server Config
             IConfig surabayaConfig = source.Configs["SurabayaServer"];
             if (surabayaConfig != null) {
                 surabayaServerURI = surabayaConfig.GetString("SurabayaServerURI");
                 surabayaServerEnabled = surabayaConfig.GetBoolean("Enabled");
-                m_log.DebugFormat("[AssetServicesConnector]: Surabaya ServerURI: {0}", surabayaServerURI);
+                m_log.DebugFormat("Surabaya ServerURI: {0}", surabayaServerURI);
             } else {
-                m_log.Warn("[AssetServicesConnector]: Surabaya Config is missing, disabling Surabaya");
+                m_log.Warn("Surabaya Config is missing, disabling Surabaya");
                 surabayaServerEnabled = false;
                 surabayaServerURI = "";
             }
@@ -99,7 +102,7 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Asset
                     IConfig assetConfig = source.Configs["AssetService"];
                     if (assetConfig == null)
                     {
-                        m_log.Error("[HG ASSET CONNECTOR]: AssetService missing from OpenSim.ini");
+                        m_log.Error("AssetService missing from OpenSim.ini");
                         return;
                     }
 
@@ -110,13 +113,13 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Asset
 
                     if (localDll == String.Empty)
                     {
-                        m_log.Error("[HG ASSET CONNECTOR]: No LocalGridAssetService named in section AssetService");
+                        m_log.Error("No LocalGridAssetService named in section AssetService");
                         return;
                     }
 
                     if (HGDll == String.Empty)
                     {
-                        m_log.Error("[HG ASSET CONNECTOR]: No HypergridAssetService named in section AssetService");
+                        m_log.Error("No HypergridAssetService named in section AssetService");
                         return;
                     }
 
@@ -131,12 +134,12 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Asset
 
                     if (m_GridService == null)
                     {
-                        m_log.Error("[HG ASSET CONNECTOR]: Can't load local asset service");
+                        m_log.Error("Can't load local asset service");
                         return;
                     }
                     if (m_HGService == null)
                     {
-                        m_log.Error("[HG ASSET CONNECTOR]: Can't load hypergrid asset service");
+                        m_log.Error("Can't load hypergrid asset service");
                         return;
                     }
 
@@ -154,7 +157,7 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Asset
                     m_AssetPerms = new AssetPermissions(hgConfig); // it's ok if arg is null
 
                     m_Enabled = true;
-                    m_log.Info("[HG ASSET CONNECTOR]: HG asset broker enabled");
+                    m_log.Info("HG asset broker enabled");
                 }
             }
         }
@@ -169,6 +172,10 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Asset
 
         public void AddRegion(Scene scene)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
+
             if (!m_Enabled)
                 return;
             
@@ -183,6 +190,10 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Asset
 
         public void RegionLoaded(Scene scene)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
+
             if (!m_Enabled)
                 return;
 
@@ -194,16 +205,19 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Asset
                     m_Cache = null;
             }
 
-            m_log.InfoFormat("[HG ASSET CONNECTOR]: Enabled hypergrid asset broker for region {0}", scene.RegionInfo.RegionName);
+            m_log.InfoFormat("Enabled hypergrid asset broker for region {0}", scene.RegionInfo.RegionName);
 
             if (m_Cache != null)
             {
-                m_log.InfoFormat("[HG ASSET CONNECTOR]: Enabled asset caching for region {0}", scene.RegionInfo.RegionName);
+                m_log.InfoFormat("Enabled asset caching for region {0}", scene.RegionInfo.RegionName);
             }
         }
 
         private bool IsHG(string id)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             Uri assetUri;
 
             if (Uri.TryCreate(id, UriKind.Absolute, out assetUri) &&
@@ -215,7 +229,9 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Asset
 
         public AssetBase Get(string id)
         {
-            //m_log.DebugFormat("[HG ASSET CONNECTOR]: Get {0}", id);
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0}(string id: {1}) ", System.Reflection.MethodBase.GetCurrentMethod ().Name, id);
+            }
             AssetBase asset = null;
             
             if (m_Cache != null)
@@ -249,6 +265,10 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Asset
 
         public AssetBase GetCached(string id)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
+
             if (m_Cache != null)
                 return m_Cache.Get(id);
 
@@ -257,6 +277,9 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Asset
 
         public AssetMetadata GetMetadata(string id)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             AssetBase asset = null;
             
             if (m_Cache != null)
@@ -280,6 +303,9 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Asset
 
         public byte[] GetData(string id)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             AssetBase asset = null;
             
             if (m_Cache != null)
@@ -300,6 +326,9 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Asset
 
         public bool Get(string id, Object sender, AssetRetrieved handler)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             AssetBase asset = null;
             
             if (m_Cache != null)
@@ -333,6 +362,9 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Asset
 
         public virtual bool[] AssetsExist(string[] ids)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             int numHG = 0;
             foreach (string id in ids)
             {
@@ -345,11 +377,14 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Asset
             else if (numHG == ids.Length)
                 return m_HGService.AssetsExist(ids);
             else
-                throw new Exception("[HG ASSET CONNECTOR]: AssetsExist: all the assets must be either local or foreign");
+                throw new Exception("AssetsExist: all the assets must be either local or foreign");
         }
 
         public string Store(AssetBase asset)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             bool isHG = IsHG(asset.ID);
 
             if ((m_Cache != null) && !isHG)
@@ -438,6 +473,10 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Asset
 
         public bool UpdateContent(string id, byte[] data)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
+
             AssetBase asset = null;
             
             if (m_Cache != null)
@@ -457,6 +496,10 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Asset
 
         public bool Delete(string id)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
+
             if (m_Cache != null)
                 m_Cache.Expire(id);
 

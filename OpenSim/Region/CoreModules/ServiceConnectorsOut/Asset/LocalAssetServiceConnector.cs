@@ -61,6 +61,9 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Asset
 
         public void Initialise(IConfigSource source)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             IConfig moduleConfig = source.Configs["Modules"];
             if (moduleConfig != null)
             {
@@ -70,7 +73,7 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Asset
                     IConfig assetConfig = source.Configs["AssetService"];
                     if (assetConfig == null)
                     {
-                        m_log.Error("[LOCAL ASSET SERVICES CONNECTOR]: AssetService missing from OpenSim.ini");
+                        m_log.Error("AssetService missing from OpenSim.ini");
                         return;
                     }
 
@@ -78,12 +81,12 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Asset
 
                     if (serviceDll == String.Empty)
                     {
-                        m_log.Error("[LOCAL ASSET SERVICES CONNECTOR]: No LocalServiceModule named in section AssetService");
+                        m_log.Error("No LocalServiceModule named in section AssetService");
                         return;
                     }
                     else
                     {
-                        m_log.DebugFormat("[LOCAL ASSET SERVICES CONNECTOR]: Loading asset service at {0}", serviceDll);
+                        m_log.DebugFormat("Loading asset service at {0}", serviceDll);
                     }
 
                     Object[] args = new Object[] { source };
@@ -91,11 +94,11 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Asset
 
                     if (m_AssetService == null)
                     {
-                        m_log.Error("[LOCAL ASSET SERVICES CONNECTOR]: Can't load asset service");
+                        m_log.Error("Can't load asset service");
                         return;
                     }
                     m_Enabled = true;
-                    m_log.Info("[LOCAL ASSET SERVICES CONNECTOR]: Local asset connector enabled");
+                    m_log.Info("Local asset connector enabled");
                 }
             }
         }
@@ -110,6 +113,9 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Asset
 
         public void AddRegion(Scene scene)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (!m_Enabled)
                 return;
 
@@ -122,6 +128,9 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Asset
 
         public void RegionLoaded(Scene scene)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (!m_Enabled)
                 return;
 
@@ -133,14 +142,15 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Asset
                     m_Cache = null;
             }
 
-            m_log.DebugFormat(
-                "[LOCAL ASSET SERVICES CONNECTOR]: Enabled connector for region {0}", scene.RegionInfo.RegionName);
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat("Enabled connector for region {0}", scene.RegionInfo.RegionName);
+            }
 
             if (m_Cache != null)
             {
-                m_log.DebugFormat(
-                    "[LOCAL ASSET SERVICES CONNECTOR]: Enabled asset caching for region {0}",
-                    scene.RegionInfo.RegionName);
+                if (m_log.IsDebugEnabled) {
+                    m_log.DebugFormat("Enabled asset caching for region {0}",scene.RegionInfo.RegionName);
+                }
             }
             else
             {
@@ -153,8 +163,10 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Asset
 
         public AssetBase Get(string id)
         {
-//            m_log.DebugFormat("[LOCAL ASSET SERVICES CONNECTOR]: Synchronously requesting asset {0}", id);
-            
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0}(string id: {1}) ", System.Reflection.MethodBase.GetCurrentMethod ().Name, id);
+            }
+
             AssetBase asset = null;
             if (m_Cache != null)
                 asset = m_Cache.Get(id);
@@ -174,7 +186,9 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Asset
 
         public AssetBase GetCached(string id)
         {
-//            m_log.DebugFormat("[LOCAL ASSET SERVICES CONNECTOR]: Cache request for {0}", id);
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0}(string id: {1}) ", System.Reflection.MethodBase.GetCurrentMethod ().Name, id);
+            }
 
             if (m_Cache != null)
                 return m_Cache.Get(id);
@@ -184,6 +198,10 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Asset
 
         public AssetMetadata GetMetadata(string id)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0}(string id: {1}) ", System.Reflection.MethodBase.GetCurrentMethod ().Name, id);
+            }
+
             AssetBase asset = null;
             if (m_Cache != null)
                 asset = m_Cache.Get(id);
@@ -204,7 +222,9 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Asset
 
         public byte[] GetData(string id)
         {
-//            m_log.DebugFormat("[LOCAL ASSET SERVICES CONNECTOR]: Requesting data for asset {0}", id);
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0}(string id: {1}) ", System.Reflection.MethodBase.GetCurrentMethod ().Name, id);
+            }
 
             AssetBase asset = null;
 
@@ -227,7 +247,9 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Asset
 
         public bool Get(string id, Object sender, AssetRetrieved handler)
         {
-//            m_log.DebugFormat("[LOCAL ASSET SERVICES CONNECTOR]: Asynchronously requesting asset {0}", id);
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0}(string id: {1}, Object sender, AssetRetrieved handler) ", System.Reflection.MethodBase.GetCurrentMethod ().Name, id);
+            }
                                     
             if (m_Cache != null)
             {
@@ -259,29 +281,41 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Asset
 
         public string Store(AssetBase asset)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
+
             if (m_Cache != null)
                 m_Cache.Cache(asset);
             
             if (asset.Local)
             {
-//                m_log.DebugFormat(
-//                    "[LOCAL ASSET SERVICE CONNECTOR]: Returning asset {0} {1} without querying database since status Temporary = {2}, Local = {3}",
-//                    asset.Name, asset.ID, asset.Temporary, asset.Local);
+                if (m_log.IsDebugEnabled) {
+                    m_log.DebugFormat(
+                        "Returning asset {0} {1} without querying database since status Temporary = {2}, Local = {3}",
+                        asset.Name, asset.ID, asset.Temporary, asset.Local);
+                }
 
                 return asset.ID;
             }
             else
             {
-//                m_log.DebugFormat(
-//                    "[LOCAL ASSET SERVICE CONNECTOR]: Passing {0} {1} on to asset service for storage, status Temporary = {2}, Local = {3}",
-//                    asset.Name, asset.ID, asset.Temporary, asset.Local);
-                
+                if (m_log.IsDebugEnabled) {
+                    m_log.DebugFormat(
+                        "Passing {0} {1} on to asset service for storage, status Temporary = {2}, Local = {3}",
+                        asset.Name, asset.ID, asset.Temporary, asset.Local);
+                }
+
                 return m_AssetService.Store(asset);
             }
         }
 
         public bool UpdateContent(string id, byte[] data)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
+
             AssetBase asset = null;
             if (m_Cache != null)
                 m_Cache.Get(id);
@@ -297,6 +331,10 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Asset
 
         public bool Delete(string id)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
+
             if (m_Cache != null)
                 m_Cache.Expire(id);
 

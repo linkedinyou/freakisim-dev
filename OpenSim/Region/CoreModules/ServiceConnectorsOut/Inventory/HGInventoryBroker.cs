@@ -73,7 +73,7 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Inventory
 
                     if (m_UserManagement == null)
                         m_log.ErrorFormat(
-                            "[HG INVENTORY CONNECTOR]: Could not retrieve IUserManagement module from {0}",
+                            "Could not retrieve IUserManagement module from {0}",
                             m_Scenes[0].RegionInfo.RegionName);
                 }
 
@@ -93,6 +93,9 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Inventory
 
         public void Initialise(IConfigSource source)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             IConfig moduleConfig = source.Configs["Modules"];
             if (moduleConfig != null)
             {
@@ -102,7 +105,7 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Inventory
                     IConfig inventoryConfig = source.Configs["InventoryService"];
                     if (inventoryConfig == null)
                     {
-                        m_log.Error("[HG INVENTORY CONNECTOR]: InventoryService missing from OpenSim.ini");
+                        m_log.Error("InventoryService missing from OpenSim.ini");
                         return;
                     }
 
@@ -113,7 +116,7 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Inventory
 
                     if (localDll == String.Empty)
                     {
-                        m_log.Error("[HG INVENTORY CONNECTOR]: No LocalGridInventoryService named in section InventoryService");
+                        m_log.Error("No LocalGridInventoryService named in section InventoryService");
                         //return;
                         throw new Exception("Unable to proceed. Please make sure your ini files in config-include are updated according to .example's");
                     }
@@ -125,12 +128,12 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Inventory
 
                     if (m_LocalGridInventoryService == null)
                     {
-                        m_log.Error("[HG INVENTORY CONNECTOR]: Can't load local inventory service");
+                        m_log.Error("Can't load local inventory service");
                         return;
                     }
 
                     m_Enabled = true;
-                    m_log.InfoFormat("[HG INVENTORY CONNECTOR]: HG inventory broker enabled with inner connector of type {0}", m_LocalGridInventoryService.GetType());
+                    m_log.InfoFormat("HG inventory broker enabled with inner connector of type {0}", m_LocalGridInventoryService.GetType());
                 }
             }
         }
@@ -145,6 +148,10 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Inventory
 
         public void AddRegion(Scene scene)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
+
             if (!m_Enabled)
                 return;
 
@@ -170,7 +177,7 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Inventory
                 if (null == ((RemoteXInventoryServicesConnector)m_LocalGridInventoryService).Scene)
                 {
                     m_log.DebugFormat(
-                        "[HG INVENTORY BROKER]: Manually setting scene in LocalInventoryServicesConnector to {0}",
+                        "Manually setting scene in LocalInventoryServicesConnector to {0}",
                         scene.RegionInfo.RegionName);
 
                     ((LocalInventoryServicesConnector)m_LocalGridInventoryService).Scene = scene;
@@ -182,6 +189,9 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Inventory
 
         public void RemoveRegion(Scene scene)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (!m_Enabled)
                 return;
 
@@ -190,10 +200,13 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Inventory
 
         public void RegionLoaded(Scene scene)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (!m_Enabled)
                 return;
 
-            m_log.InfoFormat("[HG INVENTORY CONNECTOR]: Enabled HG inventory for region {0}", scene.RegionInfo.RegionName);
+            m_log.InfoFormat("Enabled HG inventory for region {0}", scene.RegionInfo.RegionName);
 
         }
 
@@ -201,6 +214,9 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Inventory
 
         void OnClientClosed(UUID clientID, Scene scene)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             try
             {
                 m_Scenes.ForEach(delegate(Scene s)
@@ -209,7 +225,7 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Inventory
                     s.TryGetScenePresence(clientID, out sp);
                     if ((sp != null) && !sp.IsChildAgent && (s != scene))
                     {
-                        m_log.DebugFormat("[INVENTORY CACHE]: OnClientClosed in {0}, but user {1} still in sim. Keeping inventoryURL in cache",
+                        m_log.DebugFormat("OnClientClosed in {0}, but user {1} still in sim. Keeping inventoryURL in cache",
                             scene.RegionInfo.RegionName, clientID);
                         throw new ThreadedClasses.ReturnValueException<bool>(true);
                     }
@@ -224,7 +240,7 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Inventory
             string url;
             if(m_InventoryURLs.Remove(clientID, out url))
             {
-                m_log.DebugFormat("[HG INVENTORY CONNECTOR]: Removed {0} from the cache of inventory URLs for agent {1}", url, clientID.ToString());
+                m_log.DebugFormat("Removed {0} from the cache of inventory URLs for agent {1}", url, clientID.ToString());
             }
         }
 
@@ -235,6 +251,9 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Inventory
         /// <param name="userID"></param>
         private void CacheInventoryServiceURL(UUID userID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (UserManagementModule != null && !UserManagementModule.IsLocalGridUser(userID))
             {
                 // The user is not local; let's cache its service URL
@@ -261,7 +280,7 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Inventory
                                 {
                                     inventoryURL = inventoryURL.Trim(new char[] { '/' });
                                     m_InventoryURLs[userID] = inventoryURL;
-                                    m_log.DebugFormat("[HG INVENTORY CONNECTOR]: Added {0} to the cache of inventory URLs", inventoryURL);
+                                    m_log.DebugFormat("Added {0} to the cache of inventory URLs", inventoryURL);
                                     throw new ThreadedClasses.ReturnValueException<ScenePresence>(sp);
                                 }
                             }
@@ -279,7 +298,7 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Inventory
                     {
                         inventoryURL = inventoryURL.Trim(new char[] { '/' });
                         m_InventoryURLs[userID] = inventoryURL;
-                        m_log.DebugFormat("[HG INVENTORY CONNECTOR]: Added {0} to the cache of inventory URLs", inventoryURL);
+                        m_log.DebugFormat("Added {0} to the cache of inventory URLs", inventoryURL);
                     }
 
                 }
@@ -288,6 +307,9 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Inventory
 
         public string GetInventoryServiceURL(UUID userID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             string inventoryURL;
             if (m_InventoryURLs.TryGetValue(userID, out inventoryURL))
             {
@@ -310,11 +332,17 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Inventory
 
         public bool CreateUserInventory(UUID userID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             return m_LocalGridInventoryService.CreateUserInventory(userID);
         }
 
         public List<InventoryFolderBase> GetInventorySkeleton(UUID userID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             string invURL = GetInventoryServiceURL(userID);
 
             if (invURL == null) // not there, forward to local inventory connector to resolve
@@ -327,7 +355,10 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Inventory
 
         public InventoryFolderBase GetRootFolder(UUID userID)
         {
-            //m_log.DebugFormat("[HG INVENTORY CONNECTOR]: GetRootFolder for {0}", userID);
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
+
             InventoryFolderBase root = m_Cache.GetRootFolder(userID);
             if (root != null)
                 return root;
@@ -348,7 +379,10 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Inventory
 
         public InventoryFolderBase GetFolderForType(UUID userID, AssetType type)
         {
-            //m_log.DebugFormat("[HG INVENTORY CONNECTOR]: GetFolderForType {0} type {1}", userID, type);
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
+
             InventoryFolderBase f = m_Cache.GetFolderForType(userID, type);
             if (f != null)
                 return f;
@@ -369,7 +403,9 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Inventory
 
         public InventoryCollection GetFolderContent(UUID userID, UUID folderID)
         {
-            //m_log.Debug("[HG INVENTORY CONNECTOR]: GetFolderContent " + folderID);
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
 
             string invURL = GetInventoryServiceURL(userID);
 
@@ -390,7 +426,9 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Inventory
 
         public List<InventoryItemBase> GetFolderItems(UUID userID, UUID folderID)
         {
-            //m_log.Debug("[HG INVENTORY CONNECTOR]: GetFolderItems " + folderID);
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
 
             string invURL = GetInventoryServiceURL(userID);
 
@@ -411,6 +449,9 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Inventory
 
         public bool AddFolder(InventoryFolderBase folder)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (folder == null)
                 return false;
 
@@ -428,6 +469,9 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Inventory
 
         public bool UpdateFolder(InventoryFolderBase folder)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (folder == null)
                 return false;
 
@@ -445,6 +489,10 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Inventory
 
         public bool DeleteFolders(UUID ownerID, List<UUID> folderIDs)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
+
             if (folderIDs == null)
                 return false;
             if (folderIDs.Count == 0)
@@ -464,6 +512,9 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Inventory
 
         public bool MoveFolder(InventoryFolderBase folder)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (folder == null)
                 return false;
 
@@ -481,6 +532,9 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Inventory
 
         public bool PurgeFolder(InventoryFolderBase folder)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (folder == null)
                 return false;
 
@@ -498,6 +552,9 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Inventory
 
         public bool AddItem(InventoryItemBase item)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (item == null)
                 return false;
 
@@ -515,6 +572,9 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Inventory
 
         public bool UpdateItem(InventoryItemBase item)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (item == null)
                 return false;
 
@@ -532,6 +592,9 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Inventory
 
         public bool MoveItems(UUID ownerID, List<InventoryItemBase> items)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (items == null)
                 return false;
             if (items.Count == 0)
@@ -551,6 +614,9 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Inventory
 
         public bool DeleteItems(UUID ownerID, List<UUID> itemIDs)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             //m_log.DebugFormat("[HG INVENTORY CONNECTOR]: Delete {0} items for user {1}", itemIDs.Count, ownerID);
 
             if (itemIDs == null)
@@ -570,6 +636,9 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Inventory
 
         public InventoryItemBase GetItem(InventoryItemBase item)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (item == null)
                 return null;
             //m_log.Debug("[HG INVENTORY CONNECTOR]: GetItem " + item.ID);
@@ -586,6 +655,9 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Inventory
 
         public InventoryFolderBase GetFolder(InventoryFolderBase folder)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (folder == null)
                 return null;
 
@@ -615,12 +687,15 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Inventory
 
         private IInventoryService GetConnector(string url)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             return m_connectors.GetOrAddIfNotExists(url, delegate()
             {
                 // Still not as flexible as I would like this to be,
                 // but good enough for now
                 string connectorType = new HeloServicesConnector(url).Helo();
-                m_log.DebugFormat("[HG INVENTORY SERVICE]: HELO returned {0}", connectorType);
+                m_log.DebugFormat("HELO returned {0}", connectorType);
                 if (connectorType == "opensim-simian")
                 {
                     return new SimianInventoryServiceConnector(url);

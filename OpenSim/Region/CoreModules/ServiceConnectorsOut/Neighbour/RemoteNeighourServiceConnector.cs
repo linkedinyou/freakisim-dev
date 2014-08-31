@@ -63,6 +63,9 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Neighbour
 
         public void Initialise(IConfigSource source)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             IConfig moduleConfig = source.Configs["Modules"];
             if (moduleConfig != null)
             {
@@ -86,7 +89,7 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Neighbour
 
                     m_Enabled = true;
 
-                    m_log.Info("[NEIGHBOUR CONNECTOR]: Remote Neighbour connector enabled");
+                    m_log.Info("Remote Neighbour connector enabled");
                 }
             }
         }
@@ -115,6 +118,9 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Neighbour
 
         public void AddRegion(Scene scene)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (!m_Enabled)
                 return;
 
@@ -124,18 +130,24 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Neighbour
 
         public void RemoveRegion(Scene scene)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (m_Enabled)
                 m_LocalService.RemoveRegion(scene);
         }
 
         public void RegionLoaded(Scene scene)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (!m_Enabled)
                 return;
 
             m_GridService = scene.GridService;
 
-            m_log.InfoFormat("[NEIGHBOUR CONNECTOR]: Enabled remote neighbours for region {0}", scene.RegionInfo.RegionName);
+            m_log.InfoFormat("Enabled remote neighbours for region {0}", scene.RegionInfo.RegionName);
 
         }
 

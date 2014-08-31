@@ -52,6 +52,10 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsIn.Simulation
 
         public void Initialise(IConfigSource config)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
+
             m_Config = config;
 
             IConfig moduleConfig = config.Configs["Modules"];
@@ -98,6 +102,9 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsIn.Simulation
 
         public void RegionLoaded(Scene scene)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (!m_Enabled)
                 return;
 
@@ -105,7 +112,7 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsIn.Simulation
             {
                 m_Registered = true;
 
-                m_log.Info("[SIM SERVICE]: Starting...");
+                m_log.Info("Starting...");
 
                 Object[] args = new Object[] { m_Config, MainServer.Instance, scene };
 

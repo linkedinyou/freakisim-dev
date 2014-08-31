@@ -63,6 +63,10 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Land
 
         public void Initialise(IConfigSource source)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
+
             IConfig moduleConfig = source.Configs["Modules"];
             if (moduleConfig != null)
             {
@@ -88,6 +92,9 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Land
 
         public void AddRegion(Scene scene)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (!m_Enabled)
                 return;
 
@@ -97,12 +104,18 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Land
 
         public void RemoveRegion(Scene scene)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (m_Enabled)
                 m_LocalService.RemoveRegion(scene);
         }
 
         public void RegionLoaded(Scene scene)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (m_Enabled)
                 m_GridService = scene.GridService;
         }
@@ -112,6 +125,9 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Land
 
         public override LandData GetLandData(UUID scopeID, ulong regionHandle, uint x, uint y, out byte regionAccess)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             LandData land = m_LocalService.GetLandData(scopeID, regionHandle, x, y, out regionAccess);
             if (land != null)
                 return land;

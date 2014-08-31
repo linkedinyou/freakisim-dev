@@ -61,7 +61,7 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Authorization
 
         public void Initialise(IConfigSource source)
         {
-            m_log.Info("[AUTHORIZATION CONNECTOR]: Initialise");
+            m_log.Info("Initialise");
             
             IConfig moduleConfig = source.Configs["Modules"];
             if (moduleConfig != null)
@@ -71,7 +71,7 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Authorization
                 {
                     m_Enabled = true;
                     m_AuthorizationConfig = source.Configs["AuthorizationService"];
-                    m_log.Info("[AUTHORIZATION CONNECTOR]: Local authorization connector enabled");
+                    m_log.Info("Local authorization connector enabled");
                 }
             }
         }
@@ -86,6 +86,9 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Authorization
 
         public void AddRegion(Scene scene)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (!m_Enabled)
                 return;
 
@@ -99,19 +102,25 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Authorization
 
         public void RegionLoaded(Scene scene)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (!m_Enabled)
                 return;
 
             m_AuthorizationService = new AuthorizationService(m_AuthorizationConfig, m_Scene);
 
             m_log.InfoFormat(
-                "[AUTHORIZATION CONNECTOR]: Enabled local authorization for region {0}",
+                "Enabled local authorization for region {0}",
                 scene.RegionInfo.RegionName);
         }
 
         public bool IsAuthorizedForRegion(
             string userID, string firstName, string lastName, string regionID, out string message)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             message = "";
             if (!m_Enabled)
                 return true;

@@ -60,6 +60,9 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Simulation
 
         public virtual void Initialise(IConfigSource configSource)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             IConfig moduleConfig = configSource.Configs["Modules"];
             if (moduleConfig != null)
             {
@@ -89,6 +92,9 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Simulation
 
         public void AddRegion(Scene scene)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (!m_enabled)
                 return;
 
@@ -102,6 +108,9 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Simulation
 
         public void RemoveRegion(Scene scene)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (m_enabled)
             {
                 m_localBackend.RemoveScene(scene);
@@ -127,12 +136,18 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Simulation
 
         protected virtual void InitEach(Scene scene)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             m_localBackend.Init(scene);
             scene.RegisterModuleInterface<ISimulationService>(this);
         }
 
         protected virtual void InitOnce(Scene scene)
-        {            
+        {   
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             m_aScene = scene;
             //m_regionClient = new RegionToRegionClient(m_aScene, m_hyperlinkService);
             m_thisIP = Util.GetHostFromDNS(scene.RegionInfo.ExternalHostName);
@@ -144,11 +159,17 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Simulation
 
         public IScene GetScene(UUID regionId)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             return m_localBackend.GetScene(regionId);
         }
 
         public ISimulationService GetInnerService()
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             return m_localBackend;
         }
 
@@ -158,6 +179,10 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Simulation
 
         public bool CreateAgent(GridRegion source, GridRegion destination, AgentCircuitData aCircuit, uint teleportFlags, out string reason)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
+
             if (destination == null)
             {
                 reason = "Given destination was null";
@@ -179,6 +204,9 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Simulation
 
         public bool UpdateAgent(GridRegion destination, AgentData cAgentData)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (destination == null)
                 return false;
 
@@ -191,6 +219,9 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Simulation
 
         public bool UpdateAgent(GridRegion destination, AgentPosition cAgentData)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (destination == null)
                 return false;
 
@@ -203,6 +234,10 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Simulation
 
         public bool QueryAccess(GridRegion destination, UUID agentID, string agentHomeURI, Vector3 position, string theirversion, out string version, out string reason)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
+
             reason = "Communications failure";
             version = "Unknown";
 
@@ -222,6 +257,9 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Simulation
 
         public bool ReleaseAgent(UUID origin, UUID id, string uri)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             // Try local first
             if (m_localBackend.ReleaseAgent(origin, id, uri))
                 return true;
@@ -236,6 +274,9 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Simulation
 
         public bool CloseAgent(GridRegion destination, UUID id, string auth_token)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (destination == null)
                 return false;
 
@@ -256,6 +297,9 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Simulation
 
         public bool CreateObject(GridRegion destination, Vector3 newPosition, ISceneObject sog, bool isLocalCall)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (destination == null)
                 return false;
 

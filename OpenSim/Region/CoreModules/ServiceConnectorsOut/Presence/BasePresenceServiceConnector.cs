@@ -68,7 +68,7 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Presence
             scene.RegisterModuleInterface<IPresenceService>(this);
             m_PresenceDetector.AddRegion(scene);
 
-            m_log.InfoFormat("[BASE PRESENCE SERVICE CONNECTOR]: Enabled for region {0}", scene.Name);
+            m_log.InfoFormat("Enabled for region {0}", scene.Name);
         }
 
         public void RemoveRegion(Scene scene)
@@ -106,7 +106,7 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Presence
 
         public bool LoginAgent(string userID, UUID sessionID, UUID secureSessionID)
         {
-            m_log.Warn("[BASE PRESENCE SERVICE CONNECTOR]: LoginAgent connector not implemented at the simulators");
+            m_log.Warn("LoginAgent connector not implemented at the simulators");
             return false;
         }
 

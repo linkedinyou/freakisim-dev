@@ -86,6 +86,10 @@ namespace OpenSim.Services.Connectors
 
         public virtual void Initialise(IConfigSource source)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
+
             IConfig netconfig = source.Configs["Network"];
             if (netconfig != null)
                 m_maxAssetRequestConcurrency = netconfig.GetInt("MaxRequestConcurrency",m_maxAssetRequestConcurrency);
@@ -129,7 +133,9 @@ namespace OpenSim.Services.Connectors
 
         public AssetBase Get(string id)
         {
-//            m_log.DebugFormat("[ASSET SERVICE CONNECTOR]: Synchronous get request for {0}", id);
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0}(string id: {1})", System.Reflection.MethodBase.GetCurrentMethod ().Name, id);
+            } 
 
             string uri = m_ServerURI + "/assets/" + id;
 
@@ -150,7 +156,9 @@ namespace OpenSim.Services.Connectors
 
         public AssetBase GetCached(string id)
         {
-//            m_log.DebugFormat("[ASSET SERVICE CONNECTOR]: Cache request for {0}", id);
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0}(string id: {1})", System.Reflection.MethodBase.GetCurrentMethod ().Name, id);
+            } 
 
             if (m_Cache != null)
                 return m_Cache.Get(id);
@@ -160,6 +168,10 @@ namespace OpenSim.Services.Connectors
 
         public AssetMetadata GetMetadata(string id)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0}(string id: {1})", System.Reflection.MethodBase.GetCurrentMethod ().Name, id);
+            } 
+
             if (m_Cache != null)
             {
                 AssetBase fullAsset = m_Cache.Get(id);
@@ -210,7 +222,9 @@ namespace OpenSim.Services.Connectors
 
         public bool Get(string id, Object sender, AssetRetrieved handler)
         {
-//            m_log.DebugFormat("[ASSET SERVICE CONNECTOR]: Potentially asynchronous get request for {0}", id);
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0}(string id: {1}, Object sender, AssetRetrieved handler)", System.Reflection.MethodBase.GetCurrentMethod ().Name, id);
+            } 
 
             string uri = m_ServerURI + "/assets/" + id;
 
@@ -279,6 +293,10 @@ namespace OpenSim.Services.Connectors
 
         public virtual bool[] AssetsExist(string[] ids)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
+
             string uri = m_ServerURI + "/get_assets_exist";
 
             bool[] exist = null;
@@ -300,6 +318,9 @@ namespace OpenSim.Services.Connectors
 
         public string Store(AssetBase asset)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (asset.Local)
             {
                 if (m_Cache != null)
@@ -390,6 +411,9 @@ namespace OpenSim.Services.Connectors
 
         public bool UpdateContent(string id, byte[] data)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             AssetBase asset = null;
 
             if (m_Cache != null)
@@ -421,6 +445,9 @@ namespace OpenSim.Services.Connectors
 
         public bool Delete(string id)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             string uri = m_ServerURI + "/assets/" + id;
 
             if (SynchronousRestObjectRequester.

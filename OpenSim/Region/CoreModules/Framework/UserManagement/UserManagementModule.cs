@@ -62,6 +62,9 @@ namespace OpenSim.Region.CoreModules.Framework.UserManagement
 
         public void Initialise(IConfigSource config)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             string umanmod = config.Configs["Modules"].GetString("UserManagementModule", Name);
             if (umanmod == Name)
             {
@@ -99,6 +102,9 @@ namespace OpenSim.Region.CoreModules.Framework.UserManagement
 
         public void AddRegion(Scene scene)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (m_Enabled)
             {
                 m_Scenes.Add(scene);

@@ -47,6 +47,9 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Presence
 
         public void Initialise(IConfigSource source)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             IConfig moduleConfig = source.Configs["Modules"];
             if (moduleConfig != null)
             {
@@ -59,7 +62,7 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Presence
 
                     m_PresenceDetector = new PresenceDetector(this);
 
-                    m_log.Info("[REMOTE PRESENCE CONNECTOR]: Remote presence enabled");
+                    m_log.Info("Remote presence enabled");
                 }
             }
         }

@@ -64,6 +64,9 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Avatar
 
         public void Initialise(IConfigSource source)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             IConfig moduleConfig = source.Configs["Modules"];
             if (moduleConfig != null)
             {
@@ -73,7 +76,7 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Avatar
                     IConfig userConfig = source.Configs["AvatarService"];
                     if (userConfig == null)
                     {
-                        m_log.Error("[AVATAR CONNECTOR]: AvatarService missing from OpenSim.ini");
+                        m_log.Error("AvatarService missing from OpenSim.ini");
                         return;
                     }
 
@@ -82,7 +85,7 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Avatar
 
                     if (serviceDll == String.Empty)
                     {
-                        m_log.Error("[AVATAR CONNECTOR]: No LocalServiceModule named in section AvatarService");
+                        m_log.Error("No LocalServiceModule named in section AvatarService");
                         return;
                     }
 
@@ -93,11 +96,11 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Avatar
 
                     if (m_AvatarService == null)
                     {
-                        m_log.Error("[AVATAR CONNECTOR]: Can't load user account service");
+                        m_log.Error("Can't load user account service");
                         return;
                     }
                     m_Enabled = true;
-                    m_log.Info("[AVATAR CONNECTOR]: Local avatar connector enabled");
+                    m_log.Info("Local avatar connector enabled");
                 }
             }
         }
@@ -116,6 +119,9 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Avatar
 
         public void AddRegion(Scene scene)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (!m_Enabled)
                 return;
 
