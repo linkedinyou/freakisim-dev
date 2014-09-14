@@ -82,6 +82,9 @@ namespace OpenSim.Region.CoreModules.Agent.TextureSender
 
         public void Initialise(IConfigSource source)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             IConfig startupConfig = source.Configs["Startup"];
             if (startupConfig != null)
             {
@@ -130,6 +133,9 @@ namespace OpenSim.Region.CoreModules.Agent.TextureSender
 
         public void BeginDecode(UUID assetID, byte[] j2kData, DecodedCallback callback)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             OpenJPEG.J2KLayerInfo[] result;
 
             // If it's cached, return the cached results
@@ -212,6 +218,9 @@ namespace OpenSim.Region.CoreModules.Agent.TextureSender
         /// <returns>true if decode was successful.  false otherwise.</returns>
         private bool DoJ2KDecode(UUID assetID, byte[] j2kData, out OpenJPEG.J2KLayerInfo[] layers, out int components)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
 //            m_log.DebugFormat(
 //                "[J2KDecoderModule]: Doing J2K decoding of {0} bytes for asset {1}", j2kData.Length, assetID);
 
@@ -356,6 +365,9 @@ namespace OpenSim.Region.CoreModules.Agent.TextureSender
 
         bool TryLoadCacheForAsset(UUID AssetId, out OpenJPEG.J2KLayerInfo[] Layers)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (m_decodedCache.TryGetValue(AssetId, out Layers))
             {
                 return true;

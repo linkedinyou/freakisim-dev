@@ -221,7 +221,8 @@ namespace OpenSim.Framework
         private static OSDMap ServiceOSDRequestWorker(string url, OSDMap data, string method, int timeout, bool compressed, bool rpc)
         {
 			if (m_log.IsDebugEnabled) {
-				m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+                m_log.DebugFormat ("{0}(string url: {1}, OSDMap data, string method: {2}, int timeout: {3}, bool compressed: {4}, bool rpc: {5}) ", 
+                    System.Reflection.MethodBase.GetCurrentMethod ().Name, url, method, timeout, compressed, rpc);
 			}
 
             int reqnum = RequestNumber++;
@@ -410,7 +411,8 @@ namespace OpenSim.Framework
         private static OSDMap ServiceFormRequestWorker(string url, NameValueCollection data, int timeout)
         {
 			if (m_log.IsDebugEnabled) {
-				m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+                m_log.DebugFormat ("{0}(string url: {1}, NameValueCollection data, int timeout: {2})", 
+                    System.Reflection.MethodBase.GetCurrentMethod ().Name, url, timeout);
 			}
 
             int reqnum = RequestNumber++;
@@ -987,7 +989,8 @@ namespace OpenSim.Framework
         public static string MakeRequest(string verb, string requestUrl, string obj, int timeoutsecs)
         {
 			if (m_log.IsDebugEnabled) {
-				m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+                m_log.DebugFormat ("{0}(string verb: {1}, string requestUrl: {2}, string obj: {3}, int timeoutsecs: {4}) ", 
+                    System.Reflection.MethodBase.GetCurrentMethod ().Name, verb, requestUrl, obj, timeoutsecs);
 			}
 
             int reqnum = WebUtil.RequestNumber++;
@@ -1122,7 +1125,8 @@ namespace OpenSim.Framework
         public static TResponse MakeRequest<TRequest, TResponse>(string verb, string requestUrl, TRequest obj, int pTimeout, int maxConnections)
         {
 			if (m_log.IsDebugEnabled) {
-				m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+                m_log.DebugFormat ("{0}(string verb: {1}, string requestUrl: {2}, TRequest obj, int pTimeout: {3}, int maxConnections: {4})", 
+                    System.Reflection.MethodBase.GetCurrentMethod ().Name, verb, requestUrl, pTimeout, maxConnections);
 			}
 
             int reqnum = WebUtil.RequestNumber++;
@@ -1302,7 +1306,8 @@ namespace OpenSim.Framework
         public static Hashtable SendRequest(Hashtable ReqParams, string method, string url)
         {
 			if (m_log.IsDebugEnabled) {
-				m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+                m_log.DebugFormat ("{0}(Hashtable ReqParams, string method: {1}, string url: {2})", 
+                    System.Reflection.MethodBase.GetCurrentMethod ().Name, method, url);
 			}
 
             int reqnum = WebUtil.RequestNumber++;
