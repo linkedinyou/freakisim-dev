@@ -547,7 +547,7 @@ namespace OpenSim.Region.Framework.Scenes
                     SceneObjectPart sitPart = ParentPart;
 
                     if (sitPart != null)
-                        return sitPart.ParentGroup.AbsolutePosition + (m_pos * sitPart.GetWorldRotation());
+                        return sitPart.ParentGroup.AbsolutePosition + (m_pos * sitPart.WorldRotation);
                 }
                 
                 return m_pos;
@@ -601,8 +601,11 @@ namespace OpenSim.Region.Framework.Scenes
         }
 
         /// <summary>
-        /// Current velocity of the avatar.
+        /// Velocity of the avatar with respect to its local reference frame.
         /// </summary>
+        /// <remarks>
+        /// So when sat on a vehicle this will be 0.  To get velocity with respect to the world use GetWorldVelocity()
+        /// </remarks>
         public override Vector3 Velocity
         {
             get
@@ -743,17 +746,36 @@ namespace OpenSim.Region.Framework.Scenes
         /// Unlike Rotation, this returns the world rotation no matter whether the avatar is sitting on a prim or not.
         /// </remarks>
         /// <returns></returns>
-        public Quaternion GetWorldRotation()
+        public Quaternion WorldRotation
         {
-            if (IsSatOnObject)
+            get
+            {
+                if (IsSatOnObject)
+                {
+                    SceneObjectPart sitPart = ParentPart;
+
+                    if (sitPart != null)
+                        return sitPart.WorldRotation * Rotation;
+                }
+
+                return Rotation;
+            }
+        }
+
+        /// <summary>
+        /// Get velocity relative to the world.
+        /// </summary>
+        public Vector3 WorldVelocity
+        {
+            get
             {
                 SceneObjectPart sitPart = ParentPart;
 
                 if (sitPart != null)
-                    return sitPart.GetWorldRotation() * Rotation;
-            }
+                    return sitPart.ParentGroup.Velocity;
 
-            return Rotation;
+                return Velocity;
+            }
         }
 
         public void AdjustKnownSeeds()
@@ -1042,7 +1064,7 @@ namespace OpenSim.Region.Framework.Scenes
                         ParentPart = part;
                         m_pos = PrevSitOffset;
     //                    pos = ParentPosition;
-                        pos = part.GetWorldPosition();
+                        pos = part.WorldPosition;
                     }
                     ParentUUID = UUID.Zero;
 
@@ -2613,7 +2635,7 @@ namespace OpenSim.Region.Framework.Scenes
                     }
                 }
 
-                Vector3 sitPartWorldPosition = part.GetWorldPosition();
+                Vector3 sitPartWorldPosition = part.WorldPosition;
                 ControllingClient.SendClearFollowCamProperties(part.ParentUUID);
 
                 ParentID = 0;
@@ -2623,7 +2645,7 @@ namespace OpenSim.Region.Framework.Scenes
 
                 if (part.SitTargetAvatar == UUID)
                 {
-                    standRotation = part.GetWorldRotation();
+                    standRotation = part.WorldRotation;
 
                     if (!part.IsRoot)
                         standRotation = standRotation * part.SitTargetOrientation;
@@ -2642,7 +2664,7 @@ namespace OpenSim.Region.Framework.Scenes
 
 //                Vector3 standPositionAdjustment 
 //                    = part.SitTargetPosition + new Vector3(0.5f, 0f, m_sitAvatarHeight / 2f);
-                Vector3 adjustmentForSitPosition = part.SitTargetPosition * part.GetWorldRotation();
+                Vector3 adjustmentForSitPosition = part.SitTargetPosition * part.WorldRotation;
 
                 // XXX: This is based on the physics capsule sizes.  Need to find a better way to read this rather than
                 // hardcoding here.
@@ -2901,7 +2923,7 @@ namespace OpenSim.Region.Framework.Scenes
             if (part == null)
                 return;
 
-            Vector3 targetPos = part.GetWorldPosition() + offset * part.GetWorldRotation();     
+            Vector3 targetPos = part.WorldPosition + offset * part.WorldRotation;
             if(!CanEnterLandPosition(targetPos))
             {
                 ControllingClient.SendAlertMessage(" Sit position on restricted land, try another spot");
@@ -5045,7 +5067,7 @@ namespace OpenSim.Region.Framework.Scenes
             detobj.nameStr = obj.Name;
             detobj.ownerUUID = obj.OwnerID;
             detobj.posVector = obj.AbsolutePosition;
-            detobj.rotQuat = obj.GetWorldRotation();
+            detobj.rotQuat = obj.WorldRotation;
             detobj.velVector = obj.Velocity;
             detobj.colliderType = 0;
             detobj.groupUUID = obj.GroupID;
