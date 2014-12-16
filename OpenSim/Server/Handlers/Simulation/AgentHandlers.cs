@@ -297,6 +297,9 @@ namespace OpenSim.Server.Handlers.Simulation
         {
 			if (m_log.IsDebugEnabled) {
 				m_log.Debug ("DoAgentPost(Hashtable request, Hashtable responsedata, UUID id)");
+                m_log.DebugFormat ("request: {0}", Util.PrettyFormatHashTable(request));
+                m_log.DebugFormat ("uuid: {0}", id);
+                // Implemented in Akkisim AvatarActor
 			}
 
             OSDMap args = Utils.GetOSDMap((string)request["body"]);

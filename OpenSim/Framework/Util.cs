@@ -1886,6 +1886,27 @@ namespace OpenSim.Framework
         }
 
         /// <summary>
+        /// Pretty format the hashtable contents to a single line for each key/value pair.
+        /// </summary>
+        /// <remarks>
+        /// Used for debugging output.
+        /// </remarks>
+        /// <param name='ht'></param>
+        public static string PrettyFormatHashTable(Hashtable ht)
+        {
+            StringBuilder sb = new StringBuilder();
+
+            int i = 0;
+
+            foreach (string key in ht.Keys)
+            {
+                sb.AppendFormat("  {0} :: {1}\n", key, ht[key]);
+            }
+
+            return sb.ToString();
+        }
+
+        /// <summary>
         /// Used to trigger an early library load on Windows systems.
         /// </summary>
         /// <remarks>

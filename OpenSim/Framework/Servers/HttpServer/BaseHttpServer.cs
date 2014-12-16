@@ -462,6 +462,9 @@ namespace OpenSim.Framework.Servers.HttpServer
 			}
 
             OSHttpRequest req = new OSHttpRequest(context, request);
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("OSHttpRequest: {0}", req.ToString() );
+            }
             WebSocketRequestDelegate dWebSocketRequestDelegate = null;
             try
             {
@@ -540,7 +543,7 @@ namespace OpenSim.Framework.Servers.HttpServer
 
                 if (TryGetStreamHandler(handlerKey, out requestHandler))
                 {
-                    if (DebugLevel >= 3)
+                    if (m_log.IsDebugEnabled)
                         LogIncomingToStreamHandler(request, requestHandler);
 
                     response.ContentType = requestHandler.ContentType; // Lets do this defaulting before in case handler has varying content type.
@@ -684,11 +687,11 @@ namespace OpenSim.Framework.Servers.HttpServer
 
                 if (buffer != null)
                 {
-                    if (WebUtil.DebugLevel >= 5)
+                    if (m_log.IsDebugEnabled)
                     {
                         string output = System.Text.Encoding.UTF8.GetString(buffer);
 
-                        if (WebUtil.DebugLevel >= 6)
+                        if (m_log.IsDebugEnabled)
                         {
                             // Always truncate binary blobs. We don't have a ContentType, so detect them using the request name.
                             if ((requestHandler != null && requestHandler.Name == "GetMesh"))
@@ -786,7 +789,7 @@ namespace OpenSim.Framework.Servers.HttpServer
                 requestHandler.Description,
                 request.RemoteIPEndPoint);
 
-            if (DebugLevel >= 5)
+            if (m_log.IsDebugEnabled)
                 LogIncomingInDetail(request);
         }
 
@@ -801,7 +804,7 @@ namespace OpenSim.Framework.Servers.HttpServer
                 request.Url.PathAndQuery,
                 request.RemoteIPEndPoint);
 
-            if (DebugLevel >= 5)
+            if (m_log.IsDebugEnabled)
                 LogIncomingInDetail(request);
         }
 
@@ -815,7 +818,7 @@ namespace OpenSim.Framework.Servers.HttpServer
                 request.Url.PathAndQuery,
                 request.RemoteIPEndPoint);
 
-            if (DebugLevel >= 5)
+            if (m_log.IsDebugEnabled)
                 LogIncomingInDetail(request);
         }
 
@@ -833,7 +836,7 @@ namespace OpenSim.Framework.Servers.HttpServer
             {
                 string output;
 
-                if (DebugLevel == 5)
+                if (m_log.IsDebugEnabled)
                 {
                     char[] chars = new char[WebUtil.MaxRequestDiagLength + 1];  // +1 so we know to add "..." only if needed
                     int len = reader.Read(chars, 0, WebUtil.MaxRequestDiagLength + 1);

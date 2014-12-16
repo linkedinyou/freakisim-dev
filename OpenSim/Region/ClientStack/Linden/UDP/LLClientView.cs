@@ -446,6 +446,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
         public LLClientView(Scene scene, LLUDPServer udpServer, LLUDPClient udpClient, AuthenticateResponse sessionInfo,
             UUID agentId, UUID sessionId, uint circuitCode)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
 //            DebugPacketLevel = 1;
 
             CloseSyncLock = new Object();
@@ -493,6 +496,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         public void Close(bool force)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             // We lock here to prevent race conditions between two threads calling close simultaneously (e.g.
             // a simultaneous relog just as a client is being closed out due to no packet ack from the old connection.
             lock (CloseSyncLock)
@@ -523,9 +529,12 @@ namespace OpenSim.Region.ClientStack.LindenUDP
         /// </remarks>
         public void CloseWithoutChecks()
         {
-            m_log.DebugFormat(
-                "[CLIENT]: Close has been called for {0} attached to scene {1}",
-                Name, m_scene.RegionInfo.RegionName);
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+                m_log.DebugFormat(
+                    "Close has been called for {0} attached to scene {1}",
+                    Name, m_scene.RegionInfo.RegionName);
+            }
 
             // Shutdown the image manager
             ImageManager.Close();
@@ -556,6 +565,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         public void Kick(string message)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (!SceneAgent.IsChildAgent)
             {
                 KickUserPacket kupack = (KickUserPacket)PacketPool.Instance.GetPacket(PacketType.KickUser);
@@ -590,6 +602,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         public static bool AddPacketHandler(PacketType packetType, PacketMethod handler)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }   
             try
             {
                 GlobalPacketHandlers.AddIfNotExists(packetType, delegate() { return handler; });
@@ -614,6 +629,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
         /// <returns>true if the handler was added.  This is currently always the case.</returns>
         public bool AddLocalPacketHandler(PacketType packetType, PacketMethod handler)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             return AddLocalPacketHandler(packetType, handler, true);
         }
 
@@ -630,6 +648,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
         /// <returns>true if the handler was added.  This is currently always the case.</returns>
         public bool AddLocalPacketHandler(PacketType packetType, PacketMethod handler, bool doAsync)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             try
             {
                 m_localPacketHandlers.AddIfNotExists(packetType, delegate() { return new PacketProcessor() { method = handler, Async = doAsync }; });
@@ -644,6 +665,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         public bool AddGenericPacketHandler(string MethodName, GenericMessage handler)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             try
             {
                 m_genericPacketHandlers.AddIfNotExists(MethodName.ToLower().Trim(), delegate() { return handler; });
@@ -663,6 +687,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
         /// <returns>True if a handler was found which successfully processed the packet.</returns>
         protected virtual bool ProcessPacketMethod(Packet packet)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             PacketProcessor pprocessor;
             bool result = false;
 
@@ -709,6 +736,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         public void ProcessSpecificPacketAsync(object state)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             AsyncPacketProcess packetObject = (AsyncPacketProcess)state;
 
             try
@@ -730,6 +760,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         public virtual void Start()
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             m_scene.AddNewAgent(this, PresenceType.User);
 
             RefreshGroupMembership();
@@ -754,6 +787,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         public void SendRegionHandshake(RegionInfo regionInfo, RegionHandshakeArgs args)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             RegionHandshakePacket handshake = (RegionHandshakePacket)PacketPool.Instance.GetPacket(PacketType.RegionHandshake);
             handshake.RegionInfo = new RegionHandshakePacket.RegionInfoBlock();
             handshake.RegionInfo.BillableFactor = args.billableFactor;
@@ -803,6 +839,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         public void MoveAgentIntoRegion(RegionInfo regInfo, Vector3 pos, Vector3 look)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             AgentMovementCompletePacket mov = (AgentMovementCompletePacket)PacketPool.Instance.GetPacket(PacketType.AgentMovementComplete);
             mov.SimData.ChannelVersion = m_channelVersion;
             mov.AgentData.SessionID = m_sessionId;
@@ -828,6 +867,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
             string message, byte type, Vector3 fromPos, string fromName,
             UUID fromAgentID, UUID ownerID, byte source, byte audible)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             ChatFromSimulatorPacket reply = (ChatFromSimulatorPacket)PacketPool.Instance.GetPacket(PacketType.ChatFromSimulator);
             reply.ChatData.Audible = audible;
             reply.ChatData.Message = Util.StringToBytes1024(message);
@@ -848,6 +890,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
         // Don't remove transaction ID! Groups and item gives need to set it!
         public void SendInstantMessage(GridInstantMessage im)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (((Scene)(m_scene)).Permissions.CanInstantMessage(new UUID(im.fromAgentID), new UUID(im.toAgentID)))
             {
                 ImprovedInstantMessagePacket msg
@@ -877,6 +922,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         public void SendGenericMessage(string method, UUID invoice, List<string> message)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             GenericMessagePacket gmp = new GenericMessagePacket();
 
             gmp.AgentData.AgentID = AgentId;
@@ -897,6 +945,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         public void SendGenericMessage(string method, UUID invoice, List<byte[]> message)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             GenericMessagePacket gmp = new GenericMessagePacket();
 
             gmp.AgentData.AgentID = AgentId;
@@ -917,6 +968,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         public void SendGroupActiveProposals(UUID groupID, UUID transactionID, GroupActiveProposals[] Proposals)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             int i = 0;
             foreach (GroupActiveProposals Proposal in Proposals)
             {
@@ -969,6 +1023,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         public void SendGroupVoteHistory(UUID groupID, UUID transactionID, GroupVoteHistory[] Votes)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             int i = 0;
             foreach (GroupVoteHistory Vote in Votes)
             {
@@ -1027,6 +1084,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         public void SendGroupAccountingDetails(IClientAPI sender,UUID groupID, UUID transactionID, UUID sessionID, int amt)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             GroupAccountDetailsReplyPacket GADRP = new GroupAccountDetailsReplyPacket();
             GADRP.AgentData = new GroupAccountDetailsReplyPacket.AgentDataBlock();
             GADRP.AgentData.AgentID = sender.AgentId;
@@ -1046,6 +1106,10 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         public void SendGroupAccountingSummary(IClientAPI sender,UUID groupID, uint moneyAmt, int totalTier, int usedTier)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
+
             GroupAccountSummaryReplyPacket GASRP =
                     (GroupAccountSummaryReplyPacket)PacketPool.Instance.GetPacket(
                     PacketType.GroupAccountSummaryReply);
@@ -1079,6 +1143,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         public void SendGroupTransactionsSummaryDetails(IClientAPI sender,UUID groupID, UUID transactionID, UUID sessionID, int amt)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             GroupAccountTransactionsReplyPacket GATRP =
                     (GroupAccountTransactionsReplyPacket)PacketPool.Instance.GetPacket(
                     PacketType.GroupAccountTransactionsReply);
@@ -1108,6 +1175,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
         /// <param name="map">heightmap</param>
         public virtual void SendLayerData(float[] map)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             Util.FireAndForget(DoSendLayerData, m_scene.Heightmap.GetTerrainData());
         }
 
@@ -1116,7 +1186,10 @@ namespace OpenSim.Region.ClientStack.LindenUDP
         /// </summary>
         /// <param name="o"></param>
         private void DoSendLayerData(object o)
-        {
+        {   
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             TerrainData map = (TerrainData)o;
 
             try
@@ -1141,6 +1214,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private void SendLayerTopRight(TerrainData map, int x1, int y1, int x2, int y2)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             // Row
             for (int i = x1; i <= x2; i++)
                 SendLayerData(i, y1, map);
@@ -1155,6 +1231,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         void SendLayerBottomLeft(TerrainData map, int x1, int y1, int x2, int y2)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             // Row in reverse
             for (int i = x2; i >= x1; i--)
                 SendLayerData(i, y2, map);
@@ -1195,6 +1274,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
         //    and the patches to send are <3,5> and <8,4>.
         public void SendLayerData(int px, int py, float[] map)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (px >= 0)
             {
                 SendLayerData(px, py, m_scene.Heightmap.GetTerrainData());
@@ -1224,6 +1306,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
         /// <param name="map">heightmap</param>
         public void SendLayerData(int px, int py, TerrainData terrData)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             int[] xPatches = new[] { px };
             int[] yPatches = new[] { py };
             SendLayerData(xPatches, yPatches, terrData);
@@ -1231,6 +1316,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private void SendLayerData(int[] px, int[] py, TerrainData terrData)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             try
             {
                 // Many, many patches could have been passed to us. Since the patches will be compressed
@@ -1276,6 +1364,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
         //    only have one cache miss.
         private void SendTheLayerPacket(LayerDataPacket layerpack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (m_justEditedTerrain)
             {
                 layerpack.Header.Reliable = false;
@@ -1294,6 +1385,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
         /// <param name="windSpeeds">16x16 array of wind speeds</param>
         public virtual void SendWindData(Vector2[] windSpeeds)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             Util.FireAndForget(DoSendWindData, windSpeeds);
         }
 
@@ -1303,6 +1397,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
         /// <param name="windSpeeds">16x16 array of cloud densities</param>
         public virtual void SendCloudData(float[] cloudDensity)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             Util.FireAndForget(DoSendCloudData, cloudDensity);
         }
 
@@ -1312,6 +1409,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
         /// <param name="o"></param>
         private void DoSendWindData(object o)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             Vector2[] windSpeeds = (Vector2[])o;
             TerrainPatch[] patches = new TerrainPatch[2];
             patches[0] = new TerrainPatch { Data = new float[16 * 16] };
@@ -1369,6 +1469,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
         /// </summary>
         public virtual void InformClientOfNeighbour(ulong neighbourHandle, IPEndPoint neighbourEndPoint)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             IPAddress neighbourIP = neighbourEndPoint.Address;
             ushort neighbourPort = (ushort)neighbourEndPoint.Port;
 
@@ -1391,6 +1494,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         public AgentCircuitData RequestClientInfo()
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             AgentCircuitData agentData = new AgentCircuitData();
             agentData.AgentID = AgentId;
             agentData.SessionID = m_sessionId;
@@ -1414,6 +1520,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
         public virtual void CrossRegion(ulong newRegionHandle, Vector3 pos, Vector3 lookAt, IPEndPoint externalIPEndPoint,
                                 string capsURL)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             Vector3 look = new Vector3(lookAt.X * 10, lookAt.Y * 10, lookAt.Z * 10);
 
             //CrossedRegionPacket newSimPack = (CrossedRegionPacket)PacketPool.Instance.GetPacket(PacketType.CrossedRegion);
@@ -1441,6 +1550,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         internal void SendMapBlockSplit(List<MapBlockData> mapBlocks, uint flag)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             MapBlockReplyPacket mapReply = (MapBlockReplyPacket)PacketPool.Instance.GetPacket(PacketType.MapBlockReply);
             // TODO: don't create new blocks if recycling an old packet
 
@@ -1474,6 +1586,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         public void SendMapBlock(List<MapBlockData> mapBlocks, uint flag)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             MapBlockData[] mapBlocks2 = mapBlocks.ToArray();
 
             int maxsend = 10;
@@ -1495,6 +1610,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         public void SendLocalTeleport(Vector3 position, Vector3 lookAt, uint flags)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             TeleportLocalPacket tpLocal = (TeleportLocalPacket)PacketPool.Instance.GetPacket(PacketType.TeleportLocal);
             tpLocal.Info.AgentID = AgentId;
             tpLocal.Info.TeleportFlags = flags;
@@ -1509,6 +1627,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
         public virtual void SendRegionTeleport(ulong regionHandle, byte simAccess, IPEndPoint newRegionEndPoint, uint locationID,
                                        uint flags, string capsURL)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             //TeleportFinishPacket teleport = (TeleportFinishPacket)PacketPool.Instance.GetPacket(PacketType.TeleportFinish);
 
             TeleportFinishPacket teleport = new TeleportFinishPacket();
@@ -1539,6 +1660,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
         /// </summary>
         public void SendTeleportFailed(string reason)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             TeleportFailedPacket tpFailed = (TeleportFailedPacket)PacketPool.Instance.GetPacket(PacketType.TeleportFailed);
             tpFailed.Info.AgentID = AgentId;
             tpFailed.Info.Reason = Util.StringToBytes256(reason);
@@ -1553,6 +1677,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
         /// </summary>
         public void SendTeleportStart(uint flags)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             TeleportStartPacket tpStart = (TeleportStartPacket)PacketPool.Instance.GetPacket(PacketType.TeleportStart);
             //TeleportStartPacket tpStart = new TeleportStartPacket();
             tpStart.Info.TeleportFlags = flags; //16; // Teleport via location
@@ -1563,6 +1690,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         public void SendTeleportProgress(uint flags, string message)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             TeleportProgressPacket tpProgress = (TeleportProgressPacket)PacketPool.Instance.GetPacket(PacketType.TeleportProgress);
             tpProgress.AgentData.AgentID = this.AgentId;
             tpProgress.Info.TeleportFlags = flags;
@@ -1574,6 +1704,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         public void SendMoneyBalance(UUID transaction, bool success, byte[] description, int balance, int transactionType, UUID sourceID, bool sourceIsGroup, UUID destID, bool destIsGroup, int amount, string item)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             MoneyBalanceReplyPacket money = (MoneyBalanceReplyPacket)PacketPool.Instance.GetPacket(PacketType.MoneyBalanceReply);
             money.MoneyData.AgentID = AgentId;
             money.MoneyData.TransactionID = transaction;
@@ -1593,6 +1726,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         public void SendPayPrice(UUID objectID, int[] payPrice)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (payPrice[0] == 0 &&
                 payPrice[1] == 0 &&
                 payPrice[2] == 0 &&
@@ -1619,6 +1755,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         public void SendStartPingCheck(byte seq)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             StartPingCheckPacket pc = (StartPingCheckPacket)PacketPool.Instance.GetPacket(PacketType.StartPingCheck);
             pc.Header.Reliable = false;
 
@@ -1631,7 +1770,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         public void SendKillObject(List<uint> localIDs)
         {
-//            m_log.DebugFormat("[CLIENT]: Sending KillObjectPacket to {0} for {1} in {2}", Name, localID, regionHandle);
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
 
             KillObjectPacket kill = (KillObjectPacket)PacketPool.Instance.GetPacket(PacketType.KillObject);
             // TODO: don't create new blocks if recycling an old packet
@@ -1683,6 +1824,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
                                                List<InventoryFolderBase> folders, int version,
                                                bool fetchFolders, bool fetchItems)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             // An inventory descendents packet consists of a single agent section and an inventory details
             // section for each inventory item.  The size of each inventory item is approximately 550 bytes.
             // In theory, UDP has a maximum packet size of 64k, so it should be possible to send descendent
@@ -1753,6 +1897,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private InventoryDescendentsPacket.FolderDataBlock CreateFolderDataBlock(InventoryFolderBase folder)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             InventoryDescendentsPacket.FolderDataBlock newBlock = new InventoryDescendentsPacket.FolderDataBlock();
             newBlock.FolderID = folder.ID;
             newBlock.Name = Util.StringToBytes256(folder.Name);
@@ -1766,6 +1913,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private InventoryDescendentsPacket.ItemDataBlock CreateItemDataBlock(InventoryItemBase item)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             InventoryDescendentsPacket.ItemDataBlock newBlock = new InventoryDescendentsPacket.ItemDataBlock();
             newBlock.ItemID = item.ID;
             newBlock.AssetID = item.AssetID;
@@ -1805,6 +1955,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private void AddNullFolderBlockToDecendentsPacket(ref InventoryDescendentsPacket packet)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             packet.FolderData = new InventoryDescendentsPacket.FolderDataBlock[1];
             packet.FolderData[0] = new InventoryDescendentsPacket.FolderDataBlock();
             packet.FolderData[0].FolderID = UUID.Zero;
@@ -1815,6 +1968,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private void AddNullItemBlockToDescendentsPacket(ref InventoryDescendentsPacket packet)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             packet.ItemData = new InventoryDescendentsPacket.ItemDataBlock[1];
             packet.ItemData[0] = new InventoryDescendentsPacket.ItemDataBlock();
             packet.ItemData[0].ItemID = UUID.Zero;
@@ -1844,6 +2000,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private InventoryDescendentsPacket CreateInventoryDescendentsPacket(UUID ownerID, UUID folderID, int version, int descendents, int folders, int items)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             InventoryDescendentsPacket descend = (InventoryDescendentsPacket)PacketPool.Instance.GetPacket(PacketType.InventoryDescendents);
             descend.Header.Zerocoded = true;
             descend.AgentData.AgentID = AgentId;
@@ -1867,6 +2026,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         public void SendInventoryItemDetails(UUID ownerID, InventoryItemBase item)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             // Fudge this value. It's only needed to make the CRC anyway
             const uint FULL_MASK_PERMISSIONS = (uint)0x7fffffff;
 
@@ -1913,6 +2075,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         protected void SendBulkUpdateInventoryFolder(InventoryFolderBase folderBase)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             // We will use the same transaction id for all the separate packets to be sent out in this update.
             UUID transactionId = UUID.Random();
 
@@ -1950,6 +2115,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
             InventoryFolderBase folder, ref List<BulkUpdateInventoryPacket.FolderDataBlock> folderDataBlocks,
             UUID transactionId)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             folderDataBlocks.Add(GenerateBulkUpdateFolderDataBlock(folder));
 
             const int MAX_ITEMS_PER_PACKET = 5;
@@ -2005,6 +2173,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
         /// <returns></returns>
         private BulkUpdateInventoryPacket.FolderDataBlock GenerateBulkUpdateFolderDataBlock(InventoryFolderBase folder)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             BulkUpdateInventoryPacket.FolderDataBlock folderBlock = new BulkUpdateInventoryPacket.FolderDataBlock();
 
             folderBlock.FolderID = folder.ID;
@@ -2024,6 +2195,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
         /// <returns></returns>
         private BulkUpdateInventoryPacket.ItemDataBlock GenerateBulkUpdateItemDataBlock(InventoryItemBase item)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             BulkUpdateInventoryPacket.ItemDataBlock itemBlock = new BulkUpdateInventoryPacket.ItemDataBlock();
 
             itemBlock.ItemID = item.ID;
@@ -2062,6 +2236,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         public void SendBulkUpdateInventory(InventoryNodeBase node)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (node is InventoryItemBase)
                 SendBulkUpdateInventoryItem((InventoryItemBase)node);
             else if (node is InventoryFolderBase)
@@ -2074,6 +2251,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         protected void SendBulkUpdateInventoryItem(InventoryItemBase item)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             const uint FULL_MASK_PERMISSIONS = (uint)0x7ffffff;
 
             BulkUpdateInventoryPacket bulkUpdate
@@ -2128,6 +2308,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
         /// <see>IClientAPI.SendInventoryItemCreateUpdate(InventoryItemBase)</see>
         public void SendInventoryItemCreateUpdate(InventoryItemBase Item, uint callbackId)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             const uint FULL_MASK_PERMISSIONS = (uint)0x7fffffff;
 
             UpdateCreateInventoryItemPacket InventoryReply
@@ -2176,6 +2359,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         public void SendRemoveInventoryItem(UUID itemID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             RemoveInventoryItemPacket remove = (RemoveInventoryItemPacket)PacketPool.Instance.GetPacket(PacketType.RemoveInventoryItem);
             // TODO: don't create new blocks if recycling an old packet
             remove.AgentData.AgentID = AgentId;
@@ -2189,6 +2375,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         public void SendTakeControls(int controls, bool passToAgent, bool TakeControls)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             ScriptControlChangePacket scriptcontrol = (ScriptControlChangePacket)PacketPool.Instance.GetPacket(PacketType.ScriptControlChange);
             ScriptControlChangePacket.DataBlock[] data = new ScriptControlChangePacket.DataBlock[1];
             ScriptControlChangePacket.DataBlock ddata = new ScriptControlChangePacket.DataBlock();
@@ -2202,6 +2391,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         public void SendTaskInventory(UUID taskID, short serial, byte[] fileName)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             ReplyTaskInventoryPacket replytask = (ReplyTaskInventoryPacket)PacketPool.Instance.GetPacket(PacketType.ReplyTaskInventory);
             replytask.InventoryData.TaskID = taskID;
             replytask.InventoryData.Serial = serial;
@@ -2211,6 +2403,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         public void SendXferPacket(ulong xferID, uint packet, byte[] data)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             SendXferPacketPacket sendXfer = (SendXferPacketPacket)PacketPool.Instance.GetPacket(PacketType.SendXferPacket);
             sendXfer.XferID.ID = xferID;
             sendXfer.XferID.Packet = packet;
@@ -2220,6 +2415,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         public void SendAbortXferPacket(ulong xferID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             AbortXferPacket xferItem = (AbortXferPacket)PacketPool.Instance.GetPacket(PacketType.AbortXfer);
             xferItem.XferID.ID = xferID;
             OutPacket(xferItem, ThrottleOutPacketType.Asset);
@@ -2230,6 +2428,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
                                     int PriceParcelClaim, float PriceParcelClaimFactor, int PriceParcelRent, int PricePublicObjectDecay,
                                     int PricePublicObjectDelete, int PriceRentLight, int PriceUpload, int TeleportMinPrice, float TeleportPriceExponent)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             EconomyDataPacket economyData = (EconomyDataPacket)PacketPool.Instance.GetPacket(PacketType.EconomyData);
             economyData.Info.EnergyEfficiency = EnergyEfficiency;
             economyData.Info.ObjectCapacity = ObjectCapacity;
@@ -2254,6 +2455,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         public void SendAvatarPickerReply(AvatarPickerReplyAgentDataArgs AgentData, List<AvatarPickerReplyDataArgs> Data)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             //construct the AvatarPickerReply packet.
             AvatarPickerReplyPacket replyPacket = new AvatarPickerReplyPacket();
             replyPacket.AgentData.AgentID = AgentData.AgentID;
@@ -2274,6 +2478,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         public void SendAgentDataUpdate(UUID agentid, UUID activegroupid, string firstname, string lastname, ulong grouppowers, string groupname, string grouptitle)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (agentid == AgentId)
             {
                 ActiveGroupId = activegroupid;
@@ -2299,6 +2506,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
         /// <param name="message"></param>
         public void SendAlertMessage(string message)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             AlertMessagePacket alertPack = (AlertMessagePacket)PacketPool.Instance.GetPacket(PacketType.AlertMessage);
             alertPack.AlertData = new AlertMessagePacket.AlertDataBlock();
             alertPack.AlertData.Message = Util.StringToBytes256(message);
@@ -2315,6 +2525,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
         /// the AlertMessage packet).</param>
         public void SendAgentAlertMessage(string message, bool modal)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             OutPacket(BuildAgentAlertPacket(message, modal), ThrottleOutPacketType.Task);
         }
 
@@ -2326,6 +2539,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
         /// <returns></returns>
         public AgentAlertMessagePacket BuildAgentAlertPacket(string message, bool modal)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             // Prepend a slash to make the message come up in the top right
             // again.
             // Allow special formats to be sent from aware modules.
@@ -2342,6 +2558,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
         public void SendLoadURL(string objectname, UUID objectID, UUID ownerID, bool groupOwned, string message,
                                 string url)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             LoadURLPacket loadURL = (LoadURLPacket)PacketPool.Instance.GetPacket(PacketType.LoadURL);
             loadURL.Data.ObjectName = Util.StringToBytes256(objectname);
             loadURL.Data.ObjectID = objectID;
@@ -2356,6 +2575,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
             string objectname, UUID objectID, UUID ownerID, string ownerFirstName, string ownerLastName, string msg,
             UUID textureID, int ch, string[] buttonlabels)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             ScriptDialogPacket dialog = (ScriptDialogPacket)PacketPool.Instance.GetPacket(PacketType.ScriptDialog);
             dialog.Data.ObjectID = objectID;
             dialog.Data.ObjectName = Util.StringToBytes256(objectname);
@@ -2381,7 +2603,10 @@ namespace OpenSim.Region.ClientStack.LindenUDP
         }
 
         public void SendPreLoadSound(UUID objectID, UUID ownerID, UUID soundID)
-        {
+        {   
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             PreloadSoundPacket preSound = (PreloadSoundPacket)PacketPool.Instance.GetPacket(PacketType.PreloadSound);
             // TODO: don't create new blocks if recycling an old packet
             preSound.DataBlock = new PreloadSoundPacket.DataBlockBlock[1];
@@ -2395,6 +2620,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         public void SendPlayAttachedSound(UUID soundID, UUID objectID, UUID ownerID, float gain, byte flags)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             AttachedSoundPacket sound = (AttachedSoundPacket)PacketPool.Instance.GetPacket(PacketType.AttachedSound);
             sound.DataBlock.SoundID = soundID;
             sound.DataBlock.ObjectID = objectID;
@@ -2407,6 +2635,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         public void SendTriggeredSound(UUID soundID, UUID ownerID, UUID objectID, UUID parentID, ulong handle, Vector3 position, float gain)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             SoundTriggerPacket sound = (SoundTriggerPacket)PacketPool.Instance.GetPacket(PacketType.SoundTrigger);
             sound.SoundData.SoundID = soundID;
             sound.SoundData.OwnerID = ownerID;
@@ -2421,6 +2652,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         public void SendAttachedSoundGainChange(UUID objectID, float gain)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             AttachedSoundGainChangePacket sound = (AttachedSoundGainChangePacket)PacketPool.Instance.GetPacket(PacketType.AttachedSoundGainChange);
             sound.DataBlock.ObjectID = objectID;
             sound.DataBlock.Gain = gain;
@@ -2430,6 +2664,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         public void SendSunPos(Vector3 Position, Vector3 Velocity, ulong CurrentTime, uint SecondsPerSunCycle, uint SecondsPerYear, float OrbitalPosition)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             // Viewers based on the Linden viwer code, do wacky things for oribital positions from Midnight to Sunrise
             // So adjust for that
             // Contributed by: Godfrey
@@ -2459,6 +2696,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
         // Currently Deprecated
         public void SendViewerTime(int phase)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             /*
             Console.WriteLine("SunPhase: {0}", phase);
             SimulatorViewerTimeMessagePacket viewertime = (SimulatorViewerTimeMessagePacket)PacketPool.Instance.GetPacket(PacketType.SimulatorViewerTimeMessage);
@@ -2510,6 +2750,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         public void SendViewerEffect(ViewerEffectPacket.EffectBlock[] effectBlocks)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             ViewerEffectPacket packet = (ViewerEffectPacket)PacketPool.Instance.GetPacket(PacketType.ViewerEffect);
             packet.Header.Reliable = false;
             packet.Header.Zerocoded = true;
@@ -2527,6 +2770,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
                                          string flAbout, uint flags, UUID flImageID, UUID imageID, string profileURL,
                                          UUID partnerID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             AvatarPropertiesReplyPacket avatarReply = (AvatarPropertiesReplyPacket)PacketPool.Instance.GetPacket(PacketType.AvatarPropertiesReply);
             avatarReply.AgentData.AgentID = AgentId;
             avatarReply.AgentData.AvatarID = avatarID;
@@ -2557,6 +2803,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
         /// <param name="Message"></param>
         public void SendBlueBoxMessage(UUID FromAvatarID, String FromAvatarName, String Message)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (!SceneAgent.IsChildAgent)
                 SendInstantMessage(new GridInstantMessage(null, FromAvatarID, FromAvatarName, AgentId, 1, Message, false, new Vector3()));
 
@@ -2565,6 +2814,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         public void SendLogoutPacket()
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             // I know this is a bit of a hack, however there are times when you don't
             // want to send this, but still need to do the rest of the shutdown process
             // this method gets called from the packet server..   which makes it practically
@@ -2586,6 +2838,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         public void SendHealth(float health)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             HealthMessagePacket healthpacket = (HealthMessagePacket)PacketPool.Instance.GetPacket(PacketType.HealthMessage);
             healthpacket.HealthData.Health = health;
             OutPacket(healthpacket, ThrottleOutPacketType.Task);
@@ -2593,6 +2848,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         public void SendAgentOnline(UUID[] agentIDs)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             OnlineNotificationPacket onp = new OnlineNotificationPacket();
             OnlineNotificationPacket.AgentBlockBlock[] onpb = new OnlineNotificationPacket.AgentBlockBlock[agentIDs.Length];
             for (int i = 0; i < agentIDs.Length; i++)
@@ -2608,6 +2866,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         public void SendAgentOffline(UUID[] agentIDs)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             OfflineNotificationPacket offp = new OfflineNotificationPacket();
             OfflineNotificationPacket.AgentBlockBlock[] offpb = new OfflineNotificationPacket.AgentBlockBlock[agentIDs.Length];
             for (int i = 0; i < agentIDs.Length; i++)
@@ -2624,6 +2885,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
         public void SendSitResponse(UUID TargetID, Vector3 OffsetPos, Quaternion SitOrientation, bool autopilot,
                                         Vector3 CameraAtOffset, Vector3 CameraEyeOffset, bool ForceMouseLook)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             AvatarSitResponsePacket avatarSitResponse = new AvatarSitResponsePacket();
             avatarSitResponse.SitObject.ID = TargetID;
             avatarSitResponse.SitTransform.CameraAtOffset = CameraAtOffset;
@@ -2638,6 +2902,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         public void SendAdminResponse(UUID Token, uint AdminLevel)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             GrantGodlikePowersPacket respondPacket = new GrantGodlikePowersPacket();
             GrantGodlikePowersPacket.GrantDataBlock gdb = new GrantGodlikePowersPacket.GrantDataBlock();
             GrantGodlikePowersPacket.AgentDataBlock adb = new GrantGodlikePowersPacket.AgentDataBlock();
@@ -2654,6 +2921,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         public void SendGroupMembership(GroupMembershipData[] GroupMembership)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             m_groupPowers.Clear();
 
             AgentGroupDataUpdatePacket Groupupdate = new AgentGroupDataUpdatePacket();
@@ -2696,6 +2966,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         public void SendPartPhysicsProprieties(ISceneEntity entity)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             SceneObjectPart part = (SceneObjectPart)entity;
             if (part != null && AgentId != UUID.Zero)
             {
@@ -2725,6 +2998,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         public void SendGroupNameReply(UUID groupLLUID, string GroupName)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             UUIDGroupNameReplyPacket pack = new UUIDGroupNameReplyPacket();
             UUIDGroupNameReplyPacket.UUIDNameBlockBlock[] uidnameblock = new UUIDGroupNameReplyPacket.UUIDNameBlockBlock[1];
             UUIDGroupNameReplyPacket.UUIDNameBlockBlock uidnamebloc = new UUIDGroupNameReplyPacket.UUIDNameBlockBlock();
@@ -2737,6 +3013,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         public void SendLandStatReply(uint reportType, uint requestFlags, uint resultCount, LandStatReportItem[] lsrpia)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             LandStatReplyPacket lsrp = new LandStatReplyPacket();
             // LandStatReplyPacket.RequestDataBlock lsreqdpb = new LandStatReplyPacket.RequestDataBlock();
             LandStatReplyPacket.ReportDataBlock[] lsrepdba = new LandStatReplyPacket.ReportDataBlock[lsrpia.Length];
@@ -2764,6 +3043,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         public void SendScriptRunningReply(UUID objectID, UUID itemID, bool running)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             ScriptRunningReplyPacket scriptRunningReply = new ScriptRunningReplyPacket();
             scriptRunningReply.Script.ObjectID = objectID;
             scriptRunningReply.Script.ItemID = itemID;
@@ -2774,6 +3056,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         public void SendAsset(AssetRequestToClient req)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (req.AssetInf.Data == null)
             {
                 m_log.ErrorFormat("{0} Cannot send asset {1} ({2}), asset data is null",
@@ -2855,6 +3140,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         public void SendAssetNotFound(AssetRequestToClient req)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             TransferInfoPacket Transfer = new TransferInfoPacket();
             Transfer.TransferInfo.ChannelType = 2;
             Transfer.TransferInfo.Status = -2;
@@ -2868,11 +3156,16 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         public void SendTexture(AssetBase TextureAsset)
         {
-
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
         }
 
         public void SendRegionHandle(UUID regionID, ulong handle)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             RegionIDAndHandleReplyPacket reply = (RegionIDAndHandleReplyPacket)PacketPool.Instance.GetPacket(PacketType.RegionIDAndHandleReply);
             reply.ReplyBlock.RegionID = regionID;
             reply.ReplyBlock.RegionHandle = handle;
@@ -2881,6 +3174,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         public void SendParcelInfo(RegionInfo info, LandData land, UUID parcelID, uint x, uint y)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             float dwell = 0.0f;
             IDwellModule dwellModule = m_scene.RequestModuleInterface<IDwellModule>();
             if (dwellModule != null)
@@ -2918,6 +3214,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         public void SendScriptTeleportRequest(string objName, string simName, Vector3 pos, Vector3 lookAt)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             ScriptTeleportRequestPacket packet = (ScriptTeleportRequestPacket)PacketPool.Instance.GetPacket(PacketType.ScriptTeleportRequest);
 
             packet.Data.ObjectName = Utils.StringToBytes(objName);
@@ -2930,6 +3229,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         public void SendDirPlacesReply(UUID queryID, DirPlacesReplyData[] data)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             DirPlacesReplyPacket packet = (DirPlacesReplyPacket)PacketPool.Instance.GetPacket(PacketType.DirPlacesReply);
 
             packet.AgentData = new DirPlacesReplyPacket.AgentDataBlock();
@@ -2993,6 +3295,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         public void SendDirPeopleReply(UUID queryID, DirPeopleReplyData[] data)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             DirPeopleReplyPacket packet = (DirPeopleReplyPacket)PacketPool.Instance.GetPacket(PacketType.DirPeopleReply);
 
             packet.AgentData = new DirPeopleReplyPacket.AgentDataBlock();
@@ -3025,6 +3330,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         public void SendDirEventsReply(UUID queryID, DirEventsReplyData[] data)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             DirEventsReplyPacket packet = (DirEventsReplyPacket)PacketPool.Instance.GetPacket(PacketType.DirEventsReply);
 
             packet.AgentData = new DirEventsReplyPacket.AgentDataBlock();
@@ -3061,6 +3369,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         public void SendDirGroupsReply(UUID queryID, DirGroupsReplyData[] data)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             DirGroupsReplyPacket packet = (DirGroupsReplyPacket)PacketPool.Instance.GetPacket(PacketType.DirGroupsReply);
 
             packet.AgentData = new DirGroupsReplyPacket.AgentDataBlock();
@@ -3089,6 +3400,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         public void SendDirClassifiedReply(UUID queryID, DirClassifiedReplyData[] data)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             DirClassifiedReplyPacket packet = (DirClassifiedReplyPacket)PacketPool.Instance.GetPacket(PacketType.DirClassifiedReply);
 
             packet.AgentData = new DirClassifiedReplyPacket.AgentDataBlock();
@@ -3123,6 +3437,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         public void SendDirLandReply(UUID queryID, DirLandReplyData[] data)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             DirLandReplyPacket packet = (DirLandReplyPacket)PacketPool.Instance.GetPacket(PacketType.DirLandReply);
 
             packet.AgentData = new DirLandReplyPacket.AgentDataBlock();
@@ -3153,6 +3470,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         public void SendDirPopularReply(UUID queryID, DirPopularReplyData[] data)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             DirPopularReplyPacket packet = (DirPopularReplyPacket)PacketPool.Instance.GetPacket(PacketType.DirPopularReply);
 
             packet.AgentData = new DirPopularReplyPacket.AgentDataBlock();
@@ -3180,6 +3500,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         public void SendEventInfoReply(EventData data)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             EventInfoReplyPacket packet = (EventInfoReplyPacket)PacketPool.Instance.GetPacket(PacketType.EventInfoReply);
 
             packet.AgentData = new EventInfoReplyPacket.AgentDataBlock();
@@ -3205,6 +3528,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         public void SendMapItemReply(mapItemReply[] replies, uint mapitemtype, uint flags)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             MapItemReplyPacket mirplk = new MapItemReplyPacket();
             mirplk.AgentData.AgentID = AgentId;
             mirplk.RequestData.ItemType = mapitemtype;
@@ -3227,6 +3553,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         public void SendOfferCallingCard(UUID srcID, UUID transactionID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             // a bit special, as this uses AgentID to store the source instead
             // of the destination. The destination (the receiver) goes into destID
             OfferCallingCardPacket p = (OfferCallingCardPacket)PacketPool.Instance.GetPacket(PacketType.OfferCallingCard);
@@ -3239,6 +3568,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         public void SendAcceptCallingCard(UUID transactionID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             AcceptCallingCardPacket p = (AcceptCallingCardPacket)PacketPool.Instance.GetPacket(PacketType.AcceptCallingCard);
             p.AgentData.AgentID = AgentId;
             p.AgentData.SessionID = UUID.Zero;
@@ -3250,6 +3582,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         public void SendDeclineCallingCard(UUID transactionID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             DeclineCallingCardPacket p = (DeclineCallingCardPacket)PacketPool.Instance.GetPacket(PacketType.DeclineCallingCard);
             p.AgentData.AgentID = AgentId;
             p.AgentData.SessionID = UUID.Zero;
@@ -3259,6 +3594,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         public void SendTerminateFriend(UUID exFriendID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             TerminateFriendshipPacket p = (TerminateFriendshipPacket)PacketPool.Instance.GetPacket(PacketType.TerminateFriendship);
             p.AgentData.AgentID = AgentId;
             p.AgentData.SessionID = SessionId;
@@ -3268,6 +3606,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         public void SendAvatarGroupsReply(UUID avatarID, GroupMembershipData[] data)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
              OSDMap llsd = new OSDMap(3);
              OSDArray AgentData = new OSDArray(1);
              OSDMap AgentDataMap = new OSDMap(1);
@@ -3303,6 +3644,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         public void SendJoinGroupReply(UUID groupID, bool success)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             JoinGroupReplyPacket p = (JoinGroupReplyPacket)PacketPool.Instance.GetPacket(PacketType.JoinGroupReply);
 
             p.AgentData = new JoinGroupReplyPacket.AgentDataBlock();
@@ -3317,6 +3661,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         public void SendEjectGroupMemberReply(UUID agentID, UUID groupID, bool success)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             EjectGroupMemberReplyPacket p = (EjectGroupMemberReplyPacket)PacketPool.Instance.GetPacket(PacketType.EjectGroupMemberReply);
 
             p.AgentData = new EjectGroupMemberReplyPacket.AgentDataBlock();
@@ -3333,6 +3680,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         public void SendLeaveGroupReply(UUID groupID, bool success)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             LeaveGroupReplyPacket p = (LeaveGroupReplyPacket)PacketPool.Instance.GetPacket(PacketType.LeaveGroupReply);
 
             p.AgentData = new LeaveGroupReplyPacket.AgentDataBlock();
@@ -3347,6 +3697,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         public void SendAvatarClassifiedReply(UUID targetID, UUID[] classifiedID, string[] name)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (classifiedID.Length != name.Length)
                 return;
 
@@ -3371,6 +3724,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         public void SendClassifiedInfoReply(UUID classifiedID, UUID creatorID, uint creationDate, uint expirationDate, uint category, string name, string description, UUID parcelID, uint parentEstate, UUID snapshotID, string simName, Vector3 globalPos, string parcelName, byte classifiedFlags, int price)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             ClassifiedInfoReplyPacket cr =
                     (ClassifiedInfoReplyPacket)PacketPool.Instance.GetPacket(
                     PacketType.ClassifiedInfoReply);
@@ -3400,6 +3756,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         public void SendAgentDropGroup(UUID groupID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             AgentDropGroupPacket dg =
                     (AgentDropGroupPacket)PacketPool.Instance.GetPacket(
                     PacketType.AgentDropGroup);
@@ -3413,6 +3772,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         public void SendAvatarNotesReply(UUID targetID, string text)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             AvatarNotesReplyPacket an =
                     (AvatarNotesReplyPacket)PacketPool.Instance.GetPacket(
                     PacketType.AvatarNotesReply);
@@ -3429,6 +3791,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         public void SendAvatarPicksReply(UUID targetID, Dictionary<UUID, string> picks)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             AvatarPicksReplyPacket ap =
                     (AvatarPicksReplyPacket)PacketPool.Instance.GetPacket(
                     PacketType.AvatarPicksReply);
@@ -3453,6 +3818,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         public void SendAvatarClassifiedReply(UUID targetID, Dictionary<UUID, string> classifieds)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             AvatarClassifiedReplyPacket ac =
                     (AvatarClassifiedReplyPacket)PacketPool.Instance.GetPacket(
                     PacketType.AvatarClassifiedReply);
@@ -3477,6 +3845,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         public void SendParcelDwellReply(int localID, UUID parcelID, float dwell)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             ParcelDwellReplyPacket pd =
                     (ParcelDwellReplyPacket)PacketPool.Instance.GetPacket(
                     PacketType.ParcelDwellReply);
@@ -3494,6 +3865,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         public void SendUserInfoReply(bool imViaEmail, bool visible, string email)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             UserInfoReplyPacket ur =
                     (UserInfoReplyPacket)PacketPool.Instance.GetPacket(
                     PacketType.UserInfoReply);
@@ -3515,6 +3889,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         public void SendCreateGroupReply(UUID groupID, bool success, string message)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             CreateGroupReplyPacket createGroupReply = (CreateGroupReplyPacket)PacketPool.Instance.GetPacket(PacketType.CreateGroupReply);
 
             createGroupReply.AgentData =
@@ -3532,6 +3909,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         public void SendUseCachedMuteList()
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             UseCachedMuteListPacket useCachedMuteList = (UseCachedMuteListPacket)PacketPool.Instance.GetPacket(PacketType.UseCachedMuteList);
 
             useCachedMuteList.AgentData = new UseCachedMuteListPacket.AgentDataBlock();
@@ -3542,6 +3922,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         public void SendMuteListUpdate(string filename)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             MuteListUpdatePacket muteListUpdate = (MuteListUpdatePacket)PacketPool.Instance.GetPacket(PacketType.MuteListUpdate);
 
             muteListUpdate.MuteData = new MuteListUpdatePacket.MuteDataBlock();
@@ -3553,6 +3936,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         public void SendPickInfoReply(UUID pickID, UUID creatorID, bool topPick, UUID parcelID, string name, string desc, UUID snapshotID, string user, string originalName, string simName, Vector3 posGlobal, int sortOrder, bool enabled)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             PickInfoReplyPacket pickInfoReply = (PickInfoReplyPacket)PacketPool.Instance.GetPacket(PacketType.PickInfoReply);
 
             pickInfoReply.AgentData = new PickInfoReplyPacket.AgentDataBlock();
@@ -3584,6 +3970,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         public void SendWearables(AvatarWearable[] wearables, int serial)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             AgentWearablesUpdatePacket aw = (AgentWearablesUpdatePacket)PacketPool.Instance.GetPacket(PacketType.AgentWearablesUpdate);
             aw.AgentData.AgentID = AgentId;
             aw.AgentData.SerialNum = (uint)serial;
@@ -3619,6 +4008,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         public void SendAppearance(UUID agentID, byte[] visualParams, byte[] textureEntry)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
 //            m_log.DebugFormat(
 //                "[LLCLIENTVIEW]: Sending avatar appearance for {0} with {1} bytes to {2} {3}",
 //                agentID, textureEntry.Length, Name, AgentId);
@@ -3645,6 +4037,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         public void SendAnimations(UUID[] animations, int[] seqs, UUID sourceAgentId, UUID[] objectIDs)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
 //            m_log.DebugFormat("[LLCLIENTVIEW]: Sending animations for {0} to {1}", sourceAgentId, Name);
 
             AvatarAnimationPacket ani = (AvatarAnimationPacket)PacketPool.Instance.GetPacket(PacketType.AvatarAnimation);
@@ -3680,6 +4075,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
         /// </summary>
         public void SendAvatarDataImmediate(ISceneEntity avatar)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
 //            m_log.DebugFormat(
 //                "[LLCLIENTVIEW]: Sending immediate object update for avatar {0} {1} to {2} {3}",
 //                avatar.Name, avatar.UUID, Name, AgentId);
@@ -3705,6 +4103,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         public void SendCoarseLocationUpdate(List<UUID> users, List<Vector3> CoarseLocations)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             // We don't need to update inactive clients.
             if (!IsActive)
                 return;
@@ -3756,6 +4157,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
         /// </summary>
         public void SendEntityUpdate(ISceneEntity entity, PrimUpdateFlags updateFlags)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             //double priority = m_prioritizer.GetUpdatePriority(this, entity);
             uint priority = m_prioritizer.GetUpdatePriority(this, entity);
 
@@ -3771,6 +4175,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
         /// </summary>
         private void ResendPrimUpdate(EntityUpdate update)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             // If the update exists in priority queue, it will be updated.
             // If it does not exist then it will be added with the current (rather than its original) priority
             uint priority = m_prioritizer.GetUpdatePriority(this, update.Entity);
@@ -3787,6 +4194,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
         /// </summary>
         private void ResendPrimUpdates(List<EntityUpdate> updates, OutgoingPacket oPacket)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             // m_log.WarnFormat("[CLIENT] resending prim updates {0}, packet sequence number {1}", updates[0].UpdateTime, oPacket.SequenceNumber);
 
             // Remove the update packet from the list of packets waiting for acknowledgement
@@ -3807,6 +4217,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private void ProcessEntityUpdates(int maxUpdates)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             List<ObjectUpdatePacket.ObjectDataBlock> objectUpdateBlocks = new List<ObjectUpdatePacket.ObjectDataBlock>();
             List<ObjectUpdateCompressedPacket.ObjectDataBlock> compressedUpdateBlocks = new List<ObjectUpdateCompressedPacket.ObjectDataBlock>();
             List<ImprovedTerseObjectUpdatePacket.ObjectDataBlock> terseUpdateBlocks = new List<ImprovedTerseObjectUpdatePacket.ObjectDataBlock>();
@@ -4108,12 +4521,18 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         public void ReprioritizeUpdates()
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             lock (m_entityUpdates.SyncRoot)
                 m_entityUpdates.Reprioritize(UpdatePriorityHandler);
         }
 
         private bool UpdatePriorityHandler(ref uint priority, ISceneEntity entity)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (entity != null)
             {
                 priority = m_prioritizer.GetUpdatePriority(this, entity);
@@ -4125,6 +4544,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         public void FlushPrimUpdates()
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             m_log.WarnFormat("[CLIENT]: Flushing prim updates to " + m_firstName + " " + m_lastName);
 
             while (m_entityUpdates.Count > 0)
@@ -4142,6 +4564,10 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         void HandleQueueEmpty(ThrottleOutPacketTypeFlags categories)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
+
 //            if (!m_udpServer.IsRunningOutbound)
 //                return;
 
@@ -4177,6 +4603,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         internal bool HandleHasUpdates(ThrottleOutPacketTypeFlags categories)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             bool hasUpdates = false;
 
             if ((categories & ThrottleOutPacketTypeFlags.Task) != 0)
@@ -4198,6 +4627,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         public void SendAssetUploadCompleteMessage(sbyte AssetType, bool Success, UUID AssetFullID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             AssetUploadCompletePacket newPack = new AssetUploadCompletePacket();
             newPack.AssetBlock.Type = AssetType;
             newPack.AssetBlock.Success = Success;
@@ -4208,6 +4640,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         public void SendXferRequest(ulong XferID, short AssetType, UUID vFileID, byte FilePath, byte[] FileName)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             RequestXferPacket newPack = new RequestXferPacket();
             newPack.XferID.ID = XferID;
             newPack.XferID.VFileType = AssetType;
@@ -4220,6 +4655,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         public void SendConfirmXfer(ulong xferID, uint PacketID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             ConfirmXferPacketPacket newPack = new ConfirmXferPacketPacket();
             newPack.XferID.ID = xferID;
             newPack.XferID.Packet = PacketID;
@@ -4229,6 +4667,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         public void SendInitiateDownload(string simFileName, string clientFileName)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             InitiateDownloadPacket newPack = new InitiateDownloadPacket();
             newPack.AgentData.AgentID = AgentId;
             newPack.FileData.SimFilename = Utils.StringToBytes(simFileName);
@@ -4239,6 +4680,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
         public void SendImageFirstPart(
             ushort numParts, UUID ImageUUID, uint ImageSize, byte[] ImageData, byte imageCodec)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             ImageDataPacket im = new ImageDataPacket();
             im.Header.Reliable = false;
             im.ImageID.Packets = numParts;
@@ -4255,6 +4699,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         public void SendImageNextPart(ushort partNumber, UUID imageUuid, byte[] imageData)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             ImagePacketPacket im = new ImagePacketPacket();
             im.Header.Reliable = false;
             im.ImageID.Packet = partNumber;
@@ -4266,6 +4713,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         public void SendImageNotFound(UUID imageid)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             ImageNotInDatabasePacket notFoundPacket
             = (ImageNotInDatabasePacket)PacketPool.Instance.GetPacket(PacketType.ImageNotInDatabase);
 
@@ -4276,11 +4726,17 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         public void SendShutdownConnectionNotice()
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             OutPacket(PacketPool.Instance.GetPacket(PacketType.DisableSimulator), ThrottleOutPacketType.Unknown);
         }
 
         public void SendSimStats(SimStats stats)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             SimStatsPacket pack = new SimStatsPacket();
             pack.Region = new SimStatsPacket.RegionBlock();
             pack.Region.RegionX = stats.RegionX;
@@ -4297,17 +4753,27 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private class ObjectPropertyUpdate : IEntityUpdate
         {
+            private static readonly ILog m_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
             internal bool SendFamilyProps;
             internal bool SendObjectProps;
             
             public ObjectPropertyUpdate(ISceneEntity entity, uint flags, bool sendfam, bool sendobj)
                 : base(entity,flags)
             {
+                if (m_log.IsDebugEnabled) {
+                    m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+                }
+
                 SendFamilyProps = sendfam;
                 SendObjectProps = sendobj;
             }
             public void Update(ObjectPropertyUpdate update)
             {
+                if (m_log.IsDebugEnabled) {
+                    m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+                }
+
                 SendFamilyProps = SendFamilyProps || update.SendFamilyProps;
                 SendObjectProps = SendObjectProps || update.SendObjectProps;
                 // other properties may need to be updated by base class
@@ -4317,6 +4783,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
         
         public void SendObjectPropertiesFamilyData(ISceneEntity entity, uint requestFlags)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             uint priority = 0;  // time based ordering only
             lock (m_entityProps.SyncRoot)
                 m_entityProps.Enqueue(priority, new ObjectPropertyUpdate(entity,requestFlags,true,false));
@@ -4324,6 +4793,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private void ResendPropertyUpdate(ObjectPropertyUpdate update)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             uint priority = 0;
             lock (m_entityProps.SyncRoot)
                 m_entityProps.Enqueue(priority, update);
@@ -4331,6 +4803,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private void ResendPropertyUpdates(List<ObjectPropertyUpdate> updates, OutgoingPacket oPacket)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             // m_log.WarnFormat("[CLIENT] resending object property {0}",updates[0].UpdateTime);
 
             // Remove the update packet from the list of packets waiting for acknowledgement
@@ -4350,7 +4825,10 @@ namespace OpenSim.Region.ClientStack.LindenUDP
         }
         
         public void SendObjectPropertiesReply(ISceneEntity entity)
-        {
+        {   
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             uint priority = 0;  // time based ordering only
             lock (m_entityProps.SyncRoot)
                 m_entityProps.Enqueue(priority, new ObjectPropertyUpdate(entity,0,false,true));
@@ -4358,6 +4836,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private void ProcessEntityPropertyRequests(int maxUpdates)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             List<ObjectPropertiesFamilyPacket.ObjectDataBlock> objectFamilyBlocks =
                 new List<ObjectPropertiesFamilyPacket.ObjectDataBlock>();
 
@@ -4467,6 +4948,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private ObjectPropertiesFamilyPacket.ObjectDataBlock CreateObjectPropertiesFamilyBlock(SceneObjectPart sop, uint requestFlags)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             ObjectPropertiesFamilyPacket.ObjectDataBlock block = new ObjectPropertiesFamilyPacket.ObjectDataBlock();
 
             block.RequestFlags = requestFlags;
@@ -4496,6 +4980,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
     
         private ObjectPropertiesPacket.ObjectDataBlock CreateObjectPropertiesBlock(SceneObjectPart sop)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             //ObjectPropertiesPacket proper = (ObjectPropertiesPacket)PacketPool.Instance.GetPacket(PacketType.ObjectProperties);
             // TODO: don't create new blocks if recycling an old packet
 
@@ -4566,6 +5053,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private static bool convertParamStringToBool(byte[] field)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             string s = Utils.BytesToString(field);
             if (s == "1" || s.ToLower() == "y" || s.ToLower() == "yes" || s.ToLower() == "t" || s.ToLower() == "true")
             {
@@ -4577,6 +5067,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
         public void SendEstateList(UUID invoice, int code, UUID[] Data, uint estateID)
 
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             EstateOwnerMessagePacket packet = new EstateOwnerMessagePacket();
             packet.AgentData.TransactionID = UUID.Random();
             packet.AgentData.AgentID = AgentId;
@@ -4619,6 +5112,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         public void SendBannedUserList(UUID invoice, EstateBan[] bl, uint estateID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             List<UUID> BannedUsers = new List<UUID>();
 
             for (int i = 0; i < bl.Length; i++)
@@ -4670,6 +5166,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         public void SendRegionInfoToEstateMenu(RegionInfoForEstateMenuArgs args)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             RegionInfoPacket rinfopack = new RegionInfoPacket();
             RegionInfoPacket.RegionInfoBlock rinfoblk = new RegionInfoPacket.RegionInfoBlock();
             rinfopack.AgentData.AgentID = AgentId;
@@ -4710,6 +5209,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         public void SendEstateCovenantInformation(UUID covenant)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
 //            m_log.DebugFormat("[LLCLIENTVIEW]: Sending estate covenant asset id of {0} to {1}", covenant, Name);
             
             EstateCovenantReplyPacket einfopack = new EstateCovenantReplyPacket();
@@ -4726,6 +5228,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
             UUID invoice, string estateName, uint estateID, uint parentEstate, uint estateFlags, uint sunPosition,
             UUID covenant, uint covenantChanged, string abuseEmail, UUID estateOwner)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
 //            m_log.DebugFormat(
 //                "[LLCLIENTVIEW]: Sending detailed estate data to {0} with covenant asset id {1}", Name, covenant);
             
@@ -4760,7 +5265,10 @@ namespace OpenSim.Region.ClientStack.LindenUDP
         }
 
         public void SendTelehubInfo(UUID ObjectID, string ObjectName, Vector3 ObjectPos, Quaternion ObjectRot, List<Vector3> SpawnPoint)
-        {
+        {   
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             TelehubInfoPacket packet = (TelehubInfoPacket)PacketPool.Instance.GetPacket(PacketType.TelehubInfo);
             packet.TelehubBlock.ObjectID = ObjectID;
             packet.TelehubBlock.ObjectName = Utils.StringToBytes(ObjectName);
@@ -4782,6 +5290,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         public void SendLandParcelOverlay(byte[] data, int sequence_id)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             ParcelOverlayPacket packet = (ParcelOverlayPacket)PacketPool.Instance.GetPacket(PacketType.ParcelOverlay);
             packet.ParcelData.Data = data;
             packet.ParcelData.SequenceID = sequence_id;
@@ -4793,6 +5304,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
              int sequence_id, bool snap_selection, int request_result, ILandObject lo, 
              float simObjectBonusFactor, int parcelObjectCapacity, int simObjectCapacity, uint regionFlags)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
 //            m_log.DebugFormat("[LLCLIENTVIEW]: Sending land properties for {0} to {1}", lo.LandData.GlobalID, Name);
             
             LandData landData = lo.LandData;
@@ -4901,6 +5415,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         public void SendLandAccessListData(List<LandAccessEntry> accessList, uint accessFlag, int localLandID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             ParcelAccessListReplyPacket replyPacket = (ParcelAccessListReplyPacket)PacketPool.Instance.GetPacket(PacketType.ParcelAccessListReply);
             replyPacket.Data.AgentID = AgentId;
             replyPacket.Data.Flags = accessFlag;
@@ -4924,6 +5441,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         public void SendForceClientSelectObjects(List<uint> ObjectIDs)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
 //            m_log.DebugFormat("[LLCLIENTVIEW] sending select with {0} objects", ObjectIDs.Count);
             
             bool firstCall = true;
@@ -4966,6 +5486,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         public void SendCameraConstraint(Vector4 ConstraintPlane)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             CameraConstraintPacket cpack = (CameraConstraintPacket)PacketPool.Instance.GetPacket(PacketType.CameraConstraint);
             cpack.CameraCollidePlane = new CameraConstraintPacket.CameraCollidePlaneBlock();
             cpack.CameraCollidePlane.Plane = ConstraintPlane;
@@ -4975,6 +5498,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         public void SendLandObjectOwners(LandData land, List<UUID> groups, Dictionary<UUID, int> ownersAndCount)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             int notifyCount = ownersAndCount.Count;
             ParcelObjectOwnersReplyPacket pack = (ParcelObjectOwnersReplyPacket)PacketPool.Instance.GetPacket(PacketType.ParcelObjectOwnersReply);
 
@@ -5028,6 +5554,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         protected ImprovedTerseObjectUpdatePacket.ObjectDataBlock CreateImprovedTerseBlock(ISceneEntity entity, bool sendTexture)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             #region ScenePresence/SOP Handling
 
             bool avatar = (entity is ScenePresence);
@@ -5179,6 +5708,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         protected ObjectUpdatePacket.ObjectDataBlock CreateAvatarUpdateBlock(ScenePresence data)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
 //            m_log.DebugFormat(
 //                "[LLCLIENTVIEW]: Sending full update to {0} with position {1} in {2}", Name, data.OffsetPosition, m_scene.Name);
 
@@ -5253,6 +5785,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         protected ObjectUpdatePacket.ObjectDataBlock CreatePrimUpdateBlock(SceneObjectPart data, UUID recipientID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             byte[] objectData = new byte[60];
             data.RelativePosition.ToBytes(objectData, 0);
             data.Velocity.ToBytes(objectData, 12);
@@ -5385,12 +5920,18 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         protected ObjectUpdateCompressedPacket.ObjectDataBlock CreateCompressedUpdateBlock(SceneObjectPart part, PrimUpdateFlags updateFlags)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             // TODO: Implement this
             return null;
         }
 
         public void SendNameReply(UUID profileId, string firstname, string lastname)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             UUIDNameReplyPacket packet = (UUIDNameReplyPacket)PacketPool.Instance.GetPacket(PacketType.UUIDNameReply);
             // TODO: don't create new blocks if recycling an old packet
             packet.UUIDNameBlock = new UUIDNameReplyPacket.UUIDNameBlockBlock[1];
@@ -5404,6 +5945,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         public ulong GetGroupPowers(UUID groupID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (groupID == ActiveGroupId)
                 return ActiveGroupPowers;
 
@@ -5422,6 +5966,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
         /// </summary>
         protected virtual void RegisterLocalPacketHandlers()
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             AddLocalPacketHandler(PacketType.LogoutRequest, HandleLogout);
 
             // If AgentUpdate is ever handled asynchronously, then we will also need to construct a new AgentUpdateArgs
@@ -5669,6 +6216,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
         /// <param name='x'></param>
         public bool CheckAgentUpdateSignificance(AgentUpdatePacket.AgentDataBlock x)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             return CheckAgentMovementUpdateSignificance(x) || CheckAgentCameraUpdateSignificance(x);
         }
 
@@ -5680,6 +6230,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
         /// <param name='x'></param>
         private bool CheckAgentMovementUpdateSignificance(AgentUpdatePacket.AgentDataBlock x)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             float qdelta1 = 1 - (float)Math.Pow(Quaternion.Dot(x.BodyRotation, m_thisAgentUpdateArgs.BodyRotation), 2);
             //qdelta2 = 1 - (float)Math.Pow(Quaternion.Dot(x.HeadRotation, m_thisAgentUpdateArgs.HeadRotation), 2);
 
@@ -5711,6 +6264,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
         /// <param name='x'></param>
         private bool CheckAgentCameraUpdateSignificance(AgentUpdatePacket.AgentDataBlock x)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             float vdelta1 = Vector3.Distance(x.CameraAtAxis, m_thisAgentUpdateArgs.CameraAtAxis);
             float vdelta2 = Vector3.Distance(x.CameraCenter, m_thisAgentUpdateArgs.CameraCenter);
             float vdelta3 = Vector3.Distance(x.CameraLeftAxis, m_thisAgentUpdateArgs.CameraLeftAxis);
@@ -5736,6 +6292,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleAgentUpdate(IClientAPI sener, Packet packet)
         {            
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             // We got here, which means that something in agent update was significant
 
             AgentUpdatePacket agentUpdate = (AgentUpdatePacket)packet;
@@ -5791,6 +6350,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleMoneyTransferRequest(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             MoneyTransferRequestPacket money = (MoneyTransferRequestPacket)Pack;
             // validate the agent owns the agentID and sessionID
             if (money.MoneyData.SourceID == sender.AgentId && money.AgentData.AgentID == sender.AgentId &&
@@ -5812,6 +6374,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleParcelGodMarkAsContent(IClientAPI client, Packet Packet)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             ParcelGodMarkAsContentPacket ParcelGodMarkAsContent =
                 (ParcelGodMarkAsContentPacket)Packet;
 
@@ -5828,6 +6393,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleFreezeUser(IClientAPI client, Packet Packet)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             FreezeUserPacket FreezeUser = (FreezeUserPacket)Packet;
 
             FreezeUserUpdate FreezeUserHandler = OnParcelFreezeUser;
@@ -5844,6 +6412,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleEjectUser(IClientAPI client, Packet Packet)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             EjectUserPacket EjectUser =
                 (EjectUserPacket)Packet;
 
@@ -5861,6 +6432,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleParcelBuyPass(IClientAPI client, Packet Packet)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             ParcelBuyPassPacket ParcelBuyPass =
                 (ParcelBuyPassPacket)Packet;
 
@@ -5877,6 +6451,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleParcelBuyRequest(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             ParcelBuyPacket parcel = (ParcelBuyPacket)Pack;
             if (parcel.AgentData.AgentID == AgentId && parcel.AgentData.SessionID == SessionId)
             {
@@ -5896,6 +6473,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleUUIDGroupNameRequest(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             UUIDGroupNameRequestPacket upack = (UUIDGroupNameRequestPacket)Pack;
 
 
@@ -5913,6 +6493,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         public bool HandleGenericMessage(IClientAPI sender, Packet pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             GenericMessagePacket gmpack = (GenericMessagePacket)pack;
             if (m_genericPacketHandlers.Count == 0) return false;
             if (gmpack.AgentData.SessionID != SessionId) return false;
@@ -5956,6 +6539,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         public bool HandleObjectGroupRequest(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             ObjectGroupPacket ogpack = (ObjectGroupPacket)Pack;
             if (ogpack.AgentData.SessionID != SessionId) return false;
 
@@ -5972,6 +6558,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleViewerEffect(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             ViewerEffectPacket viewer = (ViewerEffectPacket)Pack;
             if (viewer.AgentData.SessionID != SessionId) return false;
             ViewerEffectEventHandler handlerViewerEffect = OnViewerEffect;
@@ -6000,6 +6589,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleAvatarPropertiesRequest(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             AvatarPropertiesRequestPacket avatarProperties = (AvatarPropertiesRequestPacket)Pack;
 
             #region Packet Session and User Check
@@ -6021,6 +6613,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleChatFromViewer(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             ChatFromViewerPacket inchatpack = (ChatFromViewerPacket)Pack;
 
             #region Packet Session and User Check
@@ -6062,6 +6657,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandlerAvatarPropertiesUpdate(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             AvatarPropertiesUpdatePacket avatarProps = (AvatarPropertiesUpdatePacket)Pack;
 
             #region Packet Session and User Check
@@ -6095,6 +6693,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandlerScriptDialogReply(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             ScriptDialogReplyPacket rdialog = (ScriptDialogReplyPacket)Pack;
 
             //m_log.DebugFormat("[CLIENT]: Received ScriptDialogReply from {0}", rdialog.Data.ObjectID);
@@ -6130,6 +6731,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandlerImprovedInstantMessage(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             ImprovedInstantMessagePacket msgpack = (ImprovedInstantMessagePacket)Pack;
 
             #region Packet Session and User Check
@@ -6168,6 +6772,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandlerAcceptFriendship(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             AcceptFriendshipPacket afriendpack = (AcceptFriendshipPacket)Pack;
 
             #region Packet Session and User Check
@@ -6200,6 +6807,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandlerDeclineFriendship(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             DeclineFriendshipPacket dfriendpack = (DeclineFriendshipPacket)Pack;
 
             #region Packet Session and User Check
@@ -6222,6 +6832,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandlerTerminateFriendship(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             TerminateFriendshipPacket tfriendpack = (TerminateFriendshipPacket)Pack;
 
             #region Packet Session and User Check
@@ -6246,6 +6859,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleFindAgent(IClientAPI client, Packet Packet)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             FindAgentPacket FindAgent =
                 (FindAgentPacket)Packet;
 
@@ -6260,6 +6876,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleTrackAgent(IClientAPI client, Packet Packet)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             TrackAgentPacket TrackAgent =
                 (TrackAgentPacket)Packet;
 
@@ -6276,6 +6895,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandlerRezObject(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             RezObjectPacket rezPacket = (RezObjectPacket)Pack;
 
             #region Packet Session and User Check
@@ -6301,6 +6923,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandlerDeRezObject(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             DeRezObjectPacket DeRezPacket = (DeRezObjectPacket)Pack;
 
             #region Packet Session and User Check
@@ -6335,6 +6960,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandlerModifyLand(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             ModifyLandPacket modify = (ModifyLandPacket)Pack;
 
             #region Packet Session and User Check
@@ -6375,6 +7003,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandlerRegionHandshakeReply(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             Action<IClientAPI> handlerRegionHandShakeReply = OnRegionHandShakeReply;
             if (handlerRegionHandShakeReply != null)
             {
@@ -6386,6 +7017,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandlerAgentWearablesRequest(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             GenericCall1 handlerRequestWearables = OnRequestWearables;
 
             if (handlerRequestWearables != null)
@@ -6405,6 +7039,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandlerAgentSetAppearance(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             AgentSetAppearancePacket appear = (AgentSetAppearancePacket)Pack;
 
             #region Packet Session and User Check
@@ -6455,6 +7092,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandlerAgentIsNowWearing(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (OnAvatarNowWearing != null)
             {
                 AgentIsNowWearingPacket nowWearing = (AgentIsNowWearingPacket)Pack;
@@ -6489,6 +7129,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandlerRezSingleAttachmentFromInv(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             RezSingleAttachmentFromInv handlerRezSingleAttachment = OnRezSingleAttachmentFromInv;
             if (handlerRezSingleAttachment != null)
             {
@@ -6512,6 +7155,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleRezMultipleAttachmentsFromInv(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             RezMultipleAttachmentsFromInv handlerRezMultipleAttachments = OnRezMultipleAttachmentsFromInv;
             if (handlerRezMultipleAttachments != null)
             {
@@ -6526,6 +7172,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleDetachAttachmentIntoInv(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             UUIDNameRequest handlerDetachAttachmentIntoInv = OnDetachAttachmentIntoInv;
             if (handlerDetachAttachmentIntoInv != null)
             {
@@ -6545,6 +7194,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleObjectAttach(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (OnObjectAttach != null)
             {
                 ObjectAttachPacket att = (ObjectAttachPacket)Pack;
@@ -6573,6 +7225,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleObjectDetach(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             ObjectDetachPacket dett = (ObjectDetachPacket)Pack;
 
             #region Packet Session and User Check
@@ -6599,6 +7254,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleObjectDrop(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             ObjectDropPacket dropp = (ObjectDropPacket)Pack;
 
             #region Packet Session and User Check
@@ -6624,6 +7282,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleSetAlwaysRun(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             SetAlwaysRunPacket run = (SetAlwaysRunPacket)Pack;
 
             #region Packet Session and User Check
@@ -6644,6 +7305,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleCompleteAgentMovement(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             Action<IClientAPI, bool> handlerCompleteMovementToRegion = OnCompleteMovementToRegion;
             if (handlerCompleteMovementToRegion != null)
             {
@@ -6656,6 +7320,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleAgentAnimation(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             AgentAnimationPacket AgentAni = (AgentAnimationPacket)Pack;
 
             #region Packet Session and User Check
@@ -6694,6 +7361,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleAgentRequestSit(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (OnAgentRequestSit != null)
             {
                 AgentRequestSitPacket agentRequestSit = (AgentRequestSitPacket)Pack;
@@ -6724,6 +7394,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleAgentSit(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (OnAgentSit != null)
             {
                 AgentSitPacket agentSit = (AgentSitPacket)Pack;
@@ -6757,11 +7430,17 @@ namespace OpenSim.Region.ClientStack.LindenUDP
         /// </summary>
         private void SendCantSitBecauseChildAgentResponse()
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             SendAlertMessage("Try moving closer.  Can't sit on object because it is not in the same region as you.");
         }
 
         private bool HandleSoundTrigger(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             SoundTriggerPacket soundTriggerPacket = (SoundTriggerPacket)Pack;
 
             #region Packet Session and User Check
@@ -6786,6 +7465,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleAvatarPickerRequest(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             AvatarPickerRequestPacket avRequestQuery = (AvatarPickerRequestPacket)Pack;
 
             #region Packet Session and User Check
@@ -6812,6 +7494,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleAgentDataUpdateRequest(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             AgentDataUpdateRequestPacket avRequestDataUpdatePacket = (AgentDataUpdateRequestPacket)Pack;
 
             #region Packet Session and User Check
@@ -6835,6 +7520,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleUserInfoRequest(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             UserInfoRequest handlerUserInfoRequest = OnUserInfoRequest;
             if (handlerUserInfoRequest != null)
             {
@@ -6850,6 +7538,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleUpdateUserInfo(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             UpdateUserInfoPacket updateUserInfo = (UpdateUserInfoPacket)Pack;
 
             #region Packet Session and User Check
@@ -6879,6 +7570,10 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleSetStartLocationRequest(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
+
             SetStartLocationRequestPacket avSetStartLocationRequestPacket = (SetStartLocationRequestPacket)Pack;
 
             #region Packet Session and User Check
@@ -6923,6 +7618,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleAgentThrottle(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             AgentThrottlePacket atpack = (AgentThrottlePacket)Pack;
 
             #region Packet Session and User Check
@@ -6940,12 +7638,18 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleAgentPause(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             m_udpClient.IsPaused = true;
             return true;
         }
 
         private bool HandleAgentResume(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             m_udpClient.IsPaused = false;
             SendStartPingCheck(m_udpClient.CurrentPingSequence++);
             return true;
@@ -6953,6 +7657,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleForceScriptControlRelease(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             ForceReleaseControls handlerForceReleaseControls = OnForceReleaseControls;
             if (handlerForceReleaseControls != null)
             {
@@ -6967,6 +7674,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleObjectLink(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             ObjectLinkPacket link = (ObjectLinkPacket)Pack;
 
             #region Packet Session and User Check
@@ -6999,6 +7709,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleObjectDelink(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             ObjectDelinkPacket delink = (ObjectDelinkPacket)Pack;
 
             #region Packet Session and User Check
@@ -7030,6 +7743,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleObjectAdd(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (OnAddPrim != null)
             {
                 ObjectAddPacket addPacket = (ObjectAddPacket)Pack;
@@ -7062,6 +7778,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleObjectShape(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             ObjectShapePacket shapePacket = (ObjectShapePacket)Pack;
 
             #region Packet Session and User Check
@@ -7109,6 +7828,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleObjectExtraParams(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             ObjectExtraParamsPacket extraPar = (ObjectExtraParamsPacket)Pack;
 
             #region Packet Session and User Check
@@ -7135,6 +7857,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleObjectDuplicate(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             ObjectDuplicatePacket dupe = (ObjectDuplicatePacket)Pack;
 
             #region Packet Session and User Check
@@ -7166,6 +7891,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleRequestMultipleObjects(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             RequestMultipleObjectsPacket incomingRequest = (RequestMultipleObjectsPacket)Pack;
 
             #region Packet Session and User Check
@@ -7192,6 +7920,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleObjectSelect(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             ObjectSelectPacket incomingselect = (ObjectSelectPacket)Pack;
 
             #region Packet Session and User Check
@@ -7218,6 +7949,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleObjectDeselect(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             ObjectDeselectPacket incomingdeselect = (ObjectDeselectPacket)Pack;
 
             #region Packet Session and User Check
@@ -7244,6 +7978,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleObjectPosition(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             // DEPRECATED: but till libsecondlife removes it, people will use it
             ObjectPositionPacket position = (ObjectPositionPacket)Pack;
 
@@ -7269,6 +8006,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleObjectScale(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             // DEPRECATED: but till libsecondlife removes it, people will use it
             ObjectScalePacket scale = (ObjectScalePacket)Pack;
 
@@ -7293,6 +8033,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleObjectRotation(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             // DEPRECATED: but till libsecondlife removes it, people will use it
             ObjectRotationPacket rotation = (ObjectRotationPacket)Pack;
 
@@ -7317,6 +8060,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleObjectFlagUpdate(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             ObjectFlagUpdatePacket flags = (ObjectFlagUpdatePacket)Pack;
 
             #region Packet Session and User Check
@@ -7369,6 +8115,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleObjectImage(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             ObjectImagePacket imagePack = (ObjectImagePacket)Pack;
 
             UpdatePrimTexture handlerUpdatePrimTexture = null;
@@ -7386,6 +8135,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleObjectGrab(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             ObjectGrabPacket grab = (ObjectGrabPacket)Pack;
 
             #region Packet Session and User Check
@@ -7423,6 +8175,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleObjectGrabUpdate(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             ObjectGrabUpdatePacket grabUpdate = (ObjectGrabUpdatePacket)Pack;
 
             #region Packet Session and User Check
@@ -7461,6 +8216,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleObjectDeGrab(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             ObjectDeGrabPacket deGrab = (ObjectDeGrabPacket)Pack;
 
             #region Packet Session and User Check
@@ -7497,6 +8255,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleObjectSpinStart(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             //m_log.Warn("[CLIENT]: unhandled ObjectSpinStart packet");
             ObjectSpinStartPacket spinStart = (ObjectSpinStartPacket)Pack;
 
@@ -7519,6 +8280,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleObjectSpinUpdate(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             //m_log.Warn("[CLIENT]: unhandled ObjectSpinUpdate packet");
             ObjectSpinUpdatePacket spinUpdate = (ObjectSpinUpdatePacket)Pack;
 
@@ -7546,6 +8310,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleObjectSpinStop(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             //m_log.Warn("[CLIENT]: unhandled ObjectSpinStop packet");
             ObjectSpinStopPacket spinStop = (ObjectSpinStopPacket)Pack;
 
@@ -7568,6 +8335,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleObjectDescription(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             ObjectDescriptionPacket objDes = (ObjectDescriptionPacket)Pack;
 
             #region Packet Session and User Check
@@ -7595,6 +8365,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleObjectName(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             ObjectNamePacket objName = (ObjectNamePacket)Pack;
 
             #region Packet Session and User Check
@@ -7621,6 +8394,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleObjectPermissions(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (OnObjectPermissions != null)
             {
                 ObjectPermissionsPacket newobjPerms = (ObjectPermissionsPacket)Pack;
@@ -7672,6 +8448,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleUndo(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             UndoPacket undoitem = (UndoPacket)Pack;
 
             #region Packet Session and User Check
@@ -7701,6 +8480,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleLandUndo(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             UndoLandPacket undolanditem = (UndoLandPacket)Pack;
 
             #region Packet Session and User Check
@@ -7722,6 +8504,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleRedo(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             RedoPacket redoitem = (RedoPacket)Pack;
 
             #region Packet Session and User Check
@@ -7751,6 +8536,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleObjectDuplicateOnRay(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             ObjectDuplicateOnRayPacket dupeOnRay = (ObjectDuplicateOnRayPacket)Pack;
 
             #region Packet Session and User Check
@@ -7781,6 +8569,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleRequestObjectPropertiesFamily(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             //This powers the little tooltip that appears when you move your mouse over an object
             RequestObjectPropertiesFamilyPacket packToolTip = (RequestObjectPropertiesFamilyPacket)Pack;
 
@@ -7808,6 +8599,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleObjectIncludeInSearch(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             //This lets us set objects to appear in search (stuff like DataSnapshot, etc)
             ObjectIncludeInSearchPacket packInSearch = (ObjectIncludeInSearchPacket)Pack;
             ObjectIncludeInSearch handlerObjectIncludeInSearch = null;
@@ -7838,6 +8632,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleScriptAnswerYes(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             ScriptAnswerYesPacket scriptAnswer = (ScriptAnswerYesPacket)Pack;
 
             #region Packet Session and User Check
@@ -7859,6 +8656,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleObjectClickAction(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             ObjectClickActionPacket ocpacket = (ObjectClickActionPacket)Pack;
 
             #region Packet Session and User Check
@@ -7885,6 +8685,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleObjectMaterial(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             ObjectMaterialPacket ompacket = (ObjectMaterialPacket)Pack;
 
             #region Packet Session and User Check
@@ -7915,6 +8718,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleRequestImage(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             RequestImagePacket imageRequest = (RequestImagePacket)Pack;
             //m_log.Debug("image request: " + Pack.ToString());
 
@@ -7961,6 +8767,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
         /// <returns>This parameter may be ignored since we appear to return true whatever happens</returns>
         private bool HandleTransferRequest(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             //m_log.Debug("ClientView.ProcessPackets.cs:ProcessInPacket() - Got transfer request");
 
             TransferRequestPacket transfer = (TransferRequestPacket)Pack;
@@ -7993,6 +8802,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private void HandleSimInventoryTransferRequestWithPermsCheck(IClientAPI sender, TransferRequestPacket transfer)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             UUID taskID = new UUID(transfer.TransferInfo.Params, 48);
             UUID itemID = new UUID(transfer.TransferInfo.Params, 64);
             UUID requestID = new UUID(transfer.TransferInfo.Params, 80);
@@ -8105,6 +8917,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleAssetUploadRequest(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             AssetUploadRequestPacket request = (AssetUploadRequestPacket)Pack;
 
             // m_log.Debug("upload request " + request.ToString());
@@ -8125,6 +8940,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleRequestXfer(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             RequestXferPacket xferReq = (RequestXferPacket)Pack;
 
             RequestXfer handlerRequestXfer = OnRequestXfer;
@@ -8138,6 +8956,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleSendXferPacket(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             SendXferPacketPacket xferRec = (SendXferPacketPacket)Pack;
 
             XferReceive handlerXferReceive = OnXferReceive;
@@ -8150,6 +8971,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleConfirmXferPacket(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             ConfirmXferPacketPacket confirmXfer = (ConfirmXferPacketPacket)Pack;
 
             ConfirmXfer handlerConfirmXfer = OnConfirmXfer;
@@ -8162,6 +8986,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleAbortXfer(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             AbortXferPacket abortXfer = (AbortXferPacket)Pack;
             AbortXfer handlerAbortXfer = OnAbortXfer;
             if (handlerAbortXfer != null)
@@ -8174,6 +9001,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleCreateInventoryFolder(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             CreateInventoryFolderPacket invFolder = (CreateInventoryFolderPacket)Pack;
 
             #region Packet Session and User Check
@@ -8198,6 +9028,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleUpdateInventoryFolder(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (OnUpdateInventoryFolder != null)
             {
                 UpdateInventoryFolderPacket invFolderx = (UpdateInventoryFolderPacket)Pack;
@@ -8230,6 +9063,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleMoveInventoryFolder(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (OnMoveInventoryFolder != null)
             {
                 MoveInventoryFolderPacket invFoldery = (MoveInventoryFolderPacket)Pack;
@@ -8260,6 +9096,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleCreateInventoryItem(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             CreateInventoryItemPacket createItem = (CreateInventoryItemPacket)Pack;
 
             #region Packet Session and User Check
@@ -8290,6 +9129,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleLinkInventoryItem(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             LinkInventoryItemPacket createLink = (LinkInventoryItemPacket)Pack;
 
             #region Packet Session and User Check
@@ -8322,6 +9164,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleFetchInventory(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (OnFetchInventory != null)
             {
                 FetchInventoryPacket FetchInventoryx = (FetchInventoryPacket)Pack;
@@ -8353,6 +9198,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleFetchInventoryDescendents(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             FetchInventoryDescendentsPacket Fetch = (FetchInventoryDescendentsPacket)Pack;
 
             #region Packet Session and User Check
@@ -8376,6 +9224,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandlePurgeInventoryDescendents(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             PurgeInventoryDescendentsPacket Purge = (PurgeInventoryDescendentsPacket)Pack;
 
             #region Packet Session and User Check
@@ -8397,6 +9248,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleUpdateInventoryItem(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             UpdateInventoryItemPacket inventoryItemUpdate = (UpdateInventoryItemPacket)Pack;
 
             #region Packet Session and User Check
@@ -8444,6 +9298,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleCopyInventoryItem(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             CopyInventoryItemPacket copyitem = (CopyInventoryItemPacket)Pack;
 
             #region Packet Session and User Check
@@ -8474,6 +9331,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleMoveInventoryItem(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             MoveInventoryItemPacket moveitem = (MoveInventoryItemPacket)Pack;
 
             #region Packet Session and User Check
@@ -8510,6 +9370,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleRemoveInventoryItem(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             RemoveInventoryItemPacket removeItem = (RemoveInventoryItemPacket)Pack;
 
             #region Packet Session and User Check
@@ -8541,6 +9404,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleRemoveInventoryFolder(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             RemoveInventoryFolderPacket removeFolder = (RemoveInventoryFolderPacket)Pack;
 
             #region Packet Session and User Check
@@ -8571,6 +9437,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleRemoveInventoryObjects(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             RemoveInventoryObjectsPacket removeObject = (RemoveInventoryObjectsPacket)Pack;
             #region Packet Session and User Check
             if (m_checkPackets)
@@ -8614,6 +9483,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleRequestTaskInventory(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             RequestTaskInventoryPacket requesttask = (RequestTaskInventoryPacket)Pack;
 
             #region Packet Session and User Check
@@ -8635,6 +9507,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleUpdateTaskInventory(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             UpdateTaskInventoryPacket updatetask = (UpdateTaskInventoryPacket)Pack;
 
             #region Packet Session and User Check
@@ -8687,6 +9562,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleRemoveTaskInventory(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             RemoveTaskInventoryPacket removeTask = (RemoveTaskInventoryPacket)Pack;
 
             #region Packet Session and User Check
@@ -8710,6 +9588,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleMoveTaskInventory(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             MoveTaskInventoryPacket moveTaskInventoryPacket = (MoveTaskInventoryPacket)Pack;
 
             #region Packet Session and User Check
@@ -8736,6 +9617,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleRezScript(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             //m_log.Debug(Pack.ToString());
             RezScriptPacket rezScriptx = (RezScriptPacket)Pack;
 
@@ -8779,12 +9663,18 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleMapLayerRequest(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             RequestMapLayer();
             return true;
         }
 
         private bool HandleMapBlockRequest(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             MapBlockRequestPacket MapRequest = (MapBlockRequestPacket)Pack;
 
             #region Packet Session and User Check
@@ -8807,6 +9697,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleMapNameRequest(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             MapNameRequestPacket map = (MapNameRequestPacket)Pack;
 
             #region Packet Session and User Check
@@ -8829,6 +9722,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleTeleportLandmarkRequest(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             TeleportLandmarkRequestPacket tpReq = (TeleportLandmarkRequestPacket)Pack;
 
             #region Packet Session and User Check
@@ -8909,6 +9805,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleTeleportCancel(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             TeleportCancel handlerTeleportCancel = OnTeleportCancel;
             if (handlerTeleportCancel != null)
             {
@@ -8919,6 +9818,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private AssetBase FindAssetInUserAssetServer(string id)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             AgentCircuitData aCircuit = ((Scene)Scene).AuthenticateHandler.GetAgentCircuitData(CircuitCode);
             if (aCircuit != null && aCircuit.ServiceURLs != null && aCircuit.ServiceURLs.ContainsKey("AssetServerURI"))
             {
@@ -8932,6 +9834,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleTeleportLocationRequest(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             TeleportLocationRequestPacket tpLocReq = (TeleportLocationRequestPacket)Pack;
             // m_log.Debug(tpLocReq.ToString());
 
@@ -8978,6 +9883,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleUUIDNameRequest(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             UUIDNameRequestPacket incoming = (UUIDNameRequestPacket)Pack;
 
             foreach (UUIDNameRequestPacket.UUIDNameBlockBlock UUIDBlock in incoming.UUIDNameBlock)
@@ -8995,6 +9903,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleRegionHandleRequest(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             RegionHandleRequestPacket rhrPack = (RegionHandleRequestPacket)Pack;
 
             RegionHandleRequest handlerRegionHandleRequest = OnRegionHandleRequest;
@@ -9007,6 +9918,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleParcelInfoRequest(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             ParcelInfoRequestPacket pirPack = (ParcelInfoRequestPacket)Pack;
 
             #region Packet Session and User Check
@@ -9028,6 +9942,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleParcelAccessListRequest(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             ParcelAccessListRequestPacket requestPacket = (ParcelAccessListRequestPacket)Pack;
 
             #region Packet Session and User Check
@@ -9052,6 +9969,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleParcelAccessListUpdate(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             ParcelAccessListUpdatePacket updatePacket = (ParcelAccessListUpdatePacket)Pack;
 
             #region Packet Session and User Check
@@ -9089,6 +10009,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleParcelPropertiesRequest(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             ParcelPropertiesRequestPacket propertiesRequest = (ParcelPropertiesRequestPacket)Pack;
 
             #region Packet Session and User Check
@@ -9115,6 +10038,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleParcelDivide(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             ParcelDividePacket landDivide = (ParcelDividePacket)Pack;
 
             #region Packet Session and User Check
@@ -9139,6 +10065,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleParcelJoin(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             ParcelJoinPacket landJoin = (ParcelJoinPacket)Pack;
 
             #region Packet Session and User Check
@@ -9164,6 +10093,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleParcelPropertiesUpdate(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             ParcelPropertiesUpdatePacket parcelPropertiesPacket = (ParcelPropertiesUpdatePacket)Pack;
 
             #region Packet Session and User Check
@@ -9205,6 +10137,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleParcelSelectObjects(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             ParcelSelectObjectsPacket selectPacket = (ParcelSelectObjectsPacket)Pack;
 
             #region Packet Session and User Check
@@ -9236,6 +10171,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleParcelObjectOwnersRequest(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             ParcelObjectOwnersRequestPacket reqPacket = (ParcelObjectOwnersRequestPacket)Pack;
 
             #region Packet Session and User Check
@@ -9259,6 +10197,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleParcelGodForceOwner(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             ParcelGodForceOwnerPacket godForceOwnerPacket = (ParcelGodForceOwnerPacket)Pack;
 
             #region Packet Session and User Check
@@ -9280,6 +10221,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleParcelRelease(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             ParcelReleasePacket releasePacket = (ParcelReleasePacket)Pack;
 
             #region Packet Session and User Check
@@ -9301,6 +10245,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleParcelReclaim(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             ParcelReclaimPacket reclaimPacket = (ParcelReclaimPacket)Pack;
 
             #region Packet Session and User Check
@@ -9322,6 +10269,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleParcelReturnObjects(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             ParcelReturnObjectsPacket parcelReturnObjects = (ParcelReturnObjectsPacket)Pack;
 
             #region Packet Session and User Check
@@ -9353,6 +10303,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleParcelSetOtherCleanTime(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             ParcelSetOtherCleanTimePacket parcelSetOtherCleanTimePacket = (ParcelSetOtherCleanTimePacket)Pack;
 
             #region Packet Session and User Check
@@ -9376,6 +10329,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleLandStatRequest(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             LandStatRequestPacket lsrp = (LandStatRequestPacket)Pack;
 
             #region Packet Session and User Check
@@ -9397,6 +10353,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleParcelDwellRequest(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             ParcelDwellRequestPacket dwellrq =
                             (ParcelDwellRequestPacket)Pack;
 
@@ -9423,6 +10382,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleEstateOwnerMessage(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             EstateOwnerMessagePacket messagePacket = (EstateOwnerMessagePacket)Pack;
             // m_log.InfoFormat("[LLCLIENTVIEW]: Packet: {0}", Utils.BytesToString(messagePacket.MethodData.Method));
             GodLandStatRequest handlerLandStatRequest;
@@ -9778,6 +10740,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleRequestRegionInfo(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             RequestRegionInfoPacket.AgentDataBlock mPacket = ((RequestRegionInfoPacket)Pack).AgentData;
 
             #region Packet Session and User Check
@@ -9799,7 +10764,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleEstateCovenantRequest(IClientAPI sender, Packet Pack)
         {
-
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             //EstateCovenantRequestPacket.AgentDataBlock epack =
             //     ((EstateCovenantRequestPacket)Pack).AgentData;
 
@@ -9818,6 +10785,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleRequestGodlikePowers(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             RequestGodlikePowersPacket rglpPack = (RequestGodlikePowersPacket)Pack;
             RequestGodlikePowersPacket.RequestBlockBlock rblock = rglpPack.RequestBlock;
             UUID token = rblock.Token;
@@ -9836,6 +10806,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleGodUpdateRegionInfoUpdate(IClientAPI client, Packet Packet)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             GodUpdateRegionInfoPacket GodUpdateRegionInfo =
                 (GodUpdateRegionInfoPacket)Packet;
 
@@ -9856,6 +10829,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleSimWideDeletes(IClientAPI client, Packet Packet)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             SimWideDeletesPacket SimWideDeletesRequest =
                 (SimWideDeletesPacket)Packet;
             SimWideDeletesDelegate handlerSimWideDeletesRequest = OnSimWideDeletes;
@@ -9869,6 +10845,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleGodlikeMessage(IClientAPI client, Packet Packet)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             GodlikeMessagePacket GodlikeMessage =
                 (GodlikeMessagePacket)Packet;
 
@@ -9886,6 +10865,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleSaveStatePacket(IClientAPI client, Packet Packet)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             StateSavePacket SaveStateMessage =
                 (StateSavePacket)Packet;
             SaveStateHandler handlerSaveStatePacket = OnSaveState;
@@ -9899,6 +10881,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleGodKickUser(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             GodKickUserPacket gkupack = (GodKickUserPacket)Pack;
 
             if (gkupack.UserInfo.GodSessionID == SessionId && AgentId == gkupack.UserInfo.GodID)
@@ -9933,6 +10918,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleMoneyBalanceRequest(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             MoneyBalanceRequestPacket moneybalancerequestpacket = (MoneyBalanceRequestPacket)Pack;
 
             #region Packet Session and User Check
@@ -9955,6 +10943,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
         }
         private bool HandleEconomyDataRequest(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             EconomyDataRequest handlerEconomoyDataRequest = OnEconomyDataRequest;
             if (handlerEconomoyDataRequest != null)
             {
@@ -9964,6 +10955,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
         }
         private bool HandleRequestPayPrice(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             RequestPayPricePacket requestPayPricePacket = (RequestPayPricePacket)Pack;
 
             RequestPayPrice handlerRequestPayPrice = OnRequestPayPrice;
@@ -9975,6 +10969,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
         }
         private bool HandleObjectSaleInfo(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             ObjectSaleInfoPacket objectSaleInfoPacket = (ObjectSaleInfoPacket)Pack;
 
             #region Packet Session and User Check
@@ -10004,6 +11001,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
         }
         private bool HandleObjectBuy(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             ObjectBuyPacket objectBuyPacket = (ObjectBuyPacket)Pack;
 
             #region Packet Session and User Check
@@ -10040,6 +11040,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
         #region Script Packets
         private bool HandleGetScriptRunning(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             GetScriptRunningPacket scriptRunning = (GetScriptRunningPacket)Pack;
 
             GetScriptRunning handlerGetScriptRunning = OnGetScriptRunning;
@@ -10051,6 +11054,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
         }
         private bool HandleSetScriptRunning(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             SetScriptRunningPacket setScriptRunning = (SetScriptRunningPacket)Pack;
 
             #region Packet Session and User Check
@@ -10072,6 +11078,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleScriptReset(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             ScriptResetPacket scriptResetPacket = (ScriptResetPacket)Pack;
 
             #region Packet Session and User Check
@@ -10097,6 +11106,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleActivateGestures(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             ActivateGesturesPacket activateGesturePacket = (ActivateGesturesPacket)Pack;
 
             #region Packet Session and User Check
@@ -10121,6 +11133,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
         }
         private bool HandleDeactivateGestures(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             DeactivateGesturesPacket deactivateGesturePacket = (DeactivateGesturesPacket)Pack;
 
             #region Packet Session and User Check
@@ -10141,6 +11156,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
         }
         private bool HandleObjectOwner(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             ObjectOwnerPacket objectOwnerPacket = (ObjectOwnerPacket)Pack;
 
             #region Packet Session and User Check
@@ -10169,6 +11187,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleAgentFOV(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             AgentFOVPacket fovPacket = (AgentFOVPacket)Pack;
 
             if (fovPacket.FOVBlock.GenCounter > m_agentFOVCounter)
@@ -10187,6 +11208,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleViewerStats(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             // TODO: handle this packet
             //m_log.Warn("[CLIENT]: unhandled ViewerStats packet");
             return true;
@@ -10194,6 +11218,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleMapItemRequest(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             MapItemRequestPacket mirpk = (MapItemRequestPacket)Pack;
 
             #region Packet Session and User Check
@@ -10224,6 +11251,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleMuteListRequest(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             MuteListRequestPacket muteListRequest =
                             (MuteListRequestPacket)Pack;
 
@@ -10250,6 +11280,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleUpdateMuteListEntry(IClientAPI client, Packet Packet)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             UpdateMuteListEntryPacket UpdateMuteListEntry =
                 (UpdateMuteListEntryPacket)Packet;
             MuteListEntryUpdate handlerUpdateMuteListEntry = OnUpdateMuteListEntry;
@@ -10266,6 +11299,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleRemoveMuteListEntry(IClientAPI client, Packet Packet)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             RemoveMuteListEntryPacket RemoveMuteListEntry =
                 (RemoveMuteListEntryPacket)Packet;
             MuteListEntryRemove handlerRemoveMuteListEntry = OnRemoveMuteListEntry;
@@ -10282,6 +11318,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleUserReport(IClientAPI client, Packet Packet)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             UserReportPacket UserReport =
                 (UserReportPacket)Packet;
 
@@ -10307,6 +11346,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleSendPostcard(IClientAPI client, Packet packet)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
 //            SendPostcardPacket SendPostcard =
 //                (SendPostcardPacket)packet;
             SendPostcard handlerSendPostcard = OnSendPostcard;
@@ -10339,6 +11381,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleDirPlacesQuery(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             DirPlacesQueryPacket dirPlacesQueryPacket = (DirPlacesQueryPacket)Pack;
             //m_log.Debug(dirPlacesQueryPacket.ToString());
 
@@ -10369,6 +11414,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleDirFindQuery(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             DirFindQueryPacket dirFindQueryPacket = (DirFindQueryPacket)Pack;
 
             #region Packet Session and User Check
@@ -10395,6 +11443,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleDirLandQuery(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             DirLandQueryPacket dirLandQueryPacket = (DirLandQueryPacket)Pack;
 
             #region Packet Session and User Check
@@ -10422,6 +11473,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleDirPopularQuery(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             DirPopularQueryPacket dirPopularQueryPacket = (DirPopularQueryPacket)Pack;
 
             #region Packet Session and User Check
@@ -10445,6 +11499,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleDirClassifiedQuery(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             DirClassifiedQueryPacket dirClassifiedQueryPacket = (DirClassifiedQueryPacket)Pack;
 
             #region Packet Session and User Check
@@ -10472,6 +11529,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleEventInfoRequest(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             EventInfoRequestPacket eventInfoRequestPacket = (EventInfoRequestPacket)Pack;
 
             #region Packet Session and User Check
@@ -10496,6 +11556,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleOfferCallingCard(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             OfferCallingCardPacket offerCallingCardPacket = (OfferCallingCardPacket)Pack;
 
             #region Packet Session and User Check
@@ -10518,6 +11581,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleAcceptCallingCard(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             AcceptCallingCardPacket acceptCallingCardPacket = (AcceptCallingCardPacket)Pack;
 
             #region Packet Session and User Check
@@ -10542,6 +11608,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleDeclineCallingCard(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             DeclineCallingCardPacket declineCallingCardPacket = (DeclineCallingCardPacket)Pack;
 
             #region Packet Session and User Check
@@ -10567,6 +11636,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleActivateGroup(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             ActivateGroupPacket activateGroupPacket = (ActivateGroupPacket)Pack;
 
             #region Packet Session and User Check
@@ -10589,6 +11661,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleGroupVoteHistoryRequest(IClientAPI client, Packet Packet)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             GroupVoteHistoryRequestPacket GroupVoteHistoryRequest =
                 (GroupVoteHistoryRequestPacket)Packet;
             GroupVoteHistoryRequest handlerGroupVoteHistoryRequest = OnGroupVoteHistoryRequest;
@@ -10602,6 +11677,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleGroupActiveProposalsRequest(IClientAPI client, Packet Packet)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             GroupActiveProposalsRequestPacket GroupActiveProposalsRequest =
                 (GroupActiveProposalsRequestPacket)Packet;
             GroupActiveProposalsRequest handlerGroupActiveProposalsRequest = OnGroupActiveProposalsRequest;
@@ -10615,6 +11693,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleGroupAccountDetailsRequest(IClientAPI client, Packet Packet)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             GroupAccountDetailsRequestPacket GroupAccountDetailsRequest =
                 (GroupAccountDetailsRequestPacket)Packet;
             GroupAccountDetailsRequest handlerGroupAccountDetailsRequest = OnGroupAccountDetailsRequest;
@@ -10628,6 +11709,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleGroupAccountSummaryRequest(IClientAPI client, Packet Packet)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             GroupAccountSummaryRequestPacket GroupAccountSummaryRequest =
                 (GroupAccountSummaryRequestPacket)Packet;
             GroupAccountSummaryRequest handlerGroupAccountSummaryRequest = OnGroupAccountSummaryRequest;
@@ -10641,6 +11725,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleGroupTransactionsDetailsRequest(IClientAPI client, Packet Packet)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             GroupAccountTransactionsRequestPacket GroupAccountTransactionsRequest =
                 (GroupAccountTransactionsRequestPacket)Packet;
             GroupAccountTransactionsRequest handlerGroupAccountTransactionsRequest = OnGroupAccountTransactionsRequest;
@@ -10654,6 +11741,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleGroupTitlesRequest(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             GroupTitlesRequestPacket groupTitlesRequest =
                             (GroupTitlesRequestPacket)Pack;
 
@@ -10708,6 +11798,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
         }
         private bool HandleGroupProfileRequest(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             GroupProfileRequestPacket groupProfileRequest =
                        (GroupProfileRequestPacket)Pack;
 
@@ -10754,6 +11847,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
         }
         private bool HandleGroupMembersRequest(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             GroupMembersRequestPacket groupMembersRequestPacket =
                         (GroupMembersRequestPacket)Pack;
 
@@ -10825,6 +11921,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
         }
         private bool HandleGroupRoleDataRequest(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             GroupRoleDataRequestPacket groupRolesRequest =
                         (GroupRoleDataRequestPacket)Pack;
 
@@ -10894,6 +11993,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleGroupRoleMembersRequest(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             GroupRoleMembersRequestPacket groupRoleMembersRequest =
                        (GroupRoleMembersRequestPacket)Pack;
 
@@ -10957,6 +12059,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
         }
         private bool HandleCreateGroupRequest(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             CreateGroupRequestPacket createGroupRequest =
                        (CreateGroupRequestPacket)Pack;
 
@@ -10985,6 +12090,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
         }
         private bool HandleUpdateGroupInfo(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             UpdateGroupInfoPacket updateGroupInfo =
                         (UpdateGroupInfoPacket)Pack;
 
@@ -11014,6 +12122,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
         }
         private bool HandleSetGroupAcceptNotices(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             SetGroupAcceptNoticesPacket setGroupAcceptNotices =
                         (SetGroupAcceptNoticesPacket)Pack;
 
@@ -11038,6 +12149,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
         }
         private bool HandleGroupTitleUpdate(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             GroupTitleUpdatePacket groupTitleUpdate =
                         (GroupTitleUpdatePacket)Pack;
 
@@ -11061,6 +12175,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
         }
         private bool HandleParcelDeedToGroup(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             ParcelDeedToGroupPacket parcelDeedToGroup = (ParcelDeedToGroupPacket)Pack;
             if (m_GroupsModule != null)
             {
@@ -11076,6 +12193,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
         }
         private bool HandleGroupNoticesListRequest(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             GroupNoticesListRequestPacket groupNoticesListRequest =
                         (GroupNoticesListRequestPacket)Pack;
 
@@ -11128,6 +12248,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
         }
         private bool HandleGroupNoticeRequest(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             GroupNoticeRequestPacket groupNoticeRequest =
                         (GroupNoticeRequestPacket)Pack;
 
@@ -11149,6 +12272,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
         }
         private bool HandleGroupRoleUpdate(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             GroupRoleUpdatePacket groupRoleUpdate =
                         (GroupRoleUpdatePacket)Pack;
 
@@ -11181,6 +12307,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
         }
         private bool HandleGroupRoleChanges(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             GroupRoleChangesPacket groupRoleChanges =
                         (GroupRoleChangesPacket)Pack;
 
@@ -11210,6 +12339,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
         }
         private bool HandleJoinGroupRequest(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             JoinGroupRequestPacket joinGroupRequest =
                         (JoinGroupRequestPacket)Pack;
 
@@ -11231,6 +12363,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
         }
         private bool HandleLeaveGroupRequest(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             LeaveGroupRequestPacket leaveGroupRequest =
                         (LeaveGroupRequestPacket)Pack;
 
@@ -11252,6 +12387,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
         }
         private bool HandleEjectGroupMemberRequest(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             EjectGroupMemberRequestPacket ejectGroupMemberRequest =
                        (EjectGroupMemberRequestPacket)Pack;
 
@@ -11278,6 +12416,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
         }
         private bool HandleInviteGroupRequest(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             InviteGroupRequestPacket inviteGroupRequest =
                         (InviteGroupRequestPacket)Pack;
 
@@ -11308,6 +12449,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleStartLure(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             StartLurePacket startLureRequest = (StartLurePacket)Pack;
 
             #region Packet Session and User Check
@@ -11330,6 +12474,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
         }
         private bool HandleTeleportLureRequest(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             TeleportLureRequestPacket teleportLureRequest =
                             (TeleportLureRequestPacket)Pack;
 
@@ -11352,6 +12499,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
         }
         private bool HandleClassifiedInfoRequest(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             ClassifiedInfoRequestPacket classifiedInfoRequest =
                             (ClassifiedInfoRequestPacket)Pack;
 
@@ -11373,6 +12523,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
         }
         private bool HandleClassifiedInfoUpdate(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             ClassifiedInfoUpdatePacket classifiedInfoUpdate =
                             (ClassifiedInfoUpdatePacket)Pack;
 
@@ -11406,6 +12559,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
         }
         private bool HandleClassifiedDelete(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             ClassifiedDeletePacket classifiedDelete =
                            (ClassifiedDeletePacket)Pack;
 
@@ -11427,6 +12583,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
         }
         private bool HandleClassifiedGodDelete(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             ClassifiedGodDeletePacket classifiedGodDelete =
                             (ClassifiedGodDeletePacket)Pack;
 
@@ -11448,6 +12607,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
         }
         private bool HandleEventGodDelete(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             EventGodDeletePacket eventGodDelete =
                                (EventGodDeletePacket)Pack;
 
@@ -11474,6 +12636,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
         }
         private bool HandleEventNotificationAddRequest(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             EventNotificationAddRequestPacket eventNotificationAdd =
                             (EventNotificationAddRequestPacket)Pack;
 
@@ -11494,6 +12659,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
         }
         private bool HandleEventNotificationRemoveRequest(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             EventNotificationRemoveRequestPacket eventNotificationRemove =
                             (EventNotificationRemoveRequestPacket)Pack;
 
@@ -11514,6 +12682,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
         }
         private bool HandleRetrieveInstantMessages(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             RetrieveInstantMessagesPacket rimpInstantMessagePack = (RetrieveInstantMessagesPacket)Pack;
 
             #region Packet Session and User Check
@@ -11532,6 +12703,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
         }
         private bool HandlePickDelete(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             PickDeletePacket pickDelete =
                             (PickDeletePacket)Pack;
 
@@ -11551,6 +12725,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
         }
         private bool HandlePickGodDelete(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             PickGodDeletePacket pickGodDelete =
                            (PickGodDeletePacket)Pack;
 
@@ -11573,6 +12750,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
         }
         private bool HandlePickInfoUpdate(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             PickInfoUpdatePacket pickInfoUpdate =
                             (PickInfoUpdatePacket)Pack;
 
@@ -11600,6 +12780,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
         }
         private bool HandleAvatarNotesUpdate(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             AvatarNotesUpdatePacket avatarNotesUpdate =
                             (AvatarNotesUpdatePacket)Pack;
 
@@ -11621,6 +12804,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
         }
         private bool HandleAvatarInterestsUpdate(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             AvatarInterestsUpdatePacket avatarInterestUpdate =
                             (AvatarInterestsUpdatePacket)Pack;
 
@@ -11646,6 +12832,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleGrantUserRights(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             GrantUserRightsPacket GrantUserRights =
                             (GrantUserRightsPacket)Pack;
             #region Packet Session and User Check
@@ -11668,6 +12857,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandlePlacesQuery(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             PlacesQueryPacket placesQueryPacket =
                             (PlacesQueryPacket)Pack;
 
@@ -11690,6 +12882,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         public void SendScriptQuestion(UUID taskID, string taskName, string ownerName, UUID itemID, int question)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             ScriptQuestionPacket scriptQuestion = (ScriptQuestionPacket)PacketPool.Instance.GetPacket(PacketType.ScriptQuestion);
             scriptQuestion.Data = new ScriptQuestionPacket.DataBlock();
             // TODO: don't create new blocks if recycling an old packet
@@ -11710,6 +12905,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
         /// <returns></returns>
         protected virtual bool HandleLogout(IClientAPI client, Packet packet)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (packet.Type == PacketType.LogoutRequest)
             {
                 if (((LogoutRequestPacket)packet).AgentData.SessionID != SessionId) return false;
@@ -11725,6 +12923,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
         /// <returns></returns>
         protected virtual bool Logout(IClientAPI client)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             m_log.InfoFormat("[CLIENT]: Got a logout request for {0} in {1}", Name, Scene.RegionInfo.RegionName);
 
             Action<IClientAPI> handlerLogout = OnLogout;
@@ -11747,6 +12948,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
         /// <returns></returns>
         protected bool HandleAgentTextureCached(IClientAPI simclient, Packet packet)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             //m_log.Debug("texture cached: " + packet.ToString());
             AgentCachedTexturePacket cachedtex = (AgentCachedTexturePacket)packet;
             AgentCachedTextureResponsePacket cachedresp = (AgentCachedTextureResponsePacket)PacketPool.Instance.GetPacket(PacketType.AgentCachedTextureResponse);
@@ -11912,6 +13116,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
         /// <returns></returns>
         public void SendCachedTextureResponse(ISceneEntity avatar, int serial, List<CachedTextureResponseArg> cachedTextures)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             ScenePresence presence = avatar as ScenePresence;
             if (presence == null)
                 return;
@@ -11938,6 +13145,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         protected bool HandleMultipleObjUpdate(IClientAPI simClient, Packet packet)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             MultipleObjectUpdatePacket multipleupdate = (MultipleObjectUpdatePacket)packet;
 
             if (multipleupdate.AgentData.SessionID != SessionId)
@@ -12173,6 +13383,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         public void RequestMapLayer()
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             //should be getting the map layer from the grid server
             //send a layer covering the 800,800 - 1200,1200 area (should be covering the requested area)
             MapLayerReplyPacket mapReply = (MapLayerReplyPacket)PacketPool.Instance.GetPacket(PacketType.MapLayerReply);
@@ -12192,6 +13405,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         public void RequestMapBlocksX(int minX, int minY, int maxX, int maxY)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             /*
             IList simMapProfiles = m_gridServer.RequestMapBlocks(minX, minY, maxX, maxY);
             MapBlockReplyPacket mbReply = new MapBlockReplyPacket();
@@ -12227,6 +13443,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
         /// <param name="throttles"></param>
         public void SetChildAgentThrottle(byte[] throttles)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             m_udpClient.SetThrottles(throttles);
         }
 
@@ -12237,6 +13456,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
         /// <returns></returns>
         public byte[] GetThrottlesPacked(float multiplier)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             return m_udpClient.GetThrottlesPacked(multiplier);
         }
 
@@ -12245,6 +13467,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
         /// </summary>
         public virtual void InPacket(object NewPack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             throw new NotImplementedException();
         }
 
@@ -12255,6 +13480,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
         /// <param name="throttlePacketType">Throttling category for the packet</param>
         protected void OutPacket(Packet packet, ThrottleOutPacketType throttlePacketType)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             #region BinaryStats
             LLUDPServer.LogPacketHeader(false, m_circuitCode, 0, packet.Type, (ushort)packet.Length);
             #endregion BinaryStats
@@ -12272,6 +13500,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
         /// handles splitting manually</param>
         protected void OutPacket(Packet packet, ThrottleOutPacketType throttlePacketType, bool doAutomaticSplitting)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             OutPacket(packet, throttlePacketType, doAutomaticSplitting, null);
         }
 
@@ -12288,6 +13519,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
         /// provide your own method.</param>
         protected void OutPacket(Packet packet, ThrottleOutPacketType throttlePacketType, bool doAutomaticSplitting, UnackedPacketMethod method)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (DebugPacketLevel > 0)
             {
                 bool logPacket = true;
@@ -12324,6 +13558,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         protected void HandleAutopilot(Object sender, string method, List<String> args)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             float locx = 0;
             float locy = 0;
             float locz = 0;
@@ -12346,6 +13583,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
         /// <param name="Pack">OpenMetaverse.packet</param>
         public void ProcessInPacket(Packet packet)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (DebugPacketLevel > 0)
             {
                 bool logPacket = true;
@@ -12376,6 +13616,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private static PrimitiveBaseShape GetShapeFromAddPacket(ObjectAddPacket addPacket)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             PrimitiveBaseShape shape = new PrimitiveBaseShape();
 
             shape.PCode = addPacket.ObjectData.PCode;
@@ -12408,6 +13651,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         public ClientInfo GetClientInfo()
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             ClientInfo info = m_udpClient.GetClientInfo();
 
             info.proxyEP = null;
@@ -12419,6 +13665,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         public void SetClientInfo(ClientInfo info)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             m_udpClient.SetClientInfo(info);
         }
 
@@ -12426,6 +13675,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         public void SendParcelMediaCommand(uint flags, ParcelMediaCommandEnum command, float time)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             ParcelMediaCommandMessagePacket commandMessagePacket = new ParcelMediaCommandMessagePacket();
             commandMessagePacket.CommandBlock.Flags = flags;
             commandMessagePacket.CommandBlock.Command = (uint)command;
@@ -12438,6 +13690,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
                                    byte autoScale, string mediaType, string mediaDesc, int mediaWidth, int mediaHeight,
                                    byte mediaLoop)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             ParcelMediaUpdatePacket updatePacket = new ParcelMediaUpdatePacket();
             updatePacket.DataBlock.MediaURL = Util.StringToBytes256(mediaUrl);
             updatePacket.DataBlock.MediaID = mediaTextureID;
@@ -12458,6 +13713,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         public void SendSetFollowCamProperties(UUID objectID, SortedDictionary<int, float> parameters)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             SetFollowCamPropertiesPacket packet = (SetFollowCamPropertiesPacket)PacketPool.Instance.GetPacket(PacketType.SetFollowCamProperties);
             packet.ObjectData.ObjectID = objectID;
             SetFollowCamPropertiesPacket.CameraPropertyBlock[] camPropBlock = new SetFollowCamPropertiesPacket.CameraPropertyBlock[parameters.Count];
@@ -12476,6 +13734,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         public void SendClearFollowCamProperties(UUID objectID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             ClearFollowCamPropertiesPacket packet = (ClearFollowCamPropertiesPacket)PacketPool.Instance.GetPacket(PacketType.ClearFollowCamProperties);
             packet.ObjectData.ObjectID = objectID;
             OutPacket(packet, ThrottleOutPacketType.Task);
@@ -12513,6 +13774,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
         /// <param name="iface"></param>
         protected void RegisterInterface<T>(T iface)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             try
             {
                 m_clientInterfaces.AddIfNotExists(typeof(T), delegate() { return iface; });
@@ -12525,6 +13789,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         public bool TryGet<T>(out T iface)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             object o;
             if(m_clientInterfaces.TryGetValue(typeof(T), out o))
             {
@@ -12537,11 +13804,17 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         public T Get<T>()
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             return (T)m_clientInterfaces[typeof(T)];
         }
 
         public void Disconnect(string reason)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             Kick(reason);
             Thread.Sleep(1000);
             Disconnect();
@@ -12556,6 +13829,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         public void RefreshGroupMembership()
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (m_GroupsModule != null)
             {
                 GroupMembershipData[] GroupMembership =
@@ -12579,16 +13855,25 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         public string Report()
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             return m_udpClient.GetStats();
         }
 
         public string XReport(string uptime, string version)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             return String.Empty;
         }
 
         public OSDMap OReport(string uptime, string version)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             return new OSDMap();
         }
 
@@ -12599,6 +13884,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
         /// <param name="taskID"></param>
         protected void MakeAssetRequest(TransferRequestPacket transferRequest, UUID taskID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             UUID requestID = UUID.Zero;
             int sourceType = transferRequest.TransferInfo.SourceType;
 
@@ -12630,6 +13918,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
         /// <param name="asset"></param>
         protected void AssetReceived(string id, Object sender, AssetBase asset)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             TransferRequestPacket transferRequest = (TransferRequestPacket)sender;
 
             UUID requestID = UUID.Zero;
@@ -12702,6 +13993,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
         /// <returns></returns>
         private static int CalculateNumPackets(byte[] data)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             const uint m_maxPacketSize = 600;
             int numPackets = 1;
 
@@ -12721,6 +14015,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         public void SendRebakeAvatarTextures(UUID textureID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             RebakeAvatarTexturesPacket pack =
                 (RebakeAvatarTexturesPacket)PacketPool.Instance.GetPacket(PacketType.RebakeAvatarTextures);
 
@@ -12737,12 +14034,17 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         public class AsyncPacketProcess
         {
+            private static readonly ILog m_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
             public bool result = false;
             public readonly LLClientView ClientView = null;
             public readonly Packet Pack = null;
             public readonly PacketMethod Method = null;
             public AsyncPacketProcess(LLClientView pClientview, PacketMethod pMethod, Packet pPack)
             {
+                if (m_log.IsDebugEnabled) {
+                    m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+                }
                 ClientView = pClientview;
                 Method = pMethod;
                 Pack = pPack;
@@ -12751,6 +14053,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         public static OSD BuildEvent(string eventName, OSD eventBody)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             OSDMap osdEvent = new OSDMap(2);
             osdEvent.Add("message", new OSDString(eventName));
             osdEvent.Add("body", eventBody);
@@ -12760,6 +14065,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         public void SendAvatarInterestsReply(UUID avatarID, uint wantMask, string wantText, uint skillsMask, string skillsText, string languages)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             AvatarInterestsReplyPacket packet = (AvatarInterestsReplyPacket)PacketPool.Instance.GetPacket(PacketType.AvatarInterestsReply);
 
             packet.AgentData = new AvatarInterestsReplyPacket.AgentDataBlock();
@@ -12777,6 +14085,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         public void SendChangeUserRights(UUID agentID, UUID friendID, int rights)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             ChangeUserRightsPacket packet = (ChangeUserRightsPacket)PacketPool.Instance.GetPacket(PacketType.ChangeUserRights);
 
             packet.AgentData = new ChangeUserRightsPacket.AgentDataBlock();
@@ -12792,6 +14103,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         public void SendTextBoxRequest(string message, int chatChannel, string objectname, UUID ownerID, string ownerFirstName, string ownerLastName, UUID objectId)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             ScriptDialogPacket dialog = (ScriptDialogPacket)PacketPool.Instance.GetPacket(PacketType.ScriptDialog);
             dialog.Data.ObjectID = objectId;
             dialog.Data.ChatChannel = chatChannel;
@@ -12816,6 +14130,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         public void SendAgentTerseUpdate(ISceneEntity p)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (p is ScenePresence)
             {
 //                m_log.DebugFormat(
@@ -12855,6 +14172,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
         public void SendPlacesReply(UUID queryID, UUID transactionID,
                 PlacesReplyData[] data)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             PlacesReplyPacket reply = null;
             PlacesReplyPacket.QueryDataBlock[] dataBlocks = 
                     new PlacesReplyPacket.QueryDataBlock[0];
@@ -12909,6 +14229,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         public void SendRemoveInventoryItems(UUID[] items)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             IEventQueue eq = Scene.RequestModuleInterface<IEventQueue>();
 
             if (eq == null)
@@ -12947,6 +14270,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         public void SendRemoveInventoryFolders(UUID[] folders)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             IEventQueue eq = Scene.RequestModuleInterface<IEventQueue>();
 
             if (eq == null)
@@ -12993,6 +14319,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         public void SendBulkUpdateInventory(InventoryFolderBase[] folders, InventoryItemBase[] items)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             IEventQueue eq = Scene.RequestModuleInterface<IEventQueue>();
 
             if (eq == null)

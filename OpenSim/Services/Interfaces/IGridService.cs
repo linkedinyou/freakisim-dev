@@ -238,6 +238,9 @@ namespace OpenSim.Services.Interfaces
 
         public GridRegion()
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             RegionSizeX = (int)Constants.RegionSize;
             RegionSizeY = (int)Constants.RegionSize;
             m_serverURI = string.Empty;
@@ -270,6 +273,9 @@ namespace OpenSim.Services.Interfaces
 
         public GridRegion(uint xcell, uint ycell)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             m_regionLocX = (int)Util.RegionToWorldLoc(xcell);
             m_regionLocY = (int)Util.RegionToWorldLoc(ycell);
             RegionSizeX = (int)Constants.RegionSize;
@@ -278,6 +284,9 @@ namespace OpenSim.Services.Interfaces
 
         public GridRegion(RegionInfo ConvertFrom)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             m_regionName = ConvertFrom.RegionName;
             m_regionLocX = (int)(ConvertFrom.WorldLocX);
             m_regionLocY = (int)(ConvertFrom.WorldLocY);
@@ -298,6 +307,9 @@ namespace OpenSim.Services.Interfaces
 
         public GridRegion(GridRegion ConvertFrom)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             m_regionName = ConvertFrom.RegionName;
             m_regionLocX = ConvertFrom.RegionLocX;
             m_regionLocY = ConvertFrom.RegionLocY;
@@ -323,6 +335,9 @@ namespace OpenSim.Services.Interfaces
         /// </summary>
         public bool Equals(GridRegion region)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if ((object)region == null)
                 return false;
             // Return true if the non-zero UUIDs are equal:
@@ -331,6 +346,9 @@ namespace OpenSim.Services.Interfaces
 
         public override bool Equals(Object obj)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (obj == null)
                 return false;
             return Equals(obj as GridRegion);
@@ -338,6 +356,9 @@ namespace OpenSim.Services.Interfaces
 
         public override int GetHashCode()
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             return RegionID.GetHashCode() ^ TerrainImage.GetHashCode() ^ ParcelImage.GetHashCode();
         }
 
@@ -406,6 +427,9 @@ namespace OpenSim.Services.Interfaces
 
         public Dictionary<string, object> ToKeyValuePairs()
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             Dictionary<string, object> kvp = new Dictionary<string, object>();
             kvp["uuid"] = RegionID.ToString();
             kvp["locX"] = RegionLocX.ToString();
@@ -429,6 +453,9 @@ namespace OpenSim.Services.Interfaces
 
         public GridRegion(Dictionary<string, object> kvp)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (kvp.ContainsKey("uuid"))
                 RegionID = new UUID((string)kvp["uuid"]);
 

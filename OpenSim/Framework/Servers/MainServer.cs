@@ -201,8 +201,7 @@ namespace OpenSim.Framework.Servers
 
                 if (allReqs || outReqs)
                 {
-                    WebUtil.DebugLevel = newDebug;
-                    MainConsole.Instance.OutputFormat("OUT debug level set to {0}", newDebug);
+                    MainConsole.Instance.OutputFormat("OUT log-level has to be set by log4net config");
                 }
             }
             else
@@ -211,7 +210,7 @@ namespace OpenSim.Framework.Servers
                     MainConsole.Instance.OutputFormat("Current IN debug level is {0}", MainServer.DebugLevel);
 
                 if (allReqs || outReqs)
-                    MainConsole.Instance.OutputFormat("Current OUT debug level is {0}", WebUtil.DebugLevel);
+                    MainConsole.Instance.OutputFormat("Current OUT log-level is set in log4net config");
             }
         }
 

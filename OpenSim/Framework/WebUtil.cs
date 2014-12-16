@@ -61,7 +61,7 @@ namespace OpenSim.Framework
         /// <remarks>
         /// If DebugLevel >= 3 then short notices about outgoing HTTP requests are logged.
         /// </remarks>
-        public static int DebugLevel { get; set; }
+        /// public static int DebugLevel { get; set; }
 
         /// <summary>
         /// Request number for diagnostic purposes.
@@ -93,7 +93,7 @@ namespace OpenSim.Framework
         /// give us useful information about the call (which agent it relates to if applicable, etc.).
         /// This is also used to truncate messages when using DebugLevel 5.
         /// </remarks>
-        public const int MaxRequestDiagLength = 200;
+        public const int MaxRequestDiagLength = 2000000;
 
         /// <summary>
         /// Dictionary of end points
@@ -177,7 +177,7 @@ namespace OpenSim.Framework
             {
                 string output;
 
-                if (DebugLevel == 5)
+                if (m_log.IsDebugEnabled)
                 {
                     char[] chars = new char[WebUtil.MaxRequestDiagLength + 1];  // +1 so we know to add "..." only if needed
                     int len = reader.Read(chars, 0, WebUtil.MaxRequestDiagLength + 1);
@@ -199,7 +199,7 @@ namespace OpenSim.Framework
 
         public static void LogOutgoingDetail(string context, string output)
         {
-            if (DebugLevel == 5)
+            if (m_log.IsDebugEnabled)
             {
                 if (output.Length > MaxRequestDiagLength)
                     output = output.Substring(0, MaxRequestDiagLength) + "...";
@@ -227,7 +227,7 @@ namespace OpenSim.Framework
 
             int reqnum = RequestNumber++;
 
-            if (DebugLevel >= 3)
+            if (m_log.IsDebugEnabled)
                 m_log.DebugFormat("[LOGHTTP]: HTTP OUT {0} JSON-RPC {1} to {2}",
                     reqnum, method, url);
 
@@ -251,7 +251,7 @@ namespace OpenSim.Framework
                 {
                     strBuffer = OSDParser.SerializeJsonString(data);
 
-                    if (DebugLevel >= 5)
+                    if (m_log.IsDebugEnabled)
                         LogOutgoingDetail("SEND", reqnum, strBuffer);
 
                     byte[] buffer = System.Text.Encoding.UTF8.GetBytes(strBuffer);
@@ -296,7 +296,7 @@ namespace OpenSim.Framework
                         using (StreamReader reader = new StreamReader(responseStream))
                         {
                             string responseStr = reader.ReadToEnd();
-                            if (WebUtil.DebugLevel >= 5)
+                            if (m_log.IsDebugEnabled)
                                 WebUtil.LogResponseDetail(reqnum, responseStr);
                             return CanonicalizeResults(responseStr);
                         }
@@ -328,7 +328,7 @@ namespace OpenSim.Framework
                             ? (strBuffer.Length > MaxRequestDiagLength ? strBuffer.Remove(MaxRequestDiagLength) : strBuffer)
                             : "");
                 }
-                else if (DebugLevel >= 4)
+                else if (m_log.IsDebugEnabled)
                 {
                     m_log.DebugFormat("[LOGHTTP]: HTTP OUT {0} took {1}ms, {2}ms writing",
                         reqnum, tickdiff, tickdata);
@@ -418,7 +418,7 @@ namespace OpenSim.Framework
             int reqnum = RequestNumber++;
             string method = (data != null && data["RequestMethod"] != null) ? data["RequestMethod"] : "unknown";
 
-            if (DebugLevel >= 3)
+            if (m_log.IsDebugEnabled)
                 m_log.DebugFormat("[LOGHTTP]: HTTP OUT {0} ServiceForm '{1}' to {2}",
                     reqnum, method, url);
             
@@ -441,7 +441,7 @@ namespace OpenSim.Framework
                 {
                     queryString = BuildQueryString(data);
 
-                    if (DebugLevel >= 5)
+                    if (m_log.IsDebugEnabled)
                         LogOutgoingDetail("SEND", reqnum, queryString);
 
                     byte[] buffer = System.Text.Encoding.UTF8.GetBytes(queryString);
@@ -463,7 +463,7 @@ namespace OpenSim.Framework
                         using (StreamReader reader = new StreamReader(responseStream))
                         {
                             string responseStr = reader.ReadToEnd();
-                            if (WebUtil.DebugLevel >= 5)
+                            if (m_log.IsDebugEnabled)
                                 WebUtil.LogResponseDetail(reqnum, responseStr);
                             OSD responseOSD = OSDParser.Deserialize(responseStr);
 
@@ -498,7 +498,7 @@ namespace OpenSim.Framework
                             ? (queryString.Length > MaxRequestDiagLength) ? queryString.Remove(MaxRequestDiagLength) : queryString
                             : "");
                 }
-                else if (DebugLevel >= 4)
+                else if (m_log.IsDebugEnabled)
                 {
                     m_log.DebugFormat("[LOGHTTP]: HTTP OUT {0} took {1}ms, {2}ms writing",
                         reqnum, tickdiff, tickdata);
@@ -792,7 +792,7 @@ namespace OpenSim.Framework
 
             int reqnum = WebUtil.RequestNumber++;
 
-            if (WebUtil.DebugLevel >= 3)
+            if (m_log.IsDebugEnabled)
                 m_log.DebugFormat("[LOGHTTP]: HTTP OUT {0} AsynchronousRequestObject {1} to {2}",
                     reqnum, verb, requestUrl);
 
@@ -834,7 +834,7 @@ namespace OpenSim.Framework
                     request.ContentLength = length;
                     byte[] data = buffer.ToArray();
 
-                    if (WebUtil.DebugLevel >= 5)
+                    if (m_log.IsDebugEnabled)
                         WebUtil.LogOutgoingDetail("SEND", reqnum, System.Text.Encoding.UTF8.GetString(data));
 
                     request.BeginGetRequestStream(delegate(IAsyncResult res)
@@ -957,7 +957,7 @@ namespace OpenSim.Framework
                         reqnum, verb, requestUrl, tickdiff, tickdata,
                         originalRequest);
                 }
-                else if (WebUtil.DebugLevel >= 4)
+                else if (m_log.IsDebugEnabled)
                 {
                     m_log.DebugFormat("[LOGHTTP]: HTTP OUT {0} took {1}ms, {2}ms writing",
                         reqnum, tickdiff, tickdata);
@@ -995,9 +995,8 @@ namespace OpenSim.Framework
 
             int reqnum = WebUtil.RequestNumber++;
 
-            if (WebUtil.DebugLevel >= 3)
-                m_log.DebugFormat("[LOGHTTP]: HTTP OUT {0} SynchronousRestForms {1} to {2}",
-                    reqnum, verb, requestUrl);
+            if (m_log.IsDebugEnabled)
+                m_log.DebugFormat("[LOGHTTP]: HTTP OUT {0} SynchronousRestForms {1} to {2}", reqnum, verb, requestUrl);
 
             int tickstart = Environment.TickCount;
             int tickdata = 0;
@@ -1025,7 +1024,7 @@ namespace OpenSim.Framework
                     request.ContentLength = length;
                     byte[] data = buffer.ToArray();
 
-                    if (WebUtil.DebugLevel >= 5)
+                    if (m_log.IsDebugEnabled)
                         WebUtil.LogOutgoingDetail("SEND", reqnum, System.Text.Encoding.UTF8.GetString(data));
 
                     Stream requestStream = null;
@@ -1078,13 +1077,13 @@ namespace OpenSim.Framework
                     reqnum, verb, requestUrl, tickdiff, tickdata,
                     obj.Length > WebUtil.MaxRequestDiagLength ? obj.Remove(WebUtil.MaxRequestDiagLength) : obj);
             }
-            else if (WebUtil.DebugLevel >= 4)
+            else if (m_log.IsDebugEnabled)
             {
                 m_log.DebugFormat("[LOGHTTP]: HTTP OUT {0} took {1}ms, {2}ms writing",
                     reqnum, tickdiff, tickdata);
             }
 
-            if (WebUtil.DebugLevel >= 5)
+            if (m_log.IsDebugEnabled)
                 WebUtil.LogResponseDetail(reqnum, respstring);
 
             return respstring;
@@ -1131,7 +1130,7 @@ namespace OpenSim.Framework
 
             int reqnum = WebUtil.RequestNumber++;
 
-            if (WebUtil.DebugLevel >= 3)
+            if (m_log.IsDebugEnabled)
                 m_log.DebugFormat("[LOGHTTP]: HTTP OUT {0} SynchronousRestObject {1} to {2}",
                     reqnum, verb, requestUrl);
 
@@ -1171,7 +1170,7 @@ namespace OpenSim.Framework
                     request.ContentLength = length;
                     byte[] data = buffer.ToArray();
 
-                    if (WebUtil.DebugLevel >= 5)
+                    if (m_log.IsDebugEnabled)
                         WebUtil.LogOutgoingDetail("SEND", reqnum, System.Text.Encoding.UTF8.GetString(data));
 
                     try
@@ -1258,7 +1257,7 @@ namespace OpenSim.Framework
                         reqnum, verb, requestUrl, tickdiff, tickdata,
                         originalRequest);
                 }
-                else if (WebUtil.DebugLevel >= 4)
+                else if (m_log.IsDebugEnabled)
                 {
                     m_log.DebugFormat("[LOGHTTP]: HTTP OUT {0} took {1}ms, {2}ms writing",
                         reqnum, tickdiff, tickdata);
@@ -1280,7 +1279,7 @@ namespace OpenSim.Framework
             {
                 XmlSerializer deserializer = new XmlSerializer(typeof(TResponse));
 
-                if (WebUtil.DebugLevel >= 5)
+                if (m_log.IsDebugEnabled)
                 {
                     byte[] data = new byte[contentLength];
                     Util.ReadStream(respStream, data);
@@ -1312,7 +1311,7 @@ namespace OpenSim.Framework
 
             int reqnum = WebUtil.RequestNumber++;
 
-            if (WebUtil.DebugLevel >= 3)
+            if (m_log.IsDebugEnabled)
                 m_log.DebugFormat("[LOGHTTP]: HTTP OUT {0} XML-RPC '{1}' to {2}",
                     reqnum, method, url);
 
@@ -1326,7 +1325,7 @@ namespace OpenSim.Framework
 
                 XmlRpcRequest Req = new XmlRpcRequest(method, SendParams);
 
-                if (WebUtil.DebugLevel >= 5)
+                if (m_log.IsDebugEnabled)
                 {
                     string str = Req.ToString();
                     str = XElement.Parse(str).ToString(SaveOptions.DisableFormatting);
@@ -1340,7 +1339,7 @@ namespace OpenSim.Framework
                     responseStr = Resp.ToString();
                     responseStr = XElement.Parse(responseStr).ToString(SaveOptions.DisableFormatting);
 
-                    if (WebUtil.DebugLevel >= 5)
+                    if (m_log.IsDebugEnabled)
                         WebUtil.LogResponseDetail(reqnum, responseStr);
                 }
                 catch (Exception e)
@@ -1371,7 +1370,7 @@ namespace OpenSim.Framework
                             ? (responseStr.Length > WebUtil.MaxRequestDiagLength ? responseStr.Remove(WebUtil.MaxRequestDiagLength) : responseStr)
                             : "");
                 }
-                else if (WebUtil.DebugLevel >= 4)
+                else if (m_log.IsDebugEnabled)
                 {
                     m_log.DebugFormat("[LOGHTTP]: HTTP OUT {0} took {1}ms", reqnum, tickdiff);
                 }
