@@ -28,6 +28,8 @@
 using MySql.Data.MySqlClient;
 using OpenMetaverse;
 using System;
+using log4net;
+using System.Reflection;
 
 namespace OpenSim.Data.MySQL
 {
@@ -37,7 +39,7 @@ namespace OpenSim.Data.MySQL
     public class MySQLPresenceData : MySQLGenericTableHandler<PresenceData>,
             IPresenceData
     {
-//        private static readonly ILog m_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog m_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         public MySQLPresenceData(string connectionString, string realm) :
                 base(connectionString, realm, "Presence")
@@ -46,6 +48,9 @@ namespace OpenSim.Data.MySQL
 
         public PresenceData Get(UUID sessionID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             PresenceData[] ret = Get("SessionID",
                     sessionID.ToString());
 
@@ -57,6 +62,9 @@ namespace OpenSim.Data.MySQL
 
         public void LogoutRegionAgents(UUID regionID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             using (MySqlCommand cmd = new MySqlCommand())
             {
                 cmd.CommandText = String.Format("delete from {0} where `RegionID`=?RegionID", m_Realm);
@@ -69,6 +77,9 @@ namespace OpenSim.Data.MySQL
 
         public bool ReportAgent(UUID sessionID, UUID regionID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             PresenceData[] pd = Get("SessionID", sessionID.ToString());
             if (pd.Length == 0)
                 return false;
@@ -92,6 +103,9 @@ namespace OpenSim.Data.MySQL
 
         public bool VerifyAgent(UUID agentId, UUID secureSessionID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             PresenceData[] ret = Get("SecureSessionID",
                     secureSessionID.ToString());
 

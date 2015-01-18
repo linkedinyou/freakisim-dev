@@ -31,6 +31,7 @@ using OpenMetaverse.StructuredData;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Text;
 
 namespace OpenSim.Framework
 {
@@ -178,6 +179,34 @@ namespace OpenSim.Framework
 
         public AgentCircuitData()
         {
+        }
+
+        public void dumpToLog() {
+           
+            m_log.DebugFormat("AgentID: {0} ", this.AgentID.ToString());
+            m_log.DebugFormat("BaseFolder: {0} ", this.BaseFolder.ToString());
+            m_log.DebugFormat("CapsPath: {0} ", this.CapsPath);
+            m_log.DebugFormat("Channel {0} ", this.Channel);
+            m_log.DebugFormat("Child: {0} ", this.child.ToString());
+
+            m_log.DebugFormat("CirquitCode: {0} ",this.circuitcode.ToString());
+            m_log.DebugFormat("FirstName: {0} ",this.firstname);
+            m_log.DebugFormat("Id0: {0} ",this.Id0.ToString());
+            m_log.DebugFormat("InventoryFolder {0} ",this.InventoryFolder.ToString());
+            m_log.DebugFormat("LastName: {0} ",this.lastname);
+            m_log.DebugFormat("Name: {0}", this.Name);
+            m_log.DebugFormat("SecureSessionID: {0} ", this.SecureSessionID.ToString());
+            m_log.DebugFormat("ServiceSessinID: {0}", this.ServiceSessionID);
+            m_log.DebugFormat("IPAddress: {0}", this.IPAddress);
+            m_log.DebugFormat("ViewerInternal: {0}", this.m_viewerInternal);
+            m_log.DebugFormat("Viewer: {0}", Viewer);
+            m_log.DebugFormat("Channel: {0}", Channel);
+            m_log.DebugFormat("Mac: {0}", Mac);
+            m_log.DebugFormat("StartPos {0}", this.startpos.ToString());
+            foreach(KeyValuePair<ulong, string> entry in ChildrenCapSeeds) {
+                m_log.DebugFormat("ChildrenCapSeeds: {0} - {1} ",entry.Key, entry.Value);
+            }
+            this.Appearance.dumpToLog ();
         }
 
         /// <summary>

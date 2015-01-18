@@ -527,6 +527,68 @@ namespace OpenSim.Framework
             return s;
         }
 
+        public void dumpToLog()
+        {
+            m_log.DebugFormat("Serial: {0}",m_serial);
+
+            m_log.DebugFormat("DefaultTexture - Bumpiness: {0}", m_texture.DefaultTexture.Bump.ToString());
+            m_log.DebugFormat("DefaultTexture - Fullbright: {0}", m_texture.DefaultTexture.Fullbright.ToString());
+            m_log.DebugFormat("DefaultTexture - Glow: {0}", m_texture.DefaultTexture.Glow.ToString());
+            m_log.DebugFormat("DefaultTexture - MaterialID: {0}", m_texture.DefaultTexture.MaterialID.ToString());
+            m_log.DebugFormat("DefaultTexture - Mediaflags: {0}", m_texture.DefaultTexture.MediaFlags.ToString());
+            m_log.DebugFormat("DefaultTexture - OffsetU: {0}", m_texture.DefaultTexture.OffsetU.ToString());
+            m_log.DebugFormat("DefaultTexture - OffsetV: {0}", m_texture.DefaultTexture.OffsetV.ToString());
+            m_log.DebugFormat("DefaultTexture - RepeatU: {0}", m_texture.DefaultTexture.RepeatU.ToString());
+            m_log.DebugFormat("DefaultTexture - RepeatV: {0}", m_texture.DefaultTexture.RepeatV.ToString());
+            m_log.DebugFormat("DefaultTexture - RGBA: {0}", m_texture.DefaultTexture.RGBA.ToString());
+            m_log.DebugFormat("DefaultTexture - Rotation: {0}", m_texture.DefaultTexture.Rotation.ToString());
+            m_log.DebugFormat("DefaultTexture - Shiny: {0}", m_texture.DefaultTexture.Shiny.ToString());
+            m_log.DebugFormat("DefaultTexture - TexMapType {0}", m_texture.DefaultTexture.TexMapType.ToString());
+            m_log.DebugFormat("DefaultTexture - TextureID {0}", m_texture.DefaultTexture.TextureID.ToString());
+
+
+            for (uint i = 0; i < AvatarAppearance.TEXTURE_COUNT; i++)
+                if (m_texture.FaceTextures [i] != null) {
+                    m_log.DebugFormat("Texture: {0} - Bumpiness: {1}",i, m_texture.FaceTextures [i].Bump.ToString());
+                    m_log.DebugFormat("Texture: {0} - Fullbright: {1}",i, m_texture.FaceTextures [i].Fullbright.ToString());
+                    m_log.DebugFormat("Texture: {0} - Glow: {1}",i, m_texture.FaceTextures [i].Glow.ToString());
+                    m_log.DebugFormat("Texture: {0} - MaterialID: {1}",i, m_texture.FaceTextures [i].MaterialID.ToString());
+                    m_log.DebugFormat("Texture: {0} - Mediaflags: {1}",i, m_texture.FaceTextures [i].MediaFlags.ToString());
+                    m_log.DebugFormat("Texture: {0} - OffsetU: {1}",i, m_texture.FaceTextures [i].OffsetU.ToString());
+                    m_log.DebugFormat("Texture: {0} - OffsetV: {1}",i, m_texture.FaceTextures [i].OffsetV.ToString());
+                    m_log.DebugFormat("Texture: {0} - RepeatU: {1}",i, m_texture.FaceTextures [i].RepeatU.ToString());
+                    m_log.DebugFormat("Texture: {0} - RepeatV: {1}",i, m_texture.FaceTextures [i].RepeatV.ToString());
+                    m_log.DebugFormat("Texture: {0} - RGBA: {1}",i, m_texture.FaceTextures [i].RGBA.ToString());
+                    m_log.DebugFormat("Texture: {0} - Rotation: {1}",i, m_texture.FaceTextures [i].Rotation.ToString());
+                    m_log.DebugFormat("Texture: {0} - Shiny: {1}",i, m_texture.FaceTextures [i].Shiny.ToString());
+                    m_log.DebugFormat("Texture: {0} - TexMapType {1}",i, m_texture.FaceTextures [i].TexMapType.ToString());
+                    m_log.DebugFormat("Texture: {0} - TextureID {1}",i, m_texture.FaceTextures [i].TextureID.ToString());
+                }
+
+            m_log.DebugFormat ("Wearables Size: {0}", m_wearables.Length);
+            int wearableNum = 0;
+            foreach (AvatarWearable awear in m_wearables){
+                m_log.DebugFormat ("Wearable ItemNo: {0}", wearableNum);
+
+                for (int i = 0; i < awear.Count; i++)
+                    m_log.DebugFormat("Wearable {0}: item={1}, asset={2}",i.ToString(),awear[i].ItemID,awear[i].AssetID);
+                wearableNum++;
+            }
+
+            foreach (KeyValuePair<int, ThreadedClasses.RwLockedList<AvatarAttachment>> entry in m_attachments) {
+                m_log.DebugFormat ("AvatarAttachments - Key: {0}", entry.Key);
+                foreach (AvatarAttachment attach in entry.Value ) {
+                    m_log.DebugFormat ("AvatarAttachment - AttachPoint: {0}", attach.AttachPoint);
+                    m_log.DebugFormat ("AvatarAttachment - ItemID: {0}", attach.ItemID.ToString ());
+                    m_log.DebugFormat ("AvatarAttachment - AssetID: {0}", attach.AssetID.ToString ());
+                }
+            }
+
+            for (uint i = 0; i < m_visualparams.Length; i++)
+                m_log.DebugFormat("Visual Params{0}: {1}",i,m_visualparams[i]);
+
+        }
+
         /// <summary>
         /// Get a list of the attachments.
         /// </summary>

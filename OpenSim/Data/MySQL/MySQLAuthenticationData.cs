@@ -31,11 +31,14 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Reflection;
+using log4net;
 
 namespace OpenSim.Data.MySQL
 {
     public class MySqlAuthenticationData : MySqlFramework, IAuthenticationData
     {
+        private static readonly ILog m_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
         private string m_Realm;
         private List<string> m_ColumnNames;
         private int m_LastExpire;
@@ -49,6 +52,9 @@ namespace OpenSim.Data.MySQL
         public MySqlAuthenticationData(string connectionString, string realm)
                 : base(connectionString)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             m_Realm = realm;
             m_connectionString = connectionString;
 
@@ -62,6 +68,9 @@ namespace OpenSim.Data.MySQL
 
         public AuthenticationData Get(UUID principalID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             AuthenticationData ret = new AuthenticationData();
             ret.Data = new Dictionary<string, object>();
 
@@ -102,6 +111,9 @@ namespace OpenSim.Data.MySQL
 
         private void CheckColumnNames(IDataReader result)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (m_ColumnNames != null)
                 return;
 
@@ -116,6 +128,9 @@ namespace OpenSim.Data.MySQL
 
         public bool Store(AuthenticationData data)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (data.Data.ContainsKey("UUID"))
                 data.Data.Remove("UUID");
 
@@ -159,6 +174,9 @@ namespace OpenSim.Data.MySQL
 
         public bool SetDataItem(UUID principalID, string item, string value)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             using (MySqlCommand cmd
                 = new MySqlCommand("update `" + m_Realm + "` set `" + item + "` = ?" + item + " where UUID = ?UUID"))
             {
@@ -174,6 +192,9 @@ namespace OpenSim.Data.MySQL
 
         public bool SetToken(UUID principalID, string token, int lifetime)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (System.Environment.TickCount - m_LastExpire > 30000)
                 DoExpire();
 
@@ -194,6 +215,9 @@ namespace OpenSim.Data.MySQL
 
         public bool CheckToken(UUID principalID, string token, int lifetime)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (System.Environment.TickCount - m_LastExpire > 30000)
                 DoExpire();
 
@@ -214,6 +238,9 @@ namespace OpenSim.Data.MySQL
 
         private void DoExpire()
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             using (MySqlCommand cmd = new MySqlCommand("delete from tokens where validity < now()"))
             {
                 ExecuteNonQuery(cmd);

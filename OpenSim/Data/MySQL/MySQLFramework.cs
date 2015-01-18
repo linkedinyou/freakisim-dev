@@ -53,6 +53,10 @@ namespace OpenSim.Data.MySQL
         //
         protected int ExecuteNonQuery(MySqlCommand cmd)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+                m_log.DebugFormat ("MySqlComand {0}", cmd.CommandText);
+            }
             using (MySqlConnection dbcon = new MySqlConnection(m_connectionString))
             {
                 dbcon.Open();

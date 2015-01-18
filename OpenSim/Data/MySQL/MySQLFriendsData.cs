@@ -33,6 +33,10 @@ namespace OpenSim.Data.MySQL
 {
     public class MySqlFriendsData : MySQLGenericTableHandler<FriendsData>, IFriendsData
     {
+        private static readonly log4net.ILog m_log =
+            log4net.LogManager.GetLogger(
+                System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
         public MySqlFriendsData(string connectionString, string realm)
                 : base(connectionString, realm, "FriendsStore")
         {
@@ -45,6 +49,9 @@ namespace OpenSim.Data.MySQL
 
         public override bool Delete(string principalID, string friend)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             using (MySqlCommand cmd = new MySqlCommand())
             {
                 cmd.CommandText = String.Format("delete from {0} where PrincipalID = ?PrincipalID and Friend = ?Friend", m_Realm);
@@ -59,6 +66,9 @@ namespace OpenSim.Data.MySQL
 
         public FriendsData[] GetFriends(UUID principalID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             using (MySqlCommand cmd = new MySqlCommand())
             {
                 cmd.CommandText = String.Format("select a.*,case when b.Flags is null then -1 else b.Flags end as TheirFlags from {0} as a left join {0} as b on a.PrincipalID = b.Friend and a.Friend = b.PrincipalID where a.PrincipalID = ?PrincipalID", m_Realm);
@@ -70,6 +80,10 @@ namespace OpenSim.Data.MySQL
 
         public FriendsData[] GetFriends(string principalID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
+
             using (MySqlCommand cmd = new MySqlCommand())
             {
                 cmd.CommandText = String.Format("select a.*,case when b.Flags is null then -1 else b.Flags end as TheirFlags from {0} as a left join {0} as b on a.PrincipalID = b.Friend and a.Friend = b.PrincipalID where a.PrincipalID LIKE ?PrincipalID", m_Realm);

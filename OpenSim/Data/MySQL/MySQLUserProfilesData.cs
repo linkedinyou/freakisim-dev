@@ -56,12 +56,18 @@ namespace OpenSim.Data.MySQL
         #region class Member Functions
         public UserProfilesData(string connectionString)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             ConnectionString = connectionString;
             Init();
         }
         
         void Init()
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             using (MySqlConnection dbcon = new MySqlConnection(ConnectionString))
             {
                 dbcon.Open();
@@ -84,6 +90,9 @@ namespace OpenSim.Data.MySQL
         /// </param>
         public OSDArray GetClassifiedRecords(UUID creatorId)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             OSDArray data = new OSDArray();
             
             using (MySqlConnection dbcon = new MySqlConnection(ConnectionString))
@@ -126,6 +135,9 @@ namespace OpenSim.Data.MySQL
         
         public bool UpdateClassifiedRecord(UserClassifiedAdd ad, ref string result)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             string query = string.Empty;
             
             
@@ -241,6 +253,9 @@ namespace OpenSim.Data.MySQL
         
         public bool DeleteClassifiedRecord(UUID recordId)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             string query = string.Empty;
             
             query += "DELETE FROM classifieds WHERE ";
@@ -271,6 +286,9 @@ namespace OpenSim.Data.MySQL
         
         public bool GetClassifiedInfo(ref UserClassifiedAdd ad, ref string result)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             string query = string.Empty;
             
             query += "SELECT * FROM classifieds WHERE ";
@@ -322,6 +340,9 @@ namespace OpenSim.Data.MySQL
         #region Picks Queries
         public OSDArray GetAvatarPicks(UUID avatarId)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             string query = string.Empty;
             
             query += "SELECT `pickuuid`,`name` FROM userpicks WHERE ";
@@ -364,6 +385,9 @@ namespace OpenSim.Data.MySQL
         
         public UserProfilePick GetPickInfo(UUID avatarId, UUID pickId)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             string query = string.Empty;
             UserProfilePick pick = new UserProfilePick();
             
@@ -420,7 +444,10 @@ namespace OpenSim.Data.MySQL
         }
         
         public bool UpdatePicksRecord(UserProfilePick pick)
-        {       
+        {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             string query = string.Empty;
             
             query += "INSERT INTO userpicks VALUES (";
@@ -481,6 +508,9 @@ namespace OpenSim.Data.MySQL
         
         public bool DeletePicksRecord(UUID pickId)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             string query = string.Empty;
             
             query += "DELETE FROM userpicks WHERE ";
@@ -513,6 +543,9 @@ namespace OpenSim.Data.MySQL
         #region Avatar Notes Queries
         public bool GetAvatarNotes(ref UserProfileNotes notes)
         {  // WIP
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             string query = string.Empty;
             
             query += "SELECT `notes` FROM usernotes WHERE ";
@@ -554,7 +587,10 @@ namespace OpenSim.Data.MySQL
         }
         
         public bool UpdateAvatarNotes(ref UserProfileNotes note, ref string result)
-        {          
+        {         
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             string query = string.Empty;
             bool remove;
             
@@ -607,6 +643,9 @@ namespace OpenSim.Data.MySQL
         #region Avatar Properties
         public bool GetAvatarProperties(ref UserProfileProperties props, ref string result)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             string query = string.Empty;
             
             query += "SELECT * FROM userprofile WHERE ";
@@ -722,7 +761,10 @@ namespace OpenSim.Data.MySQL
         }
         
         public bool UpdateAvatarProperties(ref UserProfileProperties props, ref string result)
-        {            
+        {     
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             string query = string.Empty;
             
             query += "UPDATE userprofile SET ";
@@ -764,7 +806,10 @@ namespace OpenSim.Data.MySQL
         
         #region Avatar Interests
         public bool UpdateAvatarInterests(UserProfileProperties up, ref string result)
-        {           
+        {    
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             string query = string.Empty;
             
             query += "UPDATE userprofile SET ";
@@ -806,6 +851,9 @@ namespace OpenSim.Data.MySQL
 
         public OSDArray GetUserImageAssets(UUID avatarId)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             OSDArray data = new OSDArray();
             string query = "SELECT `snapshotuuid` FROM {0} WHERE `creatoruuid` = ?Id";
 
@@ -887,6 +935,9 @@ namespace OpenSim.Data.MySQL
         #region User Preferences
         public bool GetUserPreferences(ref UserPreferences pref, ref string result)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             string query = string.Empty;
             
             query += "SELECT imviaemail,visible,email FROM ";
@@ -945,7 +996,10 @@ namespace OpenSim.Data.MySQL
         }
         
         public bool UpdateUserPreferences(ref UserPreferences pref, ref string result)
-        {           
+        {      
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             string query = string.Empty;
 
             query += "UPDATE usersettings SET ";
@@ -982,6 +1036,9 @@ namespace OpenSim.Data.MySQL
         #region Integration
         public bool GetUserAppData(ref UserAppData props, ref string result)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             string query = string.Empty;
             
             query += "SELECT * FROM `userdata` WHERE ";
@@ -1039,7 +1096,10 @@ namespace OpenSim.Data.MySQL
         }
 
         public bool SetUserAppData(UserAppData props, ref string result)
-        {         
+        {     
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             string query = string.Empty;
             
             query += "UPDATE userdata SET ";

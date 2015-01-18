@@ -28,6 +28,8 @@
 using MySql.Data.MySqlClient;
 using OpenMetaverse;
 using System;
+using log4net;
+using System.Reflection;
 
 namespace OpenSim.Data.MySQL
 {
@@ -37,7 +39,7 @@ namespace OpenSim.Data.MySQL
     public class MySQLAvatarData : MySQLGenericTableHandler<AvatarBaseData>,
             IAvatarData
     {
-//        private static readonly ILog m_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog m_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         public MySQLAvatarData(string connectionString, string realm) :
                 base(connectionString, realm, "Avatar")

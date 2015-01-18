@@ -32,20 +32,25 @@ using OpenSim.Region.Framework.Interfaces;
 using OpenSim.Services.Base;
 using System;
 using System.Collections.Generic;
+using log4net;
+using System.Reflection;
 
 namespace OpenSim.Services.Connectors
 {
     public class EstateDataService : ServiceBase, IEstateDataService
     {
-//        private static readonly ILog m_log =
-//                LogManager.GetLogger(
-//                MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog m_log =
+                LogManager.GetLogger(
+                MethodBase.GetCurrentMethod().DeclaringType);
 
         protected IEstateDataStore m_database;
 
         public EstateDataService(IConfigSource config)
             : base(config)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             string dllName = String.Empty;
             string connString = String.Empty;
 

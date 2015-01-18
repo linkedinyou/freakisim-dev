@@ -28,6 +28,8 @@
 using OpenMetaverse;
 using System;
 using System.Collections.Generic;
+using log4net;
+using System.Reflection;
 
 namespace OpenSim.Framework
 {
@@ -100,6 +102,7 @@ namespace OpenSim.Framework
 
     public class RegionSettings
     {
+        private static readonly ILog m_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         public delegate void SaveDelegate(RegionSettings rs);
 
         public event SaveDelegate OnSave;
@@ -450,7 +453,13 @@ namespace OpenSim.Framework
         public int LoadedCreationDateTime
         {
             get { return m_LoadedCreationDateTime; }
-            set { m_LoadedCreationDateTime = value; }
+            set {
+                if (m_log.IsDebugEnabled) {
+                    m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+                }
+                m_log.DebugFormat ("Value of TimeStamp: {0}: ", value);
+                m_LoadedCreationDateTime = value; 
+            }
         }
         
         public String LoadedCreationDate

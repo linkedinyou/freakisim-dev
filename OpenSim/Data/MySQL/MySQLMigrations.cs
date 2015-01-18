@@ -29,6 +29,7 @@ using MySql.Data.MySqlClient;
 using System;
 using System.Data.Common;
 using System.Reflection;
+using log4net;
 
 namespace OpenSim.Data.MySQL
 {
@@ -38,6 +39,8 @@ namespace OpenSim.Data.MySQL
     /// </summary>
     public class MySqlMigration : Migration
     {
+        private static readonly ILog m_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
         public MySqlMigration()
             : base()
         { 
@@ -55,6 +58,9 @@ namespace OpenSim.Data.MySQL
 
         protected override void ExecuteScript(DbConnection conn, string[] script)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (!(conn is MySqlConnection))
             {
                 base.ExecuteScript(conn, script);

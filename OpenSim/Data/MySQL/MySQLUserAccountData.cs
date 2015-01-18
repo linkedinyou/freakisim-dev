@@ -28,11 +28,14 @@
 using MySql.Data.MySqlClient;
 using OpenMetaverse;
 using System;
+using log4net;
+using System.Reflection;
 
 namespace OpenSim.Data.MySQL
 {
     public class MySqlUserAccountData : MySQLGenericTableHandler<UserAccountData>, IUserAccountData
     {
+        private static readonly ILog m_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         public MySqlUserAccountData(string connectionString, string realm)
                 : base(connectionString, realm, "UserAccount")
         {
@@ -40,6 +43,9 @@ namespace OpenSim.Data.MySQL
 
         public UserAccountData[] GetUsers(UUID scopeID, string query)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             string[] words = query.Split(new char[] {' '});
 
             for (int i = 0 ; i < words.Length ; i++)

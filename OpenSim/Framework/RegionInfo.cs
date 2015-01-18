@@ -171,6 +171,9 @@ namespace OpenSim.Framework
 
         public RegionInfo(string description, string filename, bool skipConsoleConfig, IConfigSource configSource, string configName)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             // m_configSource = configSource;
 
             if (filename.ToLower().EndsWith(".ini"))
@@ -224,6 +227,9 @@ namespace OpenSim.Framework
         //
         public RegionInfo(string description, XmlNode xmlNode, bool skipConsoleConfig, IConfigSource configSource)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             XmlElement elem = (XmlElement)xmlNode;
             string name = elem.GetAttribute("Name");
             string xmlstr = "<Nini>" + xmlNode.OuterXml + "</Nini>";
@@ -235,6 +241,9 @@ namespace OpenSim.Framework
 
         public RegionInfo(uint legacyRegionLocX, uint legacyRegionLocY, IPEndPoint internalEndPoint, string externalUri)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             RegionLocX = legacyRegionLocX;
             RegionLocY = legacyRegionLocY;
             RegionSizeX = Constants.RegionSize;
@@ -246,6 +255,9 @@ namespace OpenSim.Framework
 
         public RegionInfo()
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             m_serverURI = string.Empty;
         }
 
@@ -575,6 +587,9 @@ namespace OpenSim.Framework
 
         public void SetDefaultRegionSize()
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             WorldLocX = 0;
             WorldLocY = 0;
             WorldLocZ = 0;
@@ -616,6 +631,9 @@ namespace OpenSim.Framework
 
         private void ReadNiniConfig(IConfigSource source, string name)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
 //            bool creatingNew = false;
 
             if (source.Configs.Count == 0)
@@ -855,6 +873,9 @@ namespace OpenSim.Framework
         // Must be multiples of legacy region size (256).
         private void DoRegionSizeSanityChecks()
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (RegionSizeX != Constants.RegionSize || RegionSizeY != Constants.RegionSize)
             {
                 // Doing non-legacy region sizes.
@@ -904,6 +925,9 @@ namespace OpenSim.Framework
 
         private void WriteNiniConfig(IConfigSource source)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             IConfig config = source.Configs[RegionName];
 
             if (config != null)
@@ -976,6 +1000,9 @@ namespace OpenSim.Framework
 
         public void SaveRegionToFile(string description, string filename)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (filename.ToLower().EndsWith(".ini"))
             {
                 IniConfigSource source = new IniConfigSource();
@@ -999,12 +1026,18 @@ namespace OpenSim.Framework
 
         public void SaveLastMapUUID(UUID mapUUID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             lastMapUUID = mapUUID;
             lastMapRefresh = Util.UnixTimeSinceEpoch().ToString();
         }
 
         public OSDMap PackRegionInfoData()
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             OSDMap args = new OSDMap();
             args["region_id"] = OSD.FromUUID(RegionID);
             if ((RegionName != null) && !RegionName.Equals(""))
@@ -1035,6 +1068,9 @@ namespace OpenSim.Framework
 
         public void UnpackRegionInfoData(OSDMap args)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (args["region_id"] != null)
                 RegionID = args["region_id"].AsUUID();
             if (args["region_name"] != null)
@@ -1089,6 +1125,9 @@ namespace OpenSim.Framework
 
         public static RegionInfo Create(UUID regionID, string regionName, uint regX, uint regY, string externalHostName, uint httpPort, uint simPort, uint remotingPort, string serverURI)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             RegionInfo regionInfo;
             IPEndPoint neighbourInternalEndPoint = new IPEndPoint(Util.GetHostFromDNS(externalHostName), (int)simPort);
             regionInfo = new RegionInfo(regX, regY, neighbourInternalEndPoint, externalHostName);

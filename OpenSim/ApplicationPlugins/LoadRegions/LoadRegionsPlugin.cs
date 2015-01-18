@@ -140,6 +140,7 @@ namespace OpenSim.ApplicationPlugins.LoadRegions
                 m_newRegionCreatedHandler = OnNewRegionCreated;
                 if (m_newRegionCreatedHandler != null)
                 {
+                    m_log.DebugFormat ("Type of the RegionCreatedHandler: {0}", m_newRegionCreatedHandler.GetType ().ToString ());
                     m_newRegionCreatedHandler(scene);
                 }
             }

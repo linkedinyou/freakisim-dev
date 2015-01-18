@@ -27,11 +27,15 @@
 
 using MySql.Data.MySqlClient;
 using System;
+using log4net;
+using System.Reflection;
 
 namespace OpenSim.Data.MySQL
 {
     public class MySQLOfflineIMData : MySQLGenericTableHandler<OfflineIMData>, IOfflineIMData
     {
+        private static readonly ILog m_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
         public MySQLOfflineIMData(string connectionString, string realm)
             : base(connectionString, realm, "IM_Store")
         {
@@ -39,6 +43,9 @@ namespace OpenSim.Data.MySQL
 
         public void DeleteOld()
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             using (MySqlCommand cmd = new MySqlCommand())
             {
                 cmd.CommandText = String.Format("delete from {0} where TMStamp < NOW() - INTERVAL 2 WEEK", m_Realm);

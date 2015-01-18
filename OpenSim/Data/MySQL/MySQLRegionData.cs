@@ -32,11 +32,14 @@ using System.Collections.Generic;
 using System.Data;
 using System.Reflection;
 using RegionFlags = OpenSim.Framework.RegionFlags;
+using log4net;
 
 namespace OpenSim.Data.MySQL
 {
     public class MySqlRegionData : MySqlFramework, IRegionData
     {
+        private static readonly ILog m_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
         private string m_Realm;
         private List<string> m_ColumnNames;
         //private string m_connectionString;
@@ -62,6 +65,9 @@ namespace OpenSim.Data.MySQL
 
         public List<RegionData> Get(string regionName, UUID scopeID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             string command = "select * from `"+m_Realm+"` where regionName like ?regionName";
             if (scopeID != UUID.Zero)
                 command += " and ScopeID = ?scopeID";
@@ -79,6 +85,9 @@ namespace OpenSim.Data.MySQL
 
         public RegionData Get(int posX, int posY, UUID scopeID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             string command = "select * from `"+m_Realm+"` where locX = ?posX and locY = ?posY";
             if (scopeID != UUID.Zero)
                 command += " and ScopeID = ?scopeID";
@@ -99,6 +108,9 @@ namespace OpenSim.Data.MySQL
 
         public RegionData Get(UUID regionID, UUID scopeID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             string command = "select * from `"+m_Realm+"` where uuid = ?regionID";
             if (scopeID != UUID.Zero)
                 command += " and ScopeID = ?scopeID";
@@ -118,6 +130,9 @@ namespace OpenSim.Data.MySQL
 
         public List<RegionData> Get(int startX, int startY, int endX, int endY, UUID scopeID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             string command = "select * from `"+m_Realm+"` where locX between ?startX and ?endX and locY between ?startY and ?endY";
             if (scopeID != UUID.Zero)
                 command += " and ScopeID = ?scopeID";
@@ -136,6 +151,9 @@ namespace OpenSim.Data.MySQL
 
         public List<RegionData> RunCommand(MySqlCommand cmd)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             List<RegionData> retList = new List<RegionData>();
 
             using (MySqlConnection dbcon = new MySqlConnection(m_connectionString))
@@ -191,6 +209,9 @@ namespace OpenSim.Data.MySQL
 
         private void CheckColumnNames(IDataReader result)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (m_ColumnNames != null)
                 return;
 
@@ -208,6 +229,9 @@ namespace OpenSim.Data.MySQL
 
         public bool Store(RegionData data)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (data.Data.ContainsKey("uuid"))
                 data.Data.Remove("uuid");
             if (data.Data.ContainsKey("ScopeID"))
@@ -277,6 +301,9 @@ namespace OpenSim.Data.MySQL
 
         public bool SetDataItem(UUID regionID, string item, string value)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             using (MySqlCommand cmd = new MySqlCommand("update `" + m_Realm + "` set `" + item + "` = ?" + item + " where uuid = ?UUID"))
             {
                 cmd.Parameters.AddWithValue("?" + item, value);
@@ -291,6 +318,9 @@ namespace OpenSim.Data.MySQL
 
         public bool Delete(UUID regionID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             using (MySqlCommand cmd = new MySqlCommand("delete from `" + m_Realm + "` where uuid = ?UUID"))
             {
                 cmd.Parameters.AddWithValue("?UUID", regionID.ToString());
@@ -304,16 +334,25 @@ namespace OpenSim.Data.MySQL
 
         public List<RegionData> GetDefaultRegions(UUID scopeID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             return Get((int)RegionFlags.DefaultRegion, scopeID);
         }
 
         public List<RegionData> GetDefaultHypergridRegions(UUID scopeID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             return Get((int)RegionFlags.DefaultHGRegion, scopeID);
         }
 
         public List<RegionData> GetFallbackRegions(UUID scopeID, int x, int y)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             List<RegionData> regions = Get((int)RegionFlags.FallbackRegion, scopeID);
             RegionDataDistanceCompare distanceComparer = new RegionDataDistanceCompare(x, y);
             regions.Sort(distanceComparer);
@@ -322,11 +361,17 @@ namespace OpenSim.Data.MySQL
 
         public List<RegionData> GetHyperlinks(UUID scopeID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             return Get((int)RegionFlags.Hyperlink, scopeID);
         }
 
         private List<RegionData> Get(int regionFlags, UUID scopeID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             string command = "select * from `" + m_Realm + "` where (flags & " + regionFlags.ToString() + ") <> 0";
             if (scopeID != UUID.Zero)
                 command += " and ScopeID = ?scopeID";

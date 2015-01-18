@@ -26,6 +26,8 @@
  */
 
 using System;
+using log4net;
+using System.Reflection;
 
 namespace OpenSim.Data.MySQL
 {
@@ -34,12 +36,18 @@ namespace OpenSim.Data.MySQL
     /// </summary>
     public class MySQLGridUserData : MySQLGenericTableHandler<GridUserData>, IGridUserData
     {
-//        private static readonly ILog m_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog m_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         public MySQLGridUserData(string connectionString, string realm) : base(connectionString, realm, "GridUserStore") {}
 
         public new GridUserData Get(string userID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             GridUserData[] ret = Get("UserID", userID);
 
             if (ret.Length == 0)
@@ -50,6 +58,12 @@ namespace OpenSim.Data.MySQL
 
         public GridUserData[] GetAll(string userID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }  
             return base.Get(String.Format("UserID LIKE '{0}%'", userID));
         }
     }

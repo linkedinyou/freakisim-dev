@@ -333,8 +333,15 @@ namespace OpenSim.Server.Handlers.Simulation
                 responsedata["str_response_string"] = "Bad request";
                 return;
             }
+//            if(m_log.IsDebugEnabled) {
+//                aCircuit.dumpToLog ();
+//            }
 
             GridRegion source = null;
+
+            // AvatarAppearance avatarappearance = new AvatarAppearance (); // TODO Remove ... for research only
+            // avatarappearance.dumpToLog (); // TODO Remove ... for research only
+
 
             if (args.ContainsKey("source_uuid"))
             {

@@ -69,6 +69,9 @@ namespace OpenSim.Data.MySQL
 
         public void Initialise(string connectionString)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             m_connectionString = connectionString;
 
             try
@@ -109,6 +112,9 @@ namespace OpenSim.Data.MySQL
 
         protected void GetWaitTimeout()
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             using (MySqlConnection dbcon = new MySqlConnection(m_connectionString))
             {
                 dbcon.Open();
@@ -136,6 +142,9 @@ namespace OpenSim.Data.MySQL
 
         public EstateSettings LoadEstateSettings(UUID regionID, bool create)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             string sql = "select estate_settings." + String.Join(",estate_settings.", FieldList) +
                 " from estate_map left join estate_settings on estate_map.EstateID = estate_settings.EstateID where estate_settings.EstateID is not null and RegionID = ?RegionID";
 
@@ -150,6 +159,9 @@ namespace OpenSim.Data.MySQL
 
         public EstateSettings CreateNewEstate()
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             EstateSettings es = new EstateSettings();
             es.OnSave += StoreEstateSettings;
 
@@ -166,6 +178,9 @@ namespace OpenSim.Data.MySQL
 
         private EstateSettings DoLoad(MySqlCommand cmd, UUID regionID, bool create)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             EstateSettings es = new EstateSettings();
             es.OnSave += StoreEstateSettings;
 
@@ -217,6 +232,9 @@ namespace OpenSim.Data.MySQL
 
         private void DoCreate(EstateSettings es)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             // Migration case
             List<string> names = new List<string>(FieldList);
 
@@ -265,6 +283,9 @@ namespace OpenSim.Data.MySQL
 
         public void StoreEstateSettings(EstateSettings es)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             string sql = "replace into estate_settings (" + String.Join(",", FieldList) + ") values ( ?" + String.Join(", ?", FieldList) + ")";
 
             using (MySqlConnection dbcon = new MySqlConnection(m_connectionString))
@@ -302,6 +323,9 @@ namespace OpenSim.Data.MySQL
 
         private void LoadBanList(EstateSettings es)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             es.ClearBans();
 
             using (MySqlConnection dbcon = new MySqlConnection(m_connectionString))
@@ -334,6 +358,9 @@ namespace OpenSim.Data.MySQL
 
         private void SaveBanList(EstateSettings es)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             using (MySqlConnection dbcon = new MySqlConnection(m_connectionString))
             {
                 dbcon.Open();
@@ -363,6 +390,9 @@ namespace OpenSim.Data.MySQL
 
         void SaveUUIDList(uint EstateID, string table, UUID[] data)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             using (MySqlConnection dbcon = new MySqlConnection(m_connectionString))
             {
                 dbcon.Open();
@@ -392,6 +422,9 @@ namespace OpenSim.Data.MySQL
 
         UUID[] LoadUUIDList(uint EstateID, string table)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             List<UUID> uuids = new List<UUID>();
 
             using (MySqlConnection dbcon = new MySqlConnection(m_connectionString))
@@ -419,6 +452,9 @@ namespace OpenSim.Data.MySQL
 
         public EstateSettings LoadEstateSettings(int estateID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             using (MySqlCommand cmd = new MySqlCommand())
             {
                 string sql = "select estate_settings." + String.Join(",estate_settings.", FieldList) + " from estate_settings where EstateID = ?EstateID";
@@ -432,6 +468,9 @@ namespace OpenSim.Data.MySQL
         
         public List<EstateSettings> LoadEstateSettingsAll()
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             List<EstateSettings> allEstateSettings = new List<EstateSettings>();            
             
             List<int> allEstateIds = GetEstatesAll();
@@ -444,6 +483,9 @@ namespace OpenSim.Data.MySQL
         
         public List<int> GetEstatesAll()
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             List<int> result = new List<int>();
 
             using (MySqlConnection dbcon = new MySqlConnection(m_connectionString))
@@ -472,6 +514,9 @@ namespace OpenSim.Data.MySQL
 
         public List<int> GetEstates(string search)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             List<int> result = new List<int>();
 
             using (MySqlConnection dbcon = new MySqlConnection(m_connectionString))
@@ -501,6 +546,9 @@ namespace OpenSim.Data.MySQL
 
         public List<int> GetEstatesByOwner(UUID ownerID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             List<int> result = new List<int>();
 
             using (MySqlConnection dbcon = new MySqlConnection(m_connectionString))
@@ -530,6 +578,9 @@ namespace OpenSim.Data.MySQL
 
         public bool LinkRegion(UUID regionID, int estateID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             using (MySqlConnection dbcon = new MySqlConnection(m_connectionString))
             {
                 dbcon.Open();
@@ -580,6 +631,9 @@ namespace OpenSim.Data.MySQL
 
         public List<UUID> GetRegions(int estateID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             List<UUID> result = new List<UUID>();
 
             using (MySqlConnection dbcon = new MySqlConnection(m_connectionString))
@@ -614,6 +668,9 @@ namespace OpenSim.Data.MySQL
 
         public bool DeleteEstate(int estateID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             return false;
         }
     }

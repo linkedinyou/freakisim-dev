@@ -30,11 +30,14 @@ using OpenMetaverse;
 using OpenSim.Framework;
 using System;
 using System.Reflection;
+using log4net;
 
 namespace OpenSim.Data.MySQL
 {
     public class MySQLGroupsData : IGroupsData
     {
+        private static readonly ILog m_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
         private MySqlGroupsGroupsHandler m_Groups;
         private MySqlGroupsMembershipHandler m_Membership;
         private MySqlGroupsRolesHandler m_Roles;
@@ -57,11 +60,17 @@ namespace OpenSim.Data.MySQL
         #region groups table
         public bool StoreGroup(GroupData data)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             return m_Groups.Store(data);
         }
 
         public GroupData RetrieveGroup(UUID groupID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             GroupData[] groups = m_Groups.Get("GroupID", groupID.ToString());
             if (groups.Length > 0)
                 return groups[0];
@@ -71,6 +80,9 @@ namespace OpenSim.Data.MySQL
 
         public GroupData RetrieveGroup(string name)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             GroupData[] groups = m_Groups.Get("Name", name);
             if (groups.Length > 0)
                 return groups[0];
@@ -80,6 +92,9 @@ namespace OpenSim.Data.MySQL
 
         public GroupData[] RetrieveGroups(string pattern)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (string.IsNullOrEmpty(pattern))
                 pattern = "1";
             else
@@ -90,11 +105,17 @@ namespace OpenSim.Data.MySQL
 
         public bool DeleteGroup(UUID groupID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             return m_Groups.Delete("GroupID", groupID.ToString());
         }
 
         public int GroupsCount()
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             return (int)m_Groups.GetCount("Location=\"\"");
         }
 
@@ -103,11 +124,17 @@ namespace OpenSim.Data.MySQL
         #region membership table
         public MembershipData[] RetrieveMembers(UUID groupID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             return m_Membership.Get("GroupID", groupID.ToString());
         }
 
         public MembershipData RetrieveMember(UUID groupID, string pricipalID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             MembershipData[] m = m_Membership.Get(new string[] { "GroupID", "PrincipalID" },
                                                   new string[] { groupID.ToString(), pricipalID });
             if (m != null && m.Length > 0)
@@ -118,22 +145,34 @@ namespace OpenSim.Data.MySQL
 
         public MembershipData[] RetrieveMemberships(string pricipalID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             return m_Membership.Get("PrincipalID", pricipalID.ToString());
         }
 
         public bool StoreMember(MembershipData data)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             return m_Membership.Store(data);
         }
 
         public bool DeleteMember(UUID groupID, string pricipalID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             return m_Membership.Delete(new string[] { "GroupID", "PrincipalID" }, 
                                        new string[] { groupID.ToString(), pricipalID });
         }
         
         public int MemberCount(UUID groupID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             return (int)m_Membership.GetCount("GroupID", groupID.ToString());
         }
         #endregion
@@ -141,11 +180,17 @@ namespace OpenSim.Data.MySQL
         #region roles table
         public bool StoreRole(RoleData data)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             return m_Roles.Store(data);
         }
 
         public RoleData RetrieveRole(UUID groupID, UUID roleID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             RoleData[] data = m_Roles.Get(new string[] { "GroupID", "RoleID" },
                                           new string[] { groupID.ToString(), roleID.ToString() });
 
@@ -157,18 +202,27 @@ namespace OpenSim.Data.MySQL
 
         public RoleData[] RetrieveRoles(UUID groupID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             //return m_Roles.RetrieveRoles(groupID);
             return m_Roles.Get("GroupID", groupID.ToString());
         }
 
         public bool DeleteRole(UUID groupID, UUID roleID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             return m_Roles.Delete(new string[] { "GroupID", "RoleID" }, 
                                   new string[] { groupID.ToString(), roleID.ToString() });
         }
 
         public int RoleCount(UUID groupID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             return (int)m_Roles.GetCount("GroupID", groupID.ToString());
         }
 
@@ -178,6 +232,9 @@ namespace OpenSim.Data.MySQL
         #region rolememberhip table
         public RoleMembershipData[] RetrieveRolesMembers(UUID groupID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             RoleMembershipData[] data = m_RoleMembership.Get("GroupID", groupID.ToString());
 
             return data;
@@ -185,6 +242,9 @@ namespace OpenSim.Data.MySQL
 
         public RoleMembershipData[] RetrieveRoleMembers(UUID groupID, UUID roleID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             RoleMembershipData[] data = m_RoleMembership.Get(new string[] { "GroupID", "RoleID" },
                                                              new string[] { groupID.ToString(), roleID.ToString() });
 
@@ -193,6 +253,9 @@ namespace OpenSim.Data.MySQL
 
         public RoleMembershipData[] RetrieveMemberRoles(UUID groupID, string principalID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             RoleMembershipData[] data = m_RoleMembership.Get(new string[] { "GroupID", "PrincipalID" },
                                                              new string[] { groupID.ToString(), principalID.ToString() });
 
@@ -201,6 +264,9 @@ namespace OpenSim.Data.MySQL
 
         public RoleMembershipData RetrieveRoleMember(UUID groupID, UUID roleID, string principalID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             RoleMembershipData[] data = m_RoleMembership.Get(new string[] { "GroupID", "RoleID", "PrincipalID" },
                                                              new string[] { groupID.ToString(), roleID.ToString(), principalID.ToString() });
 
@@ -212,23 +278,35 @@ namespace OpenSim.Data.MySQL
 
         public int RoleMemberCount(UUID groupID, UUID roleID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             return (int)m_RoleMembership.GetCount(new string[] { "GroupID", "RoleID" },
                                                   new string[] { groupID.ToString(), roleID.ToString() });
         }
 
         public bool StoreRoleMember(RoleMembershipData data)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             return m_RoleMembership.Store(data);
         }
 
         public bool DeleteRoleMember(RoleMembershipData data)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             return m_RoleMembership.Delete(new string[] { "GroupID", "RoleID", "PrincipalID"},
                                            new string[] { data.GroupID.ToString(), data.RoleID.ToString(), data.PrincipalID });
         }
 
         public bool DeleteMemberAllRoles(UUID groupID, string principalID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             return m_RoleMembership.Delete(new string[] { "GroupID", "PrincipalID" },
                                            new string[] { groupID.ToString(), principalID });
         }
@@ -238,11 +316,17 @@ namespace OpenSim.Data.MySQL
         #region principals table
         public bool StorePrincipal(PrincipalData data)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             return m_Principals.Store(data);
         }
 
         public PrincipalData RetrievePrincipal(string principalID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             PrincipalData[] p = m_Principals.Get("PrincipalID", principalID);
             if (p != null && p.Length > 0)
                 return p[0];
@@ -252,6 +336,9 @@ namespace OpenSim.Data.MySQL
 
         public bool DeletePrincipal(string principalID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             return m_Principals.Delete("PrincipalID", principalID);
         }
         #endregion
@@ -260,11 +347,17 @@ namespace OpenSim.Data.MySQL
 
         public bool StoreInvitation(InvitationData data)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             return m_Invites.Store(data);
         }
 
         public InvitationData RetrieveInvitation(UUID inviteID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             InvitationData[] invites = m_Invites.Get("InviteID", inviteID.ToString());
 
             if (invites != null && invites.Length > 0)
@@ -275,6 +368,9 @@ namespace OpenSim.Data.MySQL
 
         public InvitationData RetrieveInvitation(UUID groupID, string principalID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             InvitationData[] invites = m_Invites.Get(new string[] { "GroupID", "PrincipalID" },
                                                      new string[] { groupID.ToString(), principalID });
 
@@ -286,11 +382,17 @@ namespace OpenSim.Data.MySQL
 
         public bool DeleteInvite(UUID inviteID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             return m_Invites.Delete("InviteID", inviteID.ToString());
         }
 
         public void DeleteOldInvites()
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             m_Invites.DeleteOld();
         }
 
@@ -300,11 +402,17 @@ namespace OpenSim.Data.MySQL
 
         public bool StoreNotice(NoticeData data)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             return m_Notices.Store(data);
         }
 
         public NoticeData RetrieveNotice(UUID noticeID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             NoticeData[] notices = m_Notices.Get("NoticeID", noticeID.ToString());
 
             if (notices != null && notices.Length > 0)
@@ -315,6 +423,9 @@ namespace OpenSim.Data.MySQL
 
         public NoticeData[] RetrieveNotices(UUID groupID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             NoticeData[] notices = m_Notices.Get("GroupID", groupID.ToString());
 
             return notices;
@@ -322,11 +433,17 @@ namespace OpenSim.Data.MySQL
 
         public bool DeleteNotice(UUID noticeID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             return m_Notices.Delete("NoticeID", noticeID.ToString());
         }
 
         public void DeleteOldNotices()
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             m_Notices.DeleteOld();
         }
 
@@ -335,11 +452,17 @@ namespace OpenSim.Data.MySQL
         #region combinations
         public MembershipData RetrievePrincipalGroupMembership(string principalID, UUID groupID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             // TODO
             return null;
         }
         public MembershipData[] RetrievePrincipalGroupMemberships(string principalID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             // TODO
             return null;
         }

@@ -65,6 +65,9 @@ namespace OpenSim.Data.MySQL
 
         public void Initialise(string connectionString)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             m_connectionString = connectionString;
 
             using (MySqlConnection dbcon = new MySqlConnection(m_connectionString))
@@ -80,6 +83,9 @@ namespace OpenSim.Data.MySQL
 
         private IDataReader ExecuteReader(MySqlCommand c)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             IDataReader r = null;
 
             try
@@ -97,6 +103,9 @@ namespace OpenSim.Data.MySQL
 
         private void ExecuteNonQuery(MySqlCommand c)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             try
             {
                 c.ExecuteNonQuery();
@@ -112,6 +121,9 @@ namespace OpenSim.Data.MySQL
 
         public void StoreObject(SceneObjectGroup obj, UUID regionUUID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             uint flags = obj.RootPart.GetEffectiveObjectFlags();
 
             // Eligibility check
@@ -248,8 +260,10 @@ namespace OpenSim.Data.MySQL
 
         public void RemoveObject(UUID obj, UUID regionUUID)
         {
-//            m_log.DebugFormat("[REGION DB]: Deleting scene object {0} from {1} in database", obj, regionUUID);
-            
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
+
             List<UUID> uuids = new List<UUID>();
 
             // Formerly, this used to check the region UUID.
@@ -298,6 +312,9 @@ namespace OpenSim.Data.MySQL
         /// <param name="uuid">the Item UUID</param>
         private void RemoveItems(UUID uuid)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             using (MySqlConnection dbcon = new MySqlConnection(m_connectionString))
             {
                 dbcon.Open();
@@ -319,6 +336,9 @@ namespace OpenSim.Data.MySQL
         /// <param name="uuids">the list of UUIDs</param>
         private void RemoveShapes(List<UUID> uuids)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             string sql = "delete from primshapes where ";
             using (MySqlConnection dbcon = new MySqlConnection(m_connectionString))
             {
@@ -354,6 +374,9 @@ namespace OpenSim.Data.MySQL
         /// <param name="uuids">the list of UUIDs</param>
         private void RemoveItems(List<UUID> uuids)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             string sql = "delete from primitems where ";
             using (MySqlConnection dbcon = new MySqlConnection(m_connectionString))
             {
@@ -385,6 +408,9 @@ namespace OpenSim.Data.MySQL
 
         public List<SceneObjectGroup> LoadObjects(UUID regionID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             const int ROWS_PER_QUERY = 5000;
 
             Dictionary<UUID, SceneObjectPart> prims = new Dictionary<UUID, SceneObjectPart>(ROWS_PER_QUERY);
@@ -518,6 +544,9 @@ namespace OpenSim.Data.MySQL
         /// <param name="prim">The prim</param>
         private void LoadItems(SceneObjectPart prim)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             List<TaskInventoryItem> inventory = new List<TaskInventoryItem>();
 
             using (MySqlConnection dbcon = new MySqlConnection(m_connectionString))
@@ -553,6 +582,9 @@ namespace OpenSim.Data.MySQL
 
         public void StoreTerrain(TerrainData terrData, UUID regionID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             using (MySqlConnection dbcon = new MySqlConnection(m_connectionString))
             {
                 dbcon.Open();
@@ -585,6 +617,9 @@ namespace OpenSim.Data.MySQL
         // Legacy region loading
         public double[,] LoadTerrain(UUID regionID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             double[,] ret = null;
             TerrainData terrData = LoadTerrain(regionID, (int)Constants.RegionSize, (int)Constants.RegionSize, (int)Constants.RegionHeight);
             if (terrData != null)
@@ -595,6 +630,9 @@ namespace OpenSim.Data.MySQL
         // Returns 'null' if region not found
         public TerrainData LoadTerrain(UUID regionID, int pSizeX, int pSizeY, int pSizeZ)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             TerrainData terrData = null;
 
             using (MySqlConnection dbcon = new MySqlConnection(m_connectionString))
@@ -625,6 +663,9 @@ namespace OpenSim.Data.MySQL
 
         public void RemoveLandObject(UUID globalID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             using (MySqlConnection dbcon = new MySqlConnection(m_connectionString))
             {
                 dbcon.Open();
@@ -641,6 +682,9 @@ namespace OpenSim.Data.MySQL
 
         public void StoreLandObject(ILandObject parcel)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             using (MySqlConnection dbcon = new MySqlConnection(m_connectionString))
             {
                 dbcon.Open();
@@ -695,6 +739,9 @@ namespace OpenSim.Data.MySQL
 
         public RegionLightShareData LoadRegionWindlightSettings(UUID regionUUID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             RegionLightShareData nWP = new RegionLightShareData();
             nWP.OnSave += StoreRegionWindlightSettings;
 
@@ -793,6 +840,9 @@ namespace OpenSim.Data.MySQL
 
         public RegionSettings LoadRegionSettings(UUID regionUUID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             RegionSettings rs = null;
 
             using (MySqlConnection dbcon = new MySqlConnection(m_connectionString))
@@ -830,6 +880,9 @@ namespace OpenSim.Data.MySQL
 
         public void StoreRegionWindlightSettings(RegionLightShareData wl)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             using (MySqlConnection dbcon = new MySqlConnection(m_connectionString))
             {
                 dbcon.Open();
@@ -933,6 +986,9 @@ namespace OpenSim.Data.MySQL
 
         public void RemoveRegionWindlightSettings(UUID regionID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             using (MySqlConnection dbcon = new MySqlConnection(m_connectionString))
             {
                 dbcon.Open();
@@ -949,6 +1005,9 @@ namespace OpenSim.Data.MySQL
         #region RegionEnvironmentSettings
         public string LoadRegionEnvironmentSettings(UUID regionUUID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             using (MySqlConnection dbcon = new MySqlConnection(m_connectionString))
             {
                 dbcon.Open();
@@ -976,6 +1035,9 @@ namespace OpenSim.Data.MySQL
 
         public void StoreRegionEnvironmentSettings(UUID regionUUID, string settings)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             using (MySqlConnection dbcon = new MySqlConnection(m_connectionString))
             {
                 dbcon.Open();
@@ -994,6 +1056,9 @@ namespace OpenSim.Data.MySQL
 
         public void RemoveRegionEnvironmentSettings(UUID regionUUID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             using (MySqlConnection dbcon = new MySqlConnection(m_connectionString))
             {
                 dbcon.Open();
@@ -1010,6 +1075,9 @@ namespace OpenSim.Data.MySQL
 
         public void StoreRegionSettings(RegionSettings rs)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             using (MySqlConnection dbcon = new MySqlConnection(m_connectionString))
             {
                 dbcon.Open();
@@ -1063,6 +1131,9 @@ namespace OpenSim.Data.MySQL
 
         public List<LandData> LoadLandObjects(UUID regionUUID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             List<LandData> landData = new List<LandData>();
 
             using (MySqlConnection dbcon = new MySqlConnection(m_connectionString))
@@ -1112,6 +1183,9 @@ namespace OpenSim.Data.MySQL
 
         private SceneObjectPart BuildPrim(IDataReader row)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             SceneObjectPart prim = new SceneObjectPart();
 
             // depending on the MySQL connector version, CHAR(36) may be already converted to Guid! 
@@ -1288,6 +1362,9 @@ namespace OpenSim.Data.MySQL
         /// <returns></returns>
         private static TaskInventoryItem BuildItem(IDataReader row)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             TaskInventoryItem taskItem = new TaskInventoryItem();
 
             taskItem.ItemID        = DBGuid.FromDB(row["itemID"]);
@@ -1318,6 +1395,9 @@ namespace OpenSim.Data.MySQL
 
         private static RegionSettings BuildRegionSettings(IDataReader row)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             RegionSettings newSettings = new RegionSettings();
 
             newSettings.RegionUUID = DBGuid.FromDB(row["regionUUID"]);
@@ -1381,6 +1461,9 @@ namespace OpenSim.Data.MySQL
         /// <returns></returns>
         private static LandData BuildLandData(IDataReader row)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             LandData newData = new LandData();
 
             newData.GlobalID = DBGuid.FromDB(row["UUID"]);
@@ -1457,6 +1540,9 @@ namespace OpenSim.Data.MySQL
         /// <returns></returns>
         private static LandAccessEntry BuildLandAccessData(IDataReader row)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             LandAccessEntry entry = new LandAccessEntry();
             entry.AgentID = DBGuid.FromDB(row["AccessUUID"]);
             entry.Flags = (AccessList) Convert.ToInt32(row["Flags"]);
@@ -1473,6 +1559,9 @@ namespace OpenSim.Data.MySQL
         /// <param name="regionUUID"></param>
         private void FillPrimCommand(MySqlCommand cmd, SceneObjectPart prim, UUID sceneGroupID, UUID regionUUID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             cmd.Parameters.AddWithValue("UUID", prim.UUID.ToString());
             cmd.Parameters.AddWithValue("RegionUUID", regionUUID.ToString());
             cmd.Parameters.AddWithValue("CreationDate", prim.CreationDate);
@@ -1631,6 +1720,9 @@ namespace OpenSim.Data.MySQL
         /// <param name="taskItem"></param>
         private static void FillItemCommand(MySqlCommand cmd, TaskInventoryItem taskItem)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             cmd.Parameters.AddWithValue("itemID", taskItem.ItemID);
             cmd.Parameters.AddWithValue("primID", taskItem.ParentPartID);
             cmd.Parameters.AddWithValue("assetID", taskItem.AssetID);
@@ -1659,6 +1751,9 @@ namespace OpenSim.Data.MySQL
         /// </summary>
         private static void FillRegionSettingsCommand(MySqlCommand cmd, RegionSettings settings)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             cmd.Parameters.AddWithValue("RegionUUID", settings.RegionUUID.ToString());
             cmd.Parameters.AddWithValue("BlockTerraform", settings.BlockTerraform);
             cmd.Parameters.AddWithValue("BlockFly", settings.BlockFly);
@@ -1713,6 +1808,9 @@ namespace OpenSim.Data.MySQL
         /// <param name="regionUUID"></param>
         private static void FillLandCommand(MySqlCommand cmd, LandData land, UUID regionUUID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             cmd.Parameters.AddWithValue("UUID", land.GlobalID.ToString());
             cmd.Parameters.AddWithValue("RegionUUID", regionUUID.ToString());
             cmd.Parameters.AddWithValue("LocalLandID", land.LocalID);
@@ -1767,6 +1865,9 @@ namespace OpenSim.Data.MySQL
         /// <param name="parcelID"></param>
         private static void FillLandAccessCommand(MySqlCommand cmd, LandAccessEntry entry, UUID parcelID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             cmd.Parameters.AddWithValue("LandUUID", parcelID.ToString());
             cmd.Parameters.AddWithValue("AccessUUID", entry.AgentID.ToString());
             cmd.Parameters.AddWithValue("Flags", entry.Flags);
@@ -1780,6 +1881,9 @@ namespace OpenSim.Data.MySQL
         /// <returns></returns>
         private PrimitiveBaseShape BuildShape(IDataReader row)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             PrimitiveBaseShape s = new PrimitiveBaseShape();
             s.Scale = new Vector3(
                 (float)(double)row["ScaleX"],
@@ -1827,6 +1931,9 @@ namespace OpenSim.Data.MySQL
         /// <param name="prim"></param>
         private void FillShapeCommand(MySqlCommand cmd, SceneObjectPart prim)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             PrimitiveBaseShape s = prim.Shape;
             cmd.Parameters.AddWithValue("UUID", prim.UUID.ToString());
             // shape is an enum
@@ -1865,6 +1972,9 @@ namespace OpenSim.Data.MySQL
 
         public void StorePrimInventory(UUID primID, ICollection<TaskInventoryItem> items)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             RemoveItems(primID);
 
             if (items.Count == 0)
@@ -1906,6 +2016,9 @@ namespace OpenSim.Data.MySQL
 
         private void LoadSpawnPoints(RegionSettings rs)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             rs.ClearSpawnPoints();
 
             using (MySqlConnection dbcon = new MySqlConnection(m_connectionString))
@@ -1936,6 +2049,9 @@ namespace OpenSim.Data.MySQL
 
         private void SaveSpawnPoints(RegionSettings rs)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             using (MySqlConnection dbcon = new MySqlConnection(m_connectionString))
             {
                 dbcon.Open();
@@ -1967,6 +2083,9 @@ namespace OpenSim.Data.MySQL
 
         public void SaveExtra(UUID regionID, string name, string val)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             using (MySqlConnection dbcon = new MySqlConnection(m_connectionString))
             {
                 dbcon.Open();
@@ -1985,6 +2104,9 @@ namespace OpenSim.Data.MySQL
 
         public void RemoveExtra(UUID regionID, string name)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             using (MySqlConnection dbcon = new MySqlConnection(m_connectionString))
             {
                 dbcon.Open();
@@ -2002,6 +2124,9 @@ namespace OpenSim.Data.MySQL
 
         public Dictionary<string, string> GetExtra(UUID regionID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             Dictionary<string, string> ret = new Dictionary<string, string>();
 
             using (MySqlConnection dbcon = new MySqlConnection(m_connectionString))

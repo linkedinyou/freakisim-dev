@@ -29,6 +29,9 @@ using MySql.Data.MySqlClient;
 using OpenMetaverse;
 using System;
 using System.Collections.Generic;
+using log4net;
+using System.Reflection;
+using OpenSim.Framework;
 
 namespace OpenSim.Data.MySQL
 {
@@ -37,11 +40,16 @@ namespace OpenSim.Data.MySQL
     /// </summary>
     public class MySQLXInventoryData : IXInventoryData
     {
+        private static readonly ILog m_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
         private MySqlFolderHandler m_Folders;
         private MySqlItemHandler m_Items;
 
         public MySQLXInventoryData(string conn, string realm)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             m_Folders = new MySqlFolderHandler(
                     conn, "inventoryfolders", "InventoryStore");
             m_Items = new MySqlItemHandler(
@@ -50,16 +58,25 @@ namespace OpenSim.Data.MySQL
 
         public XInventoryFolder[] GetFolders(string[] fields, string[] vals)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             return m_Folders.Get(fields, vals);
         }
 
         public XInventoryItem[] GetItems(string[] fields, string[] vals)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             return m_Items.Get(fields, vals);
         }
 
         public bool StoreFolder(XInventoryFolder folder)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (folder.folderName.Length > 64)
                 folder.folderName = folder.folderName.Substring(0, 64);
 
@@ -68,6 +85,9 @@ namespace OpenSim.Data.MySQL
 
         public bool StoreItem(XInventoryItem item)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (item.inventoryName.Length > 64)
                 item.inventoryName = item.inventoryName.Substring(0, 64);
             if (item.inventoryDescription.Length > 128)
@@ -78,43 +98,64 @@ namespace OpenSim.Data.MySQL
         
         public bool DeleteFolders(string field, string val)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             return m_Folders.Delete(field, val);
         }
 
         public bool DeleteFolders(string[] fields, string[] vals)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             return m_Folders.Delete(fields, vals);
         }
 
         public bool DeleteItems(string field, string val)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             return m_Items.Delete(field, val);
         }
 
         public bool DeleteItems(string[] fields, string[] vals)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             return m_Items.Delete(fields, vals);
         }
 
         public bool MoveItem(string id, string newParent)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             return m_Items.MoveItem(id, newParent);
         }
 
         public bool MoveFolder(string id, string newParent)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             return m_Folders.MoveFolder(id, newParent);
         }
 
         public XInventoryItem[] GetActiveGestures(UUID principalID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             return m_Items.GetActiveGestures(principalID);
         }
     }
 
     public class MySqlItemHandler : MySqlInventoryHandler<XInventoryItem>
     {
-//        private static readonly ILog m_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog m_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         public MySqlItemHandler(string c, string t, string m) :
                 base(c, t, m)
@@ -123,6 +164,9 @@ namespace OpenSim.Data.MySQL
 
         public override bool Delete(string field, string val)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             XInventoryItem[] retrievedItems = Get(new string[] { field }, new string[] { val });
             if (retrievedItems.Length == 0)
                 return false;
@@ -138,6 +182,9 @@ namespace OpenSim.Data.MySQL
 
         public override bool Delete(string[] fields, string[] vals)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             XInventoryItem[] retrievedItems = Get(fields, vals);
             if (retrievedItems.Length == 0)
                 return false;
@@ -157,6 +204,9 @@ namespace OpenSim.Data.MySQL
 
         public bool MoveItem(string id, string newParent)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             XInventoryItem[] retrievedItems = Get(new string[] { "inventoryID" }, new string[] { id });
             if (retrievedItems.Length == 0)
                 return false;
@@ -181,6 +231,9 @@ namespace OpenSim.Data.MySQL
 
         public XInventoryItem[] GetActiveGestures(UUID principalID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             using (MySqlCommand cmd  = new MySqlCommand())
             {
                 cmd.CommandText = String.Format("select * from inventoryitems where avatarId = ?uuid and assetType = ?type and flags & 1", m_Realm);
@@ -194,6 +247,9 @@ namespace OpenSim.Data.MySQL
 
         public override bool Store(XInventoryItem item)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (!base.Store(item))
                 return false;
 
@@ -205,7 +261,7 @@ namespace OpenSim.Data.MySQL
 
     public class MySqlFolderHandler : MySqlInventoryHandler<XInventoryFolder>
     {
-//        private static readonly ILog m_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog m_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         public MySqlFolderHandler(string c, string t, string m) :
                 base(c, t, m)
@@ -214,6 +270,9 @@ namespace OpenSim.Data.MySQL
 
         public bool MoveFolder(string id, string newParentFolderID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             XInventoryFolder[] folders = Get(new string[] { "folderID" }, new string[] { id });
 
             if (folders.Length == 0)
@@ -241,6 +300,9 @@ namespace OpenSim.Data.MySQL
 
         public override bool Store(XInventoryFolder folder)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (!base.Store(folder))
                 return false;
 
@@ -252,6 +314,8 @@ namespace OpenSim.Data.MySQL
 
     public class MySqlInventoryHandler<T> : MySQLGenericTableHandler<T> where T: class, new()
     {
+        private static readonly ILog m_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
         public MySqlInventoryHandler(string c, string t, string m) : base(c, t, m) {}
 
         protected bool IncrementFolderVersion(UUID folderID)
@@ -261,8 +325,11 @@ namespace OpenSim.Data.MySQL
 
         protected bool IncrementFolderVersion(string folderID)
         {
-//            m_log.DebugFormat("[MYSQL FOLDER HANDLER]: Incrementing version on folder {0}", folderID);
-//            Util.PrintCallStack();
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+                m_log.DebugFormat("[MYSQL FOLDER HANDLER]: Incrementing version on folder {0}", folderID);
+                Util.PrintCallStack();
+            }
 
             using (MySqlConnection dbcon = new MySqlConnection(m_connectionString))
             {

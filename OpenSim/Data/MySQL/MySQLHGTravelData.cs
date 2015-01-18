@@ -28,6 +28,8 @@
 using MySql.Data.MySqlClient;
 using OpenMetaverse;
 using System;
+using log4net;
+using System.Reflection;
 
 namespace OpenSim.Data.MySQL
 {
@@ -36,12 +38,15 @@ namespace OpenSim.Data.MySQL
     /// </summary>
     public class MySQLHGTravelData : MySQLGenericTableHandler<HGTravelingData>, IHGTravelingData
     {
-//        private static readonly ILog m_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog m_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         public MySQLHGTravelData(string connectionString, string realm) : base(connectionString, realm, "HGTravelStore") { }
 
         public HGTravelingData Get(UUID sessionID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             HGTravelingData[] ret = Get("SessionID", sessionID.ToString());
 
             if (ret.Length == 0)
@@ -52,16 +57,25 @@ namespace OpenSim.Data.MySQL
 
         public HGTravelingData[] GetSessions(UUID userID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             return base.Get("UserID", userID.ToString());
         }
 
         public bool Delete(UUID sessionID)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             return Delete("SessionID", sessionID.ToString());
         }
 
         public void DeleteOld()
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             using (MySqlCommand cmd = new MySqlCommand())
             {
                 cmd.CommandText = String.Format("delete from {0} where TMStamp < NOW() - INTERVAL 2 DAY", m_Realm);

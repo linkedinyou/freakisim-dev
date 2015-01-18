@@ -3731,7 +3731,12 @@ namespace OpenSim.Region.Framework.Scenes
         {
 			if (m_log.IsDebugEnabled) {
 				m_log.Debug ("NewUserConnection(AgentCircuitData acd, uint teleportFlags, GridRegion source, out string reason, bool requirePresenceLookup)");
-			}
+                m_log.DebugFormat ("AgentCircuitData - AgentID: {0}", acd.AgentID.ToString());
+                m_log.DebugFormat ("Teleport Flags: {0}", teleportFlags);
+                m_log.DebugFormat ("GridRegion - source: {0}", source);
+                m_log.DebugFormat ("RequirePresenceLookup: {0}", requirePresenceLookup);
+
+            }
 
             bool vialogin = ((teleportFlags & (uint)TPFlags.ViaLogin) != 0 ||
                 (teleportFlags & (uint)TPFlags.ViaHGLogin) != 0);

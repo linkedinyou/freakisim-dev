@@ -31,12 +31,13 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Reflection;
+using log4net;
 
 namespace OpenSim.Data.MySQL
 {
     public class MySQLGenericTableHandler<T> : MySqlFramework where T: class, new()
     {
-//        private static readonly ILog m_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog m_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         
         protected Dictionary<string, FieldInfo> m_Fields =
                 new Dictionary<string, FieldInfo>();
@@ -53,6 +54,9 @@ namespace OpenSim.Data.MySQL
         public MySQLGenericTableHandler(string connectionString,
                 string realm, string storeName) : base(connectionString)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             m_Realm = realm;
             m_connectionString = connectionString;
             
@@ -85,6 +89,9 @@ namespace OpenSim.Data.MySQL
 
         private void CheckColumnNames(IDataReader reader)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (m_ColumnNames != null)
                 return;
 
@@ -103,11 +110,17 @@ namespace OpenSim.Data.MySQL
 
         public virtual T[] Get(string field, string key)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             return Get(new string[] { field }, new string[] { key });
         }
 
         public virtual T[] Get(string[] fields, string[] keys)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (fields.Length != keys.Length)
                 return new T[0];
 
@@ -134,6 +147,9 @@ namespace OpenSim.Data.MySQL
 
         protected T[] DoQuery(MySqlCommand cmd)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             List<T> result = new List<T>();
 
             using (MySqlConnection dbcon = new MySqlConnection(m_connectionString))
@@ -203,6 +219,9 @@ namespace OpenSim.Data.MySQL
 
         public virtual T[] Get(string where)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             using (MySqlCommand cmd = new MySqlCommand())
             {
                 string query = String.Format("select * from {0} where {1}",
@@ -216,7 +235,10 @@ namespace OpenSim.Data.MySQL
 
         public virtual bool Store(T row)
         {
-//            m_log.DebugFormat("[MYSQL GENERIC TABLE HANDLER]: Store(T row) invoked");
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+                m_log.DebugFormat("[MYSQL GENERIC TABLE HANDLER]: Store(T row) invoked");
+            }
 
             using (MySqlCommand cmd = new MySqlCommand())
             {
@@ -267,14 +289,20 @@ namespace OpenSim.Data.MySQL
 
         public virtual bool Delete(string field, string key)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             return Delete(new string[] { field }, new string[] { key });
         }
 
         public virtual bool Delete(string[] fields, string[] keys)
         {
-//            m_log.DebugFormat(
-//                "[MYSQL GENERIC TABLE HANDLER]: Delete(string[] fields, string[] keys) invoked with {0}:{1}",
-//                string.Join(",", fields), string.Join(",", keys));
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+                m_log.DebugFormat(
+                   "[MYSQL GENERIC TABLE HANDLER]: Delete(string[] fields, string[] keys) invoked with {0}:{1}",
+                   string.Join(",", fields), string.Join(",", keys));
+            }
 
             if (fields.Length != keys.Length)
                 return false;
@@ -306,6 +334,9 @@ namespace OpenSim.Data.MySQL
 
         public long GetCount(string[] fields, string[] keys)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} (string[] fields, string[] keys)", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             if (fields.Length != keys.Length)
                 return 0;
 
@@ -334,6 +365,10 @@ namespace OpenSim.Data.MySQL
 
         public long GetCount(string where)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} (string {1})", System.Reflection.MethodBase.GetCurrentMethod ().Name, where);
+            }
+
             using (MySqlCommand cmd = new MySqlCommand())
             {
                 string query = String.Format("select count(*) from {0} where {1}",
@@ -349,6 +384,10 @@ namespace OpenSim.Data.MySQL
 
         public object DoQueryScalar(MySqlCommand cmd)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+                m_log.DebugFormat ("MySqlCommand: {0}", cmd.CommandText);
+            }
             using (MySqlConnection dbcon = new MySqlConnection(m_connectionString))
             {
                 dbcon.Open();
