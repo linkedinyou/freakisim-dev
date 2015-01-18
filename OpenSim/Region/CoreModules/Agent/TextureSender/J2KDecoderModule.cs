@@ -72,7 +72,7 @@ namespace OpenSim.Region.CoreModules.Agent.TextureSender
 
         #region ISharedRegionModule
 
-        private bool m_useCSJ2K = true;
+        private bool m_useCSJ2K = false;
 
         public string Name { get { return "J2KDecoderModule"; } }
 
@@ -229,7 +229,11 @@ namespace OpenSim.Region.CoreModules.Agent.TextureSender
                 {
                     try
                     {
-                        List<int> layerStarts = CSJ2K.J2kImage.GetLayerBoundaries(new MemoryStream(j2kData));
+                        List<int> layerStarts;
+                        using (MemoryStream ms = new MemoryStream(j2kData))
+                        {
+                            layerStarts = CSJ2K.J2kImage.GetLayerBoundaries(ms);
+                        }
 
                         if (layerStarts != null && layerStarts.Count > 0)
                         {

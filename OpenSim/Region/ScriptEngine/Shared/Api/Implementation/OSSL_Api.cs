@@ -694,6 +694,8 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
 
         public bool osConsoleCommand(string command)
         {
+            CheckThreatLevel(ThreatLevel.Severe, "osConsoleCommand");
+
             m_host.AddScriptLPS(1);
 
             if (World.Permissions.CanRunConsoleCommand(m_host.OwnerID))
@@ -1088,21 +1090,6 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
             }
             return vec;
         }
-
-        /*
-        public void osSetStateEvents(int events)
-        {
-            // This function is a hack. There is no reason for it's existence
-            // anymore, since state events now work properly.
-            // It was probably added as a crutch or debugging aid, and
-            // should be removed
-            //
-            CheckThreatLevel(ThreatLevel.High, "osSetStateEvents");
-            m_host.AddScriptLPS(1);
-
-            m_host.SetScriptEvents(m_item.ItemID, events);
-        }
-        */
 
         public void osSetRegionWaterHeight(double height)
         {
@@ -3001,8 +2988,6 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
         /// </summary>
         public void osSetProjectionParams(bool projection, LSL_Key texture, double fov, double focus, double amb)
         {
-            CheckThreatLevel(ThreatLevel.High, "osSetProjectionParams");
-
             osSetProjectionParams(UUID.Zero.ToString(), projection, texture, fov, focus, amb);
         }
 
@@ -3011,9 +2996,6 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
         /// </summary>
         public void osSetProjectionParams(LSL_Key prim, bool projection, LSL_Key texture, double fov, double focus, double amb)
         {
-            CheckThreatLevel(ThreatLevel.High, "osSetProjectionParams");
-            m_host.AddScriptLPS(1);
-
             SceneObjectPart obj = null;
             if (prim == UUID.Zero.ToString())
             {
@@ -3021,10 +3003,13 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
             }
             else
             {
+                /* make only accessing other prims addressed by threat level */
+                CheckThreatLevel(ThreatLevel.High, "osSetProjectionParams");
                 obj = World.GetSceneObjectPart(new UUID(prim));
                 if (obj == null)
                     return;
             }
+            m_host.AddScriptLPS(1);
 
             obj.Shape.ProjectionEntry = projection;
             obj.Shape.ProjectionTextureUUID = new UUID(texture);

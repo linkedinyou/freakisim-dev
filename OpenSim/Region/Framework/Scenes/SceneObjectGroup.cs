@@ -71,6 +71,7 @@ namespace OpenSim.Region.Framework.Scenes
         touch = 8,
         touch_end = 536870912,
         touch_start = 2097152,
+        transaction_result = 33554432,
         object_rez = 4194304
     }
 
@@ -302,7 +303,7 @@ namespace OpenSim.Region.Framework.Scenes
         private bool m_scriptListens_atRotTarget;
         private bool m_scriptListens_notAtRotTarget;
 
-        internal Dictionary<UUID, string> m_savedScriptState;
+        internal ThreadedClasses.RwLockedDictionary<UUID, string> m_savedScriptState = new ThreadedClasses.RwLockedDictionary<UUID,string>();
 
         #region Properties
 
@@ -885,8 +886,6 @@ namespace OpenSim.Region.Framework.Scenes
             XmlNodeList nodes = doc.GetElementsByTagName("SavedScriptState");
             if (nodes.Count > 0)
             {
-                if (m_savedScriptState == null)
-                    m_savedScriptState = new Dictionary<UUID, string>();
                 foreach (XmlNode node in nodes)
                 {
                     if (node.Attributes["UUID"] != null)

@@ -264,8 +264,8 @@ namespace OpenSim.Region.Physics.Meshing
 
             List<Coord> coords;
             List<Face> faces;
-            hulls = new List<List<Vector3>>();
-            boundingHull = new List<Vector3>();
+            hulls = null;
+            boundingHull = null;
 
             if (primShape.SculptEntry)
             {
@@ -328,8 +328,8 @@ namespace OpenSim.Region.Physics.Meshing
                     out List<List<Vector3>> hulls,
                     out List<Vector3> boundingHull)
         {
-            hulls = new List<List<Vector3>>();
-            boundingHull = new List<Vector3>();
+            hulls = null;
+            boundingHull = null;
 //            m_log.DebugFormat("[MESH]: experimental mesh proxy generation for {0}", primName);
 
             coords = new List<Coord>();
@@ -936,7 +936,36 @@ namespace OpenSim.Region.Physics.Meshing
                     if (size.Y < 0.01f) size.Y = 0.01f;
                     if (size.Z < 0.01f) size.Z = 0.01f;
 
-                    mesh = CreateMeshFromPrimMesher(primName, primShape, size, lod, out hulls, out boundingHull);
+                    List<List<Vector3>> inhulls;
+                    List<Vector3> inboundingHull;
+                    mesh = CreateMeshFromPrimMesher(primName, primShape, size, lod, out inhulls, out inboundingHull);
+
+                    if (inhulls != null)
+                    {
+                        hulls = new List<List<Vector3>>();
+                        foreach (var hull in inhulls)
+                        {
+                            List<Vector3> verts = new List<Vector3>();
+                            foreach (var vert in hull)
+                                verts.Add(vert * size);
+                            hulls.Add(verts);
+                        }
+                    }
+                    else
+                    {
+                        hulls = null;
+                    }
+
+                    if (inboundingHull != null)
+                    {
+                        boundingHull = new List<Vector3>();
+                        foreach (var vert in inboundingHull)
+                            boundingHull.Add(vert * size);
+                    }
+                    else
+                    {
+                        boundingHull = null;
+                    }
 
                     if (mesh != null)
                     {
