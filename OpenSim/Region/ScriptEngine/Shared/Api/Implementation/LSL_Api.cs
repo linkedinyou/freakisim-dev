@@ -1374,12 +1374,10 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
             }
 
             if ((status & ScriptBaseClass.STATUS_BLOCK_GRAB) == ScriptBaseClass.STATUS_BLOCK_GRAB)
-            {
-                if (value != 0)
-                    m_host.SetBlockGrab(true);
-                else
-                    m_host.SetBlockGrab(false);
-            }
+                m_host.BlockGrab = value != 0;
+
+            if ((status & ScriptBaseClass.STATUS_BLOCK_GRAB_OBJECT) == ScriptBaseClass.STATUS_BLOCK_GRAB_OBJECT)
+                m_host.ParentGroup.BlockGrabOverride = value != 0;
 
             if ((status & ScriptBaseClass.STATUS_DIE_AT_EDGE) == ScriptBaseClass.STATUS_DIE_AT_EDGE)
             {
@@ -1440,10 +1438,10 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
                     return 0;
 
                 case ScriptBaseClass.STATUS_BLOCK_GRAB:
-                    if (m_host.GetBlockGrab())
-                        return 1;
-                    else
-                        return 0;
+                    return m_host.BlockGrab ? 1 : 0;
+
+                case ScriptBaseClass.STATUS_BLOCK_GRAB_OBJECT:
+                    return m_host.ParentGroup.BlockGrabOverride ? 1 : 0;
 
                 case ScriptBaseClass.STATUS_DIE_AT_EDGE:
                     if (m_host.GetDieAtEdge())
@@ -9273,7 +9271,7 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
             m_host.AddScriptLPS(1);
             try
             {
-                byte[] encData_byte = new byte[str.Length];
+                byte[] encData_byte;
                 encData_byte = Util.UTF8.GetBytes(str);
                 string encodedData = Convert.ToBase64String(encData_byte);
                 return encodedData;
@@ -9290,7 +9288,8 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
             m_host.AddScriptLPS(1);
             try
             {
-                return Util.Base64ToString(str);
+                byte[] b = Convert.FromBase64String(str);
+                return Encoding.UTF8.GetString(b);
             }
             catch
             {
@@ -13478,12 +13477,6 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
             // This does nothing for LSO scripts in SL
         }
 
-        #region Not Implemented
-        //
-        // Listing the unimplemented lsl functions here, please move
-        // them from this region as they are completed
-        //
-
         public void llSetSoundQueueing(int queue)
         {
             m_host.AddScriptLPS(1);
@@ -13577,7 +13570,6 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
             return txn.ToString();
         }
 
-        #endregion
     }
 
     public class NotecardCache
