@@ -34,13 +34,14 @@ using OpenMetaverse;
 using OpenMetaverse.Packets;
 using OpenSim.Framework;
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 
-namespace OpenSim.Region.ClientStack.LindenUDP
+namespace OpenSim.Framework
 {
     public static class OpenSimTerrainCompressor
     {
-        private static readonly ILog m_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        // private static readonly ILog m_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
 #pragma warning disable 414
         private static string LogHeader = "[TERRAIN COMPRESSOR]";
@@ -107,7 +108,7 @@ namespace OpenSim.Region.ClientStack.LindenUDP
         }
 
         // Create a land packet for a single patch.
-        public static LayerDataPacket CreateLandPacket(TerrainData terrData, int patchX, int patchY)
+        public static LayerDataPacket CreateLandPacket(HeightMapTerrainData terrData, int patchX, int patchY)
         {
             int[] xPieces = new int[1];
             int[] yPieces = new int[1];
@@ -117,7 +118,7 @@ namespace OpenSim.Region.ClientStack.LindenUDP
             return CreateLandPacket(terrData, xPieces, yPieces);
         }
 
-        public static LayerDataPacket CreateLandPacket(TerrainData terrData, int[] xPieces, int[] yPieces)
+        public static LayerDataPacket CreateLandPacket(HeightMapTerrainData terrData, int[] xPieces, int[] yPieces)
         {
             byte landPacketType = (byte)TerrainPatch.LayerType.Land;
             if (terrData.SizeX > Constants.RegionSize || terrData.SizeY > Constants.RegionSize)
@@ -149,7 +150,7 @@ namespace OpenSim.Region.ClientStack.LindenUDP
         /// </param>
         /// <param name="type"></param>
         /// <returns></returns>
-        public static LayerDataPacket CreateLandPacket(TerrainData terrData, int[] x, int[] y, byte type)
+        public static LayerDataPacket CreateLandPacket(HeightMapTerrainData terrData, int[] x, int[] y, byte type)
         {
             LayerDataPacket layer = new LayerDataPacket {LayerID = {Type = type}};
 
@@ -169,6 +170,88 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
             layer.LayerData.Data = new byte[bitpack.BytePos + 1];
             Buffer.BlockCopy(bitpack.Data, 0, layer.LayerData.Data, 0, bitpack.BytePos + 1);
+
+            return layer;
+        }
+
+        public struct PatchInfo
+        {
+            public int X;
+            public int Y;
+            public byte[] PackedData;
+            public int BitLength;
+        }
+
+        public static LayerDataPacket CreateLandPacket(List<PatchInfo> ps, byte type)
+        {
+            LayerDataPacket layer = new LayerDataPacket { LayerID = { Type = type } };
+
+            TerrainPatch.GroupHeader header = new TerrainPatch.GroupHeader { Stride = STRIDE, PatchSize = Constants.TerrainPatchSize };
+
+            byte[] outdata = new byte[1500];
+            byte[] indata = BitConverter.GetBytes((ushort)header.Stride);
+            if(!BitConverter.IsLittleEndian)
+            {
+                Array.Reverse(indata);
+            }
+            outdata[0] = indata[0];
+            outdata[1] = indata[1];
+            outdata[2] = (byte)header.PatchSize;
+            outdata[3] = type;
+
+            int outBitPos = 32;
+
+            PatchInfo eop = new PatchInfo();
+            eop.PackedData = new byte[] { END_OF_PATCHES };
+            eop.BitLength = 8;
+            ps.Add(eop);
+
+            foreach(PatchInfo pi in ps)
+            {
+                int count = 0;
+                int curBytePos = 0;
+                int bitCount = pi.BitLength;
+                /* this bit pack method has a slight variance allowing it to directly accept BitPacked data */
+                while (bitCount > 0)
+                {
+                    count = bitCount;
+                    if (count > 8)
+                    {
+                        count = 8;
+                    }
+
+                    byte srcBits = pi.PackedData[curBytePos];
+                    while (count-- > 0)
+                    {
+                        byte curBitMask = (byte)(0x80 >> (outBitPos % 8));
+
+                        if ((srcBits & 0x80) != 0)
+                        {
+                            outdata[outBitPos / 8] |= curBitMask;
+                        }
+                        else
+                        {
+                            outdata[outBitPos / 8] &= (byte)~curBitMask;
+                        }
+
+                        ++outBitPos;
+                        srcBits <<= 1;
+                    }
+                    ++curBytePos;
+
+                    if (bitCount > 8)
+                    {
+                        bitCount -= 8;
+                    }
+                    else
+                    {
+                        bitCount = 0;
+                    }
+                }
+            }
+
+            layer.LayerData.Data = new byte[(outBitPos + 7) / 8];
+            Buffer.BlockCopy(outdata, 0, layer.LayerData.Data, 0, (outBitPos + 7) / 8);
 
             return layer;
         }
@@ -212,7 +295,7 @@ namespace OpenSim.Region.ClientStack.LindenUDP
         /// </param>
         /// <param name="pRegionSizeX"></param>
         /// <param name="pRegionSizeY"></param>
-        public static void CreatePatchFromHeightmap(BitPack output, TerrainData terrData, int patchX, int patchY)
+        public static void CreatePatchFromHeightmap(BitPack output, HeightMapTerrainData terrData, int patchX, int patchY)
         {
             TerrainPatch.Header header = PrescanPatch(terrData, patchX, patchY);
             header.QuantWBits = 136;
@@ -259,7 +342,7 @@ namespace OpenSim.Region.ClientStack.LindenUDP
         }
 
         // Scan the height info we're returning and return a patch packet header for this patch.
-        private static TerrainPatch.Header PrescanPatch(TerrainData terrData, int patchX, int patchY)
+        private static TerrainPatch.Header PrescanPatch(HeightMapTerrainData terrData, int patchX, int patchY)
         {
             TerrainPatch.Header header = new TerrainPatch.Header();
             float zmax = -99999999.0f;
@@ -805,7 +888,7 @@ namespace OpenSim.Region.ClientStack.LindenUDP
             return itemp;
         }
 
-        private static int[] CompressPatch(TerrainData terrData, int patchX, int patchY, TerrainPatch.Header header,
+        private static int[] CompressPatch(HeightMapTerrainData terrData, int patchX, int patchY, TerrainPatch.Header header,
                                                                int prequant, out int wbits)
         {
             float[] block = new float[Constants.TerrainPatchSize*Constants.TerrainPatchSize];

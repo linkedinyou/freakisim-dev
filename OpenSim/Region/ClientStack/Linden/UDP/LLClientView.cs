@@ -1104,7 +1104,7 @@ namespace OpenSim.Region.ClientStack.LindenUDP
         /// <param name="o"></param>
         private void DoSendLayerData(object o)
         {
-            TerrainData map = (TerrainData)o;
+            HeightMapTerrainData map = (HeightMapTerrainData)o;
 
             try
             {
@@ -1126,7 +1126,7 @@ namespace OpenSim.Region.ClientStack.LindenUDP
             }
         }
 
-        private void SendLayerTopRight(TerrainData map, int x1, int y1, int x2, int y2)
+        private void SendLayerTopRight(HeightMapTerrainData map, int x1, int y1, int x2, int y2)
         {
             // Row
             for (int i = x1; i <= x2; i++)
@@ -1140,7 +1140,7 @@ namespace OpenSim.Region.ClientStack.LindenUDP
                 SendLayerBottomLeft(map, x1, y1 + 1, x2 - 1, y2);
         }
 
-        void SendLayerBottomLeft(TerrainData map, int x1, int y1, int x2, int y2)
+        void SendLayerBottomLeft(HeightMapTerrainData map, int x1, int y1, int x2, int y2)
         {
             // Row in reverse
             for (int i = x2; i >= x1; i--)
@@ -1209,34 +1209,78 @@ namespace OpenSim.Region.ClientStack.LindenUDP
         /// <param name="px">Patch coordinate (x) 0..15</param>
         /// <param name="py">Patch coordinate (y) 0..15</param>
         /// <param name="map">heightmap</param>
-        public void SendLayerData(int px, int py, TerrainData terrData)
+        public void SendLayerData(int px, int py, HeightMapTerrainData terrData)
         {
             int[] xPatches = new[] { px };
             int[] yPatches = new[] { py };
             SendLayerData(xPatches, yPatches, terrData);
         }
 
-        private void SendLayerData(int[] px, int[] py, TerrainData terrData)
+        private Dictionary<int, uint> m_TransmittedTerrainSerials = new Dictionary<int, uint>();
+
+        private void SendLayerData(int[] px, int[] py, HeightMapTerrainData terrData)
         {
             try
             {
-                // Many, many patches could have been passed to us. Since the patches will be compressed
-                //   into variable sized blocks, we cannot pre-compute how many will fit into one
-                //   packet. While some fancy packing algorithm is possible, 4 seems to always fit.
-                int PatchesAssumedToFit = 4;
-                for (int pcnt = 0; pcnt < px.Length; pcnt += PatchesAssumedToFit)
+                List<OpenSimTerrainCompressor.PatchInfo> patches = new List<OpenSimTerrainCompressor.PatchInfo>();
+                int pcnt;
+                
+                for (pcnt = 0; pcnt < px.Length; ++pcnt)
                 {
-                    int remaining = Math.Min(px.Length - pcnt, PatchesAssumedToFit);
-                    int[] xPatches = new int[remaining];
-                    int[] yPatches = new int[remaining];
-                    for (int ii = 0; ii < remaining; ii++)
-                    {
-                        xPatches[ii] = px[pcnt + ii];
-                        yPatches[ii] = py[pcnt + ii];
-                    }
-                    LayerDataPacket layerpack = OpenSimTerrainCompressor.CreateLandPacket(terrData, xPatches, yPatches);
+                    uint lastSerialNo = 0;
+                    uint newSerialNo = 0;
+                    int bitLength = 0;
+                    int patchID = (px[pcnt] << 16) | (py[pcnt]);
 
-                    SendTheLayerPacket(layerpack);
+                    lock(m_TransmittedTerrainSerials)
+                    {
+                        if(!m_TransmittedTerrainSerials.TryGetValue(patchID, out lastSerialNo))
+                        {
+                            lastSerialNo = 0;
+                        }
+
+                        byte[] pdata = terrData.GetCompressedPatch(px[pcnt], py[pcnt], out bitLength, lastSerialNo, out newSerialNo);
+                        if(null != pdata)
+                        {
+                            m_TransmittedTerrainSerials[patchID] = newSerialNo;
+                            OpenSimTerrainCompressor.PatchInfo pi = new OpenSimTerrainCompressor.PatchInfo();
+                            pi.X = px[pcnt];
+                            pi.Y = py[pcnt];
+                            pi.BitLength = bitLength;
+                            pi.PackedData = pdata;
+                            patches.Add(pi);
+                        }
+                    }
+
+                }
+
+                /* the largest possible patch holds 647 bytes => 20 bits * 256 + 7 byte header, so a dynamic approach is a lot better */
+
+                List<OpenSimTerrainCompressor.PatchInfo> packFrame = new List<OpenSimTerrainCompressor.PatchInfo>();
+
+                byte landPacketType = (byte)TerrainPatch.LayerType.Land;
+                if (terrData.SizeX > Constants.RegionSize || terrData.SizeY > Constants.RegionSize)
+                {
+                    landPacketType = (byte)TerrainPatch.LayerType.LandExtended;
+                }
+
+                pcnt = 0;
+                while(pcnt < patches.Count)
+                {
+                    int pstart = pcnt;
+                    int remainingbits = 1302 * 8;
+                    while(pcnt < patches.Count && remainingbits >= patches[pcnt].BitLength)
+                    {
+                        remainingbits -= patches[pcnt].BitLength;
+                        ++pcnt;
+                    }
+                    packFrame.Clear();
+                    while(pstart < pcnt)
+                    {
+                        packFrame.Add(patches[pstart++]);
+                    }
+
+                    SendTheLayerPacket(OpenSimTerrainCompressor.CreateLandPacket(packFrame, landPacketType));
                 }
             }
             catch (Exception e)
@@ -9737,6 +9781,20 @@ namespace OpenSim.Region.ClientStack.LindenUDP
                         {
                             handlerEstateManageTelehub(this, invoice, SenderID, command, param1);
                         }
+                    }
+                    return true;
+
+                case "kickestate":
+
+                    if (((Scene)m_scene).Permissions.CanIssueEstateCommand(AgentId, false))
+                    {
+                        UUID invoice = messagePacket.MethodData.Invoice;
+                        UUID SenderID = messagePacket.AgentData.AgentID;
+                        UUID Prey;
+
+                        UUID.TryParse(Utils.BytesToString(messagePacket.ParamList[0].Parameter), out Prey);
+
+                        OnEstateTeleportOneUserHomeRequest(this, invoice, SenderID, Prey);
                     }
                     return true;
 

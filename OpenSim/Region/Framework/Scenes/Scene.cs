@@ -138,6 +138,9 @@ namespace OpenSim.Region.Framework.Scenes
         }
         private bool m_scripts_enabled;
 
+        // Dynamic ossl function permissions
+        private ThreadedClasses.RwLockedDictionaryAutoAdd<string, ThreadedClasses.RwLockedDictionary<UUID, bool>> m_DynaPerms = new ThreadedClasses.RwLockedDictionaryAutoAdd<string, ThreadedClasses.RwLockedDictionary<UUID, bool>>(delegate() { return new ThreadedClasses.RwLockedDictionary<UUID, bool>(); });
+
         public SynchronizeSceneHandler SynchronizeScene;
 
         /// <summary>
@@ -1882,7 +1885,7 @@ namespace OpenSim.Region.Framework.Scenes
         {
             try
             {
-                TerrainData map = SimulationDataService.LoadTerrain(RegionInfo.RegionID, (int)RegionInfo.RegionSizeX, (int)RegionInfo.RegionSizeY, (int)RegionInfo.RegionSizeZ);
+                HeightMapTerrainData map = SimulationDataService.LoadTerrain(RegionInfo.RegionID, (int)RegionInfo.RegionSizeX, (int)RegionInfo.RegionSizeY, (int)RegionInfo.RegionSizeZ);
                 if (map == null)
                 {
                     // This should be in the Terrain module, but it isn't because
@@ -5851,6 +5854,40 @@ namespace OpenSim.Region.Framework.Scenes
             m_SimulationDataService.RemoveExtra(RegionInfo.RegionID, name);
 
             m_eventManager.TriggerExtraSettingChanged(this, name, String.Empty);
+        }
+
+        public bool AddOsslPerm(UUID key, string function)
+        {
+            if (string.IsNullOrEmpty(function))
+                return false;
+
+            m_DynaPerms.GetOrAddIfNotExists(function, delegate() { return new ThreadedClasses.RwLockedDictionary<UUID, bool>();})[key] = true;
+
+            return true;
+        }
+
+        public bool GetOsslPerms(UUID avatar, string function)
+        {
+            ThreadedClasses.RwLockedDictionary<UUID, bool> dynKeys;
+            if (m_DynaPerms.TryGetValue(function, out dynKeys))
+            {
+                return m_DynaPerms[function].ContainsKey(avatar);
+            }
+
+            return false;
+        }
+
+        public bool RemoveOsslPerm(UUID key, string function)
+        {
+            ThreadedClasses.RwLockedDictionary<UUID, bool> dynKeys;
+            if(m_DynaPerms.TryGetValue(function, out dynKeys))
+            {
+                if (dynKeys.Remove(key))
+                {
+                    m_DynaPerms.RemoveIf(function, delegate(ThreadedClasses.RwLockedDictionary<UUID, bool> val) { return val.Count == 0; });
+                }
+            }
+            return true;
         }
     }
 }

@@ -3065,7 +3065,7 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
             // set the rotation of the object, copy that behavior
             PhysicsActor pa = m_host.PhysActor;
 
-            if (strength == 0 || pa == null || !pa.IsPhysical)
+            if (m_host.ParentGroup.IsAttachment || strength == 0 || pa == null || !pa.IsPhysical)
             {
                 llSetRot(rot);
             }
@@ -12512,7 +12512,7 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
                                     vel = obj.ParentGroup.RootPart.Velocity; 
                                 }
 
-                                ret.Add(new LSL_Vector(vel));
+                                ret.Add(vel);
                                 break;
                             case ScriptBaseClass.OBJECT_OWNER:
                                 ret.Add(new LSL_String(obj.OwnerID.ToString()));

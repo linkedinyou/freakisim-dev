@@ -384,8 +384,15 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
             if (asset == null || asset.Data == null)
             {
-                m_asset = null;
-                IsDecoded = true;
+                if (m_imageManager.MissingImage != null)
+                {
+                    m_asset = m_imageManager.MissingImage.Data;
+                }
+                else
+                {
+                    m_asset = null;
+                    IsDecoded = true;
+                }
             }
             else
             {
