@@ -30,6 +30,19 @@ use DBI;
 
 sub trim($);
 
+# Prints usage
+sub usage() {
+    print "\n";
+    print "Usage: generateOpenSimIni INIFILE GRID\n\n";
+    print "generates an INIFILE for a given Path and a given GRID according to the database rules\n";
+    print "Valid INIFILES are: \n";
+    print "  - OpenSim.ini\n";
+    print "Valid GRID are: \n";
+    print "  - OSgrid\n";
+    print "  - Metropolis\n";
+}   
+
+
 if ($#ARGV != 1 ) {
 	usage();
 	exit;
@@ -99,14 +112,3 @@ $cfg->SetFileName( $filepath );
 $cfg->RewriteConfig();
 $cfg->WriteConfig( $filepath );
 
-# Prints usage
-sub usage() {
-	print "\n";
-	print "Usage: generateOpenSimIni INIFILE GRID\n\n";
-	print "generates an INIFILE for a given Path and a given GRID according to the database rules\n";
-	print "Valid INIFILES are: \n";
-	print "  - OpenSim.ini\n";
-	print "Valid GRID are: \n";
-	print "  - OSgrid\n";
-	print "  - Metropolis\n";
-}	

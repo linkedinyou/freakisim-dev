@@ -28,7 +28,9 @@ use Config::IniFiles;
 use constant { true => 1, false => 0 };
 use DBI;
 
+# Prototypes
 sub trim($);
+sub usage();
 
 if ($#ARGV != 1 ) {
 	usage();

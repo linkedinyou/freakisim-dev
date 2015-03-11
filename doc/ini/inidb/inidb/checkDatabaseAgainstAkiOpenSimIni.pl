@@ -28,7 +28,10 @@ use Config::IniFiles;
 use constant { true => 1, false => 0 };
 use DBI;
 
+# Prototypes
 sub trim($);
+sub usage();
+sub checkValue($ $ $);
 
 if ($#ARGV != 1 ) {
 	usage();
@@ -99,46 +102,46 @@ while(@row = $sth->fetchrow_array()) {
 $sth->finish();
 $dbh->disconnect();
 
-sub checkValue($,$,$) {
-	my $section = shift;
-	my $parameter = shift;
-	my $value = shift;
+sub checkValue($ $ $) {
+    my $section = shift;
+    my $parameter = shift;
+    my $value = shift;
 
-	my $ini_value = $cfg->val($section, $parameter);
-	if ($ini_value ne undef){
-		if ($ini_value =~ m/(.*)\;/) {
-			$ini_value = trim($1);
-		} else {
-			$ini_value = trim($ini_value);
-		}
-		if ($ini_value ne $value) {
- 				print "$section;$parameter;$value;$ini_value;different_values\n";				
-		}
-	} else {
- 		print "$section;$parameter;$value;--;Section/Parameter not found in ini-file\n";		  							
-	}
-	
+    my $ini_value = $cfg->val($section, $parameter);
+    if ($ini_value ne undef){
+        if ($ini_value =~ m/(.*)\;/) {
+            $ini_value = trim($1);
+        } else {
+            $ini_value = trim($ini_value);
+        }
+        if ($ini_value ne $value) {
+                print "$section;$parameter;$value;$ini_value;different_values\n";               
+        }
+    } else {
+        print "$section;$parameter;$value;--;Section/Parameter not found in ini-file\n";                                    
+    }
+    
 }
 
 # Prints usage
 sub usage() {
-	print "\n";
-	print "Usage: checkDatabaseAgainstOpenAkiSimIni INIFILE GRID\n\n";
-	print "Checks a given INIFILE of a given GRID against the ini database and the akisim settings and reports differences to the console\n";
-	print "Valid INIFILES are: \n";
-	print "  - OpenSim.ini\n";
-	print "Valid GRID are: \n";
-	print "  - OSgrid\n";
-	print "  - Metropolis\n";
-}	
+    print "\n";
+    print "Usage: checkDatabaseAgainstOpenAkiSimIni INIFILE GRID\n\n";
+    print "Checks a given INIFILE of a given GRID against the ini database and the akisim settings and reports differences to the console\n";
+    print "Valid INIFILES are: \n";
+    print "  - OpenSim.ini\n";
+    print "Valid GRID are: \n";
+    print "  - OSgrid\n";
+    print "  - Metropolis\n";
+}   
 
 
 
 
 # Perl trim function to remove whitespace from the start and end of the string
 sub trim($) {
-	my $string = shift;
-	$string =~ s/^\s+//;
-	$string =~ s/\s+$//;
-	return $string;
+    my $string = shift;
+    $string =~ s/^\s+//;
+    $string =~ s/\s+$//;
+    return $string;
 }

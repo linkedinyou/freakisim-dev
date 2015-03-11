@@ -30,6 +30,12 @@ use constant { true => 1, false => 0 };
 
 use DBI;
 
+# Prototypes
+sub trim($);
+sub usage();
+sub compareValues($ $ $ $);
+
+
 if ($#ARGV != 1 ) {
 	usage();
 	exit;
@@ -47,7 +53,7 @@ my $dbh = DBI->connect('DBI:mysql:opensim_ini', 'opensim', 'opensim'
 	           ) || die "Could not connect to database: $DBI::errstr";
 
 # Print the Header Line
-print "ini_section;ini_parameter;opensim_value;ini_value;Comment\n";				
+print "ini_section;ini_parameter;database_value;ini_value;Comment\n";				
 
 my $cfg = Config::IniFiles->new( -file => $filepath );
 
@@ -102,43 +108,43 @@ sub findInDatabase {
 
 $dbh->disconnect();
 
-
 # Subroutine to compare two values and report differences
-sub compareValues($,$,$,$) {
-	my $section = shift;
-	my $parameter = shift;
-	my $db_value = shift;
-	my $file_value = shift;
+sub compareValues($ $ $ $) {
+    my $section = shift;
+    my $parameter = shift;
+    my $db_value = shift;
+    my $file_value = shift;
 
-	if($db_value ne undef) {
-  		if($db_value ne $file_value) {
-			print "$section;$parameter;$db_value;$file_value;different_values\n";		
-		}
-	} else {
-			print "$section;$parameter;--;$file_value;not found in database\n";		  				
-	}
+    if($db_value ne undef) {
+        if($db_value ne $file_value) {
+            print "$section;$parameter;$db_value;$file_value;different_values\n";       
+        }
+    } else {
+            print "$section;$parameter;--;$file_value;not found in database\n";                     
+    }
 }
 
 
 
 # Perl trim function to remove whitespace from the start and end of the string
 sub trim($) {
-	my $string = shift;
-	$string =~ s/^\s+//;
-	$string =~ s/\s+$//;
-	return $string;
+    my $string = shift;
+    $string =~ s/^\s+//;
+    $string =~ s/\s+$//;
+    return $string;
 }
 
 # Prints usage
 sub usage() {
-	print "\n";
-	print "Usage: checkIOpenSimIniAgainstDatabase INIFILE GRID\n\n";
-	print "Checks a given INIFILE of type OpenSim.ini of a given GRID against the ini database and reports differences to the console\n";
-	print "Valid INIFILES are: \n";
-	print "  - OpenSim.ini\n";
-	print "Valid GRID are: \n";
-	print "  - OSgrid\n";
-	print "  - Metropolis\n";
-}	
+    print "\n";
+    print "Usage: checkIOpenSimIniAgainstDatabase INIFILE GRID\n\n";
+    print "Checks a given INIFILE of type OpenSim.ini of a given GRID against the ini database and reports differences to the console\n";
+    print "Valid INIFILES are: \n";
+    print "  - OpenSim.ini\n";
+    print "Valid GRID are: \n";
+    print "  - OSgrid\n";
+    print "  - Metropolis\n";
+}   
+
 
 

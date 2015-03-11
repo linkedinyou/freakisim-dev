@@ -28,7 +28,10 @@ use Config::IniFiles;
 use constant { true => 1, false => 0 };
 use DBI;
 
+# Prototypes
 sub trim($);
+sub usage();
+sub checkValue($ $ $);
 
 if ($#ARGV != 1 ) {
 	usage();
@@ -95,7 +98,7 @@ while(@row = $sth->fetchrow_array()) {
 $sth->finish();
 $dbh->disconnect();
 
-sub checkValue($,$,$) {
+sub checkValue($ $ $) {
 	my $section = shift;
 	my $parameter = shift;
 	my $value = shift;
