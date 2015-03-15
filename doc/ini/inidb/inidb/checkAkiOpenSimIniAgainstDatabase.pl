@@ -119,7 +119,7 @@ sub compareValues($ $ $ $) {
     my $db_value = shift;
     my $file_value = shift;
 
-    if($db_value ne undef) {
+    if(defined $db_value) {
         if($db_value ne $file_value) {
             print "$section;$parameter;$db_value;$file_value;different_values\n";       
         }

@@ -87,19 +87,22 @@ sub findInDatabase {
 		my($opensim_value,$opensim_enabled_default, $osgrid_value, $osgrid_enabled, $metro_value, $metro_enabled) = $sth->fetchrow_array();
 		
 		if($grid eq "osgrid") {
-			if ($osgrid_enabled == true) {
+			if ((defined $osgrid_enabled) && ($osgrid_enabled == true)) {
 				compareValues($section,$parameter,$osgrid_value,$ini_value);
-			} elsif($opensim_enabled_default == true) {
+			} elsif((defined $opensim_enabled_default) && ($opensim_enabled_default == true)) {
 				compareValues($section,$parameter,$opensim_value,$ini_value);				
 			} else {
 				print "$section;$parameter;$opensim_value;$ini_value;not_enabled\n";						
 			}
 		} elsif ($grid eq "metropolis") {
-			if ($metro_enabled == true) {
+			if ((defined $metro_enabled) && ($metro_enabled == true)) {
 				compareValues($section,$parameter,$metro_value,$ini_value);
-			} elsif($opensim_enabled_default == true) {
+			} elsif((defined $opensim_enabled_default) && ($opensim_enabled_default == true)) {
 				compareValues($section,$parameter,$opensim_value,$ini_value);				
 			} else {
+				if(!(defined $opensim_value)) {
+				    $opensim_value = "";
+				}
 				print "$section;$parameter;$opensim_value;$ini_value;not_enabled\n";						
 			}			
 		}
@@ -115,7 +118,7 @@ sub compareValues($ $ $ $) {
     my $db_value = shift;
     my $file_value = shift;
 
-    if($db_value ne undef) {
+    if(defined $db_value) {
         if($db_value ne $file_value) {
             print "$section;$parameter;$db_value;$file_value;different_values\n";       
         }
