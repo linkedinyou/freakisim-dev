@@ -40,6 +40,7 @@ sub usage() {
     print "Valid GRID are: \n";
     print "  - OSgrid\n";
     print "  - Metropolis\n";
+    print "  - Dereos\n";
 }   
 
 
@@ -51,7 +52,7 @@ if ($#ARGV != 1 ) {
 my $filepath = $ARGV[0];
 my $grid = lc($ARGV[1]);
 
-if( !($grid eq "osgrid" || $grid eq "metropolis" ) ) {
+if( !($grid eq "osgrid" || $grid eq "metropolis" || $grid eq "dereos") ) {
 	usage();
 	exit;
 }
@@ -84,6 +85,8 @@ while(@row = $sth->fetchrow_array()) {
 	my $osgrid_enabled = $row[8];
 	my $metro_value = $row[9];
 	my $metro_enabled = $row[10];
+    my $dereos_value = $row[11];
+    my $dereos_enabled = $row[12];
 
 
 	if($grid eq "osgrid") {
@@ -102,6 +105,14 @@ while(@row = $sth->fetchrow_array()) {
 		} elsif ($opensim_enabled_default == true) {
 			$cfg->newval( $ini_section, $ini_parameter, $opensim_value );
 		} 		
+    } elsif($grid eq "dereos") {
+        if ($aki_enabled == true) {
+            $cfg->newval( $ini_section, $ini_parameter, $aki_value );
+        } elsif ($dereos_enabled == true) {
+            $cfg->newval( $ini_section, $ini_parameter, $dereos_value );
+        } elsif ($opensim_enabled_default == true) {
+            $cfg->newval( $ini_section, $ini_parameter, $opensim_value );
+        }       
 	}
 }
 

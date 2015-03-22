@@ -108,7 +108,7 @@ sub checkValue($ $ $) {
     my $value = shift;
 
     my $ini_value = $cfg->val($section, $parameter);
-    if ($ini_value ne undef){
+    if (defined $ini_value){
         if ($ini_value =~ m/(.*)\;/) {
             $ini_value = trim($1);
         } else {

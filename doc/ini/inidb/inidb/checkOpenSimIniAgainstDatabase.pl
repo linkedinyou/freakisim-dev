@@ -44,7 +44,7 @@ if ($#ARGV != 1 ) {
 my $filepath = $ARGV[0];
 my $grid = lc($ARGV[1]);
 
-if( !($grid eq "osgrid" || $grid eq "metropolis" ) ) {
+if( !($grid eq "osgrid" || $grid eq "metropolis" || $grid eq "dereos" || $grid eq "repo") ) {
 	usage();
 	exit;
 }
@@ -81,10 +81,10 @@ sub findInDatabase {
 			$ini_value = trim($ini_value);
 		}
 				
-		my $sql = qq'SELECT opensim_value, opensim_enabled_default, osgrid_value, osgrid_enabled, metro_value, metro_enabled  FROM ini WHERE ini_section="$section" AND ini_parameter="$parameter"';
+		my $sql = qq'SELECT opensim_value, opensim_enabled_default, opensim_enabled, osgrid_value, osgrid_enabled, metro_value, metro_enabled, dereos_value, dereos_enabled FROM ini WHERE ini_section="$section" AND ini_parameter="$parameter"';
 		$sth = $dbh->prepare($sql)or die "Cannot prepare: " . $dbh->errstr();
 		$sth->execute() or die "Cannot execute: " . $sth->errstr();
-		my($opensim_value,$opensim_enabled_default, $osgrid_value, $osgrid_enabled, $metro_value, $metro_enabled) = $sth->fetchrow_array();
+		my($opensim_value,$opensim_enabled_default, $opensim_enabled ,$osgrid_value, $osgrid_enabled, $metro_value, $metro_enabled, $dereos_value, $dereos_enabled) = $sth->fetchrow_array();
 		
 		if($grid eq "osgrid") {
 			if ((defined $osgrid_enabled) && ($osgrid_enabled == true)) {
@@ -92,6 +92,9 @@ sub findInDatabase {
 			} elsif((defined $opensim_enabled_default) && ($opensim_enabled_default == true)) {
 				compareValues($section,$parameter,$opensim_value,$ini_value);				
 			} else {
+                if(!(defined $opensim_value)) {
+                    $opensim_value = "";
+                }
 				print "$section;$parameter;$opensim_value;$ini_value;not_enabled\n";						
 			}
 		} elsif ($grid eq "metropolis") {
@@ -105,6 +108,28 @@ sub findInDatabase {
 				}
 				print "$section;$parameter;$opensim_value;$ini_value;not_enabled\n";						
 			}			
+        } elsif ($grid eq "dereos") {
+            if ((defined $dereos_enabled) && ($dereos_enabled == true)) {
+                compareValues($section,$parameter,$dereos_value,$ini_value);
+            } elsif((defined $opensim_enabled_default) && ($opensim_enabled_default == true)) {
+                compareValues($section,$parameter,$opensim_value,$ini_value);               
+            } else {
+                if(!(defined $opensim_value)) {
+                    $opensim_value = "";
+                }
+                print "$section;$parameter;$opensim_value;$ini_value;not_enabled\n";                        
+            }           
+        } elsif ($grid eq "repo") {
+            if ((defined $opensim_enabled) && ($opensim_enabled == true)) {
+                compareValues($section,$parameter,$opensim_value,$ini_value);
+            } elsif((defined $opensim_enabled_default) && ($opensim_enabled_default == true)) {
+                compareValues($section,$parameter,$opensim_value,$ini_value);               
+            } else {
+                if(!(defined $opensim_value)) {
+                    $opensim_value = "";
+                }
+                print "$section;$parameter;$opensim_value;$ini_value;not_enabled\n";                        
+            }           
 		}
     }
 }
@@ -145,8 +170,10 @@ sub usage() {
     print "Valid INIFILES are: \n";
     print "  - OpenSim.ini\n";
     print "Valid GRID are: \n";
+    print "  - Dereos\n";
     print "  - OSgrid\n";
     print "  - Metropolis\n";
+    print "  - Repo\n";
 }   
 
 
