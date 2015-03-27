@@ -31,13 +31,17 @@ use DBI;
 # Prototypes
 sub trim($);
 sub usage();
+sub checkValue($ $ $);
 
-if ($#ARGV != 1 ) {
-	usage();
-	exit;
+if ($#ARGV != 2 ) {
+    usage();
+    exit;
 }
+
 my $filepath = $ARGV[0];
-my $grid = lc($ARGV[1]);
+my $inipath = $ARGV[1];
+my $grid = lc($ARGV[2]);
+
 
 if( !($grid eq "osgrid" || $grid eq "metropolis" || $grid eq "dereos" || $grid eq "repo" ) ) {
     usage();
@@ -47,6 +51,8 @@ if( !($grid eq "osgrid" || $grid eq "metropolis" || $grid eq "dereos" || $grid e
 
 
 my $cfg = Config::IniFiles->new( -file => $filepath);
+my $inicfg = Config::IniFiles->new( -file => $inipath );
+
 my $dbh = DBI->connect('DBI:mysql:opensim_ini', 'opensim', 'opensim'
 	           ) || die "Could not connect to database: $DBI::errstr";
 # (insert query examples here...)
@@ -68,14 +74,16 @@ while(@row = $sth->fetchrow_array()) {
 	my $opensim_value = $row[2];
 	my $opensim_enabled_default = $row[3];
 	my $opensim_enabled = $row[4];
-	my $aki_value = $row[5];
-	my $aki_enabled = $row[6];
-	my $osgrid_value = $row[7];
-	my $osgrid_enabled = $row[8];
-	my $metro_value = $row[9];
-	my $metro_enabled = $row[10];
-    my $dereos_value = $row[11];
-    my $dereos_enabled = $row[12];
+	my $aki_dereos_value = $row[5];
+    my $aki_metro_value = $row[6];
+    my $aki_osgrid_value = $row[7];
+	my $aki_enabled = $row[8];
+	my $osgrid_value = $row[9];
+	my $osgrid_enabled = $row[10];
+	my $metro_value = $row[11];
+	my $metro_enabled = $row[12];
+    my $dereos_value = $row[13];
+    my $dereos_enabled = $row[14];
 
 	
 	
@@ -89,33 +97,27 @@ while(@row = $sth->fetchrow_array()) {
 			}
             ## we only check the enabled parameters
             if($grid eq "metropolis") {
-                if ($aki_enabled == true && $ini_value ne $aki_value) {
-                    print "$ini_section;$ini_parameter;$aki_value;$ini_value;different_values - aki-setting\n";               
-                } elsif ($metro_enabled == true && $ini_value ne $metro_value) {
-                    print "$ini_section;$ini_parameter;$metro_value;$ini_value;different_values - metro-setting\n";                               	
+                if ($metro_enabled == true && $ini_value ne $metro_value) {
+                    if( !checkValue($ini_section,$ini_parameter,$metro_value) ) {
+                        print "$ini_section;$ini_parameter;$metro_value;$ini_value;metro_different_values\n";
+                    }
                 } elsif ($opensim_enabled_default == true && $ini_value ne $opensim_value) {
                     print "$ini_section;$ini_parameter;$opensim_value;$ini_value;different_values - opensim-default-setting\n";                                   
                 }
             } elsif ($grid eq "osgrid") {
-                if ($aki_enabled == true && $ini_value ne $aki_value) {
-                    print "$ini_section;$ini_parameter;$aki_value;$ini_value;different_values - aki-setting\n";               
-                } elsif ($osgrid_enabled == true && $ini_value ne $osgrid_value) {
+                if ($osgrid_enabled == true && $ini_value ne $osgrid_value) {
                     print "$ini_section;$ini_parameter;$osgrid_value;$ini_value;different_values - osgrid-setting\n";                                 
                 } elsif ($opensim_enabled_default == true && $ini_value ne $opensim_value) {
                     print "$ini_section;$ini_parameter;$opensim_value;$ini_value;different_values - opensim-default-setting\n";                                   
                 }
             } elsif ($grid eq "dereos") {
-                if ($aki_enabled == true && $ini_value ne $aki_value) {
-                    print "$ini_section;$ini_parameter;$aki_value;$ini_value;different_values - aki-setting\n";               
-                } elsif ($dereos_enabled == true && $ini_value ne $dereos_value) {
+                if ($dereos_enabled == true && $ini_value ne $dereos_value) {
                     print "$ini_section;$ini_parameter;$osgrid_value;$ini_value;different_values - dereos-setting\n";                                 
                 } elsif ($opensim_enabled_default == true && $ini_value ne $opensim_value) {
                     print "$ini_section;$ini_parameter;$opensim_value;$ini_value;different_values - opensim-default-setting\n";                                   
                 }
             } elsif ($grid eq "repo") {
-                if ($aki_enabled == true && $ini_value ne $aki_value) {
-                    print "$ini_section;$ini_parameter;$aki_value;$ini_value;different_values - aki-setting\n";               
-                } elsif ($aki_enabled == false && $opensim_enabled_default == true && $ini_value ne $opensim_value) {
+                if ($opensim_enabled_default == true && $ini_value ne $opensim_value) {
                     print "$ini_section;$ini_parameter;$opensim_value;$ini_value;different_values - opensim-default-setting\n";                                   
                 }
             }
@@ -137,6 +139,26 @@ sub trim($) {
 	return $string;
 }
 
+sub checkValue($ $ $) {
+    my $section = shift;
+    my $parameter = shift;
+    my $value = shift;
+
+    my $ini_value = $inicfg->val($section, $parameter);
+    if (defined $ini_value){
+        if ($ini_value =~ m/(.*)\;/) {
+            $ini_value = trim($1);
+        } else {
+            $ini_value = trim($ini_value);
+        }
+        if ($ini_value eq $value) {
+            return(true);
+        }
+    } 
+    return(false);
+}
+
+
 
 # Prints usage
 sub usage() {
@@ -148,6 +170,7 @@ sub usage() {
     print "Valid GRIDs are: \n";
     print "  - OSgrid\n";
     print "  - Metropolis\n";
+    print "  - Dereos\n";
     print "  - Repo\n";
 }   
     

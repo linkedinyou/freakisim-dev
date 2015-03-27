@@ -34,15 +34,17 @@ use DBI;
 # Prototypes
 sub trim($);
 sub usage();
+sub checkValue($ $ $);
 
 
-if ($#ARGV != 1 ) {
+if ($#ARGV != 2 ) {
 	usage();
 	exit;
 }
 
 my $filepath = $ARGV[0];
-my $grid = lc($ARGV[1]);
+my $inipath = $ARGV[1];
+my $grid = lc($ARGV[2]);
 
 if( !($grid eq "osgrid" || $grid eq "metropolis" || $grid eq "dereos" || $grid eq "repo" ) ) {
 	usage();
@@ -57,6 +59,8 @@ my $dbh = DBI->connect('DBI:mysql:opensim_ini', 'opensim', 'opensim'
 print "ini_section;ini_parameter;database_value;ini_value;Comment\n";				
 
 my $cfg = Config::IniFiles->new( -file => $filepath );
+my $inicfg = Config::IniFiles->new( -file => $inipath );
+
 
 my @sections=$cfg->Sections();
 
@@ -83,67 +87,80 @@ sub findInDatabase {
 			$ini_value = trim($ini_value);
 		}
 
-		my ($aki_value, $aki_enabled, $metro_value, $metro_enabled, $opensim_value, $opensim_enabled_default, $osgrid_value, $osgrid_enabled, $dereos_value, $dereos_enabled) = undef;
+		my ($aki_dereos_value, $aki_metro_value, $aki_osgrid_value, $aki_enabled, $metro_value, $metro_enabled, $opensim_value, $opensim_enabled_default, $osgrid_value, $osgrid_enabled, $dereos_value, $dereos_enabled) = undef;
 		
 		if ($grid eq "metropolis") {
-			$sql = qq'SELECT aki_value, aki_enabled, metro_value, metro_enabled, opensim_value, opensim_enabled_default FROM ini WHERE ini_section="$section" AND ini_parameter="$parameter"';
+			$sql = qq'SELECT metro_value, metro_enabled, opensim_value, opensim_enabled_default FROM ini WHERE ini_section="$section" AND ini_parameter="$parameter"';
             $sth = $dbh->prepare($sql)or die "Cannot prepare: " . $dbh->errstr();
             $sth->execute() or die "Cannot execute: " . $sth->errstr();
-            ($aki_value,$aki_enabled,$metro_value,$metro_enabled,$opensim_value,$opensim_enabled_default) = $sth->fetchrow_array();
+            ($metro_value,$metro_enabled,$opensim_value,$opensim_enabled_default) = $sth->fetchrow_array();
             
-            if( (defined $aki_enabled) && ($aki_enabled == true) && ($aki_value ne $ini_value)) {
-                print "$section;$parameter;$aki_value;$ini_value;different_values\n";       
-            } elsif ((defined $opensim_enabled_default) && $opensim_enabled_default == true && $opensim_value ne $ini_value) {
+            if( (defined $metro_enabled) && ($metro_enabled == true) && ($metro_value ne $ini_value) ) {
+                if( !checkValue($section,$parameter,$metro_value) ) {
+                    print "$section;$parameter;$metro_value;$ini_value;metro_different_values\n";
+                }
+            } elsif ( (defined $metro_enabled) && ($metro_enabled == true) && ($metro_value eq $ini_value) ) {
+            } elsif ( (defined $opensim_enabled_default) && ($opensim_enabled_default == true) && ($opensim_value ne $ini_value) ) {
                 print "$section;$parameter;$opensim_value;$ini_value;different_values\n";       
-            } elsif( !(defined $aki_value) && !(defined $metro_value) && !(defined $opensim_value) ) {
+            } elsif ( (defined $opensim_enabled_default) && ($opensim_enabled_default == true) && ($opensim_value eq $ini_value) ) {
+            } elsif ( (defined $opensim_enabled_default) && ($opensim_enabled_default == false) ) {
+                print "$section;$parameter;--;$ini_value;disabled in database\n";              
+            } else {
                 print "$section;$parameter;--;$ini_value;not found in database\n";            	
             }
             
 		} elsif ($grid eq "osgrid") {
-			$sql = qq'SELECT aki_value, aki_enabled, osgrid_value, osgrid_enabled, opensim_value, opensim_enabled_default FROM ini WHERE ini_section="$section" AND ini_parameter="$parameter"';			
+			$sql = qq'SELECT osgrid_value, osgrid_enabled, opensim_value, opensim_enabled_default FROM ini WHERE ini_section="$section" AND ini_parameter="$parameter"';			
             $sth = $dbh->prepare($sql)or die "Cannot prepare: " . $dbh->errstr();
             $sth->execute() or die "Cannot execute: " . $sth->errstr();
-            ($aki_value,$aki_enabled,$osgrid_value,$osgrid_enabled,$opensim_value,$opensim_enabled_default) = $sth->fetchrow_array();
+            ($osgrid_value,$osgrid_enabled,$opensim_value,$opensim_enabled_default) = $sth->fetchrow_array();
             
-            if( (defined $aki_enabled) && ($aki_enabled == true) && ($aki_value ne $ini_value) ) {
-                print "$section;$parameter;$aki_value;$ini_value;different_values\n";       
-            } elsif ((defined $osgrid_enabled) && $osgrid_enabled == true && $osgrid_value ne $ini_value) {
-                print "$section;$parameter;$osgrid_value;$ini_value;different_values\n";       
-            } elsif ((defined $opensim_enabled_default) && $opensim_enabled_default == true && $opensim_value ne $ini_value) {
-                print "$section;$parameter;$opensim_value;$ini_value;different_values\n";       
-            } elsif( !(defined $aki_value) && !(defined $osgrid_value) && !(defined $opensim_value)) {
+            if ((defined $osgrid_enabled) && ($osgrid_enabled == true) && ($osgrid_value ne $ini_value) ) {
+                if( !checkValue($section,$parameter,$osgrid_value) ) {
+                    print "$section;$parameter;$osgrid_value;$ini_value;osgrid_different_values\n";
+                }
+            } elsif ((defined $osgrid_enabled) && ($osgrid_enabled == true) && ($osgrid_value eq $ini_value) ) {
+            } elsif ((defined $opensim_enabled_default) && ($opensim_enabled_default == true) && ($opensim_value ne $ini_value) ) {
+                print "$section;$parameter;$opensim_value;$ini_value;opensim_different_values\n";       
+            } elsif ((defined $opensim_enabled_default) && ($opensim_enabled_default == true) && ($opensim_value eq $ini_value) ) {
+            } elsif ( (defined $opensim_enabled_default) && ($opensim_enabled_default == false) ) {
+                print "$section;$parameter;--;$ini_value;disabled in database\n";              
+            } else {
                 print "$section;$parameter;--;$ini_value;not found in database\n";              
             }
 
         } elsif ($grid eq "dereos") {
-            $sql = qq'SELECT aki_value, aki_enabled, dereos_value, dereos_enabled, opensim_value, opensim_enabled_default FROM ini WHERE ini_section="$section" AND ini_parameter="$parameter"';            
+            $sql = qq'SELECT dereos_value, dereos_enabled, opensim_value, opensim_enabled_default FROM ini WHERE ini_section="$section" AND ini_parameter="$parameter"';            
             $sth = $dbh->prepare($sql)or die "Cannot prepare: " . $dbh->errstr();
             $sth->execute() or die "Cannot execute: " . $sth->errstr();
-            ($aki_value,$aki_enabled,$dereos_value,$dereos_enabled,$opensim_value,$opensim_enabled_default) = $sth->fetchrow_array();
+            ($dereos_value,$dereos_enabled,$opensim_value,$opensim_enabled_default) = $sth->fetchrow_array();
             
-            if( (defined $aki_enabled) && ($aki_enabled == true) && ($aki_value ne $ini_value) ) {
-                print "$section;$parameter;$aki_value;$ini_value;different_values\n";       
-            } elsif ((defined $dereos_enabled) && $dereos_enabled == true && $dereos_value ne $ini_value) {
-                print "$section;$parameter;$dereos_value;$ini_value;different_values\n";       
-            } elsif ((defined $opensim_enabled_default) && $opensim_enabled_default == true && $opensim_value ne $ini_value) {
-                print "$section;$parameter;$opensim_value;$ini_value;different_values\n";       
-            } elsif( !(defined $aki_value) && !(defined $dereos_value) && !(defined $opensim_value)) {
+            if ((defined $dereos_enabled) && ($dereos_enabled == true) && ($dereos_value ne $ini_value) ) {
+            	if( !checkValue($section,$parameter,$dereos_value) ) {
+                    print "$section;$parameter;$dereos_value;$ini_value;dereos_different_values\n";
+            	}
+            } elsif ( (defined $dereos_enabled) && ($dereos_enabled == true) && ($dereos_value eq $ini_value) ) {
+            } elsif ( (defined $opensim_enabled_default) && ($opensim_enabled_default == true) && ($opensim_value ne $ini_value) ) {
+                print "$section;$parameter;$opensim_value;$ini_value;opensim_different_values\n";       
+            } elsif ( (defined $opensim_enabled_default) && ($opensim_enabled_default == true) && ($opensim_value eq $ini_value) ) {
+            } elsif ( (defined $opensim_enabled_default) && ($opensim_enabled_default == false) ) {
+                print "$section;$parameter;--;$ini_value;disabled in database\n";              
+            } else {
                 print "$section;$parameter;--;$ini_value;not found in database\n";              
             }
             
 		} elsif ($grid eq "repo") {
-			$sql = qq'SELECT aki_value, aki_enabled, opensim_value, opensim_enabled_default FROM ini WHERE ini_section="$section" AND ini_parameter="$parameter"';
+			$sql = qq'SELECT opensim_value, opensim_enabled_default FROM ini WHERE ini_section="$section" AND ini_parameter="$parameter"';
 			$sth = $dbh->prepare($sql)or die "Cannot prepare: " . $dbh->errstr();
             $sth->execute() or die "Cannot execute: " . $sth->errstr();
-            ($aki_value,$aki_enabled,$opensim_value,$opensim_enabled_default) = $sth->fetchrow_array();
+            ($opensim_value,$opensim_enabled_default) = $sth->fetchrow_array();
             
-            if( (defined $aki_enabled) && $aki_enabled == true && $aki_value ne $ini_value) {
-                print "$section;$parameter;$aki_value;$ini_value;different_values\n";       
-            } elsif ( (defined $aki_enabled) && $aki_enabled == false && $opensim_enabled_default == true && $opensim_value ne $ini_value) {
-                print "$section;$parameter;$opensim_value;$ini_value;different_values\n";       
-            } elsif((defined $opensim_enabled_default) && $opensim_enabled_default == false && $aki_enabled == false){
-                print "$section;$parameter;--;$ini_value;disabled_in_database\n";
-            } elsif( !(defined $opensim_value) && !(defined $aki_value) )  {
+            if((defined $opensim_enabled_default) && ($opensim_enabled_default == true) && ($opensim_value ne $ini_value) ) {
+                print "$section;$parameter;$opensim_value;$ini_value;different Values - possibly overwritten\n";
+            } elsif( (defined $opensim_enabled_default) && ($opensim_enabled_default == true) && ($opensim_value eq $ini_value) ) {
+            } elsif( (defined $opensim_enabled_default) && ($opensim_enabled_default == false) ) {
+                print "$section;$parameter;--;$ini_value;disabled in database\n";              
+            } else {
                 print "$section;$parameter;--;$ini_value;not found in database\n";              
             }
 			
@@ -163,13 +180,36 @@ sub trim($) {
 	return $string;
 }
 
+sub checkValue($ $ $) {
+    my $section = shift;
+    my $parameter = shift;
+    my $value = shift;
+
+    my $ini_value = $inicfg->val($section, $parameter);
+    if (defined $ini_value){
+        if ($ini_value =~ m/(.*)\;/) {
+            $ini_value = trim($1);
+        } else {
+            $ini_value = trim($ini_value);
+        }
+        if ($ini_value eq $value) {
+        	return(true);
+        }
+    } 
+    return(false);
+}
+
+
 # Prints usage
 sub usage() {
 	print "\n";
-	print "Usage: checkDefaultIniAgainstDatabase INIFILE GRID\n\n";
+	print "Usage: checkDefaultIniAgainstDatabase INIFILE OPENSIMINIFILE GRID\n\n";
 	print "Checks a given INIFILE of type OpenSimDefault.ini of a given GRID or Source-Repository against the ini database and reports differences to the console\n";
+    print "Checks as well if a value in the Database is different from the Value if it is overwritten by the corresponding OpenSim.ini";
 	print "Valid INIFILES are: \n";
 	print "  - OpenSimDefaults.ini\n";
+    print "Valid OPENSIMINIFILES are: \n";
+    print "  - OpenSim.ini\n";
 	print "Valid GRIDs are: \n";
 	print "  - OSgrid\n";
 	print "  - Metropolis\n";

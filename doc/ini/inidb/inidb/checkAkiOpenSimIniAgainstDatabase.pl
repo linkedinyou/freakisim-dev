@@ -26,7 +26,7 @@
 use strict;
 use Config::IniFiles;
 
-use constant { true => 1, false => 0 };
+use constant { true => 1, false => 0, global_disable => -1 };
 
 use DBI;
 
@@ -81,42 +81,46 @@ sub findInDatabase {
 			$ini_value = trim($ini_value);
 		}
 				
-		my $sql = qq'SELECT opensim_value, opensim_enabled_default, aki_value, aki_enabled, osgrid_value, osgrid_enabled, metro_value, metro_enabled, dereos_value, dereos_enabled  FROM ini WHERE ini_section="$section" AND ini_parameter="$parameter"';
+		my $sql = qq'SELECT opensim_value, opensim_enabled_default, aki_dereos_value, aki_metro_value, aki_osgrid_value, aki_enabled, osgrid_value, osgrid_enabled, metro_value, metro_enabled, dereos_value, dereos_enabled  FROM ini WHERE ini_section="$section" AND ini_parameter="$parameter"';
 		$sth = $dbh->prepare($sql)or die "Cannot prepare: " . $dbh->errstr();
 		$sth->execute() or die "Cannot execute: " . $sth->errstr();
-		my($opensim_value,$opensim_enabled_default, $aki_value, $aki_enabled, $osgrid_value, $osgrid_enabled, $metro_value, $metro_enabled, $dereos_value, $dereos_enabled) = $sth->fetchrow_array();
+		my($opensim_value,$opensim_enabled_default, $aki_dereos_value, $aki_metro_value, $aki_osgrid_value, $aki_enabled, $osgrid_value, $osgrid_enabled, $metro_value, $metro_enabled, $dereos_value, $dereos_enabled) = $sth->fetchrow_array();
 		
-		if($grid eq "osgrid") {
-			if ($aki_enabled == true) {
-				compareValues($section,$parameter,$aki_value,$ini_value);
-			} elsif ($osgrid_enabled == true) {
-				compareValues($section,$parameter,$osgrid_value,$ini_value);
-			} elsif($opensim_enabled_default == true) {
-				compareValues($section,$parameter,$opensim_value,$ini_value);				
-			} else {
-				print "$section;$parameter;$opensim_value;$ini_value;not_enabled\n";						
+        if( !($aki_enabled == global_disable) ) {
+			if($grid eq "osgrid") {
+				if ($aki_enabled == true) {
+					compareValues($section,$parameter,$aki_osgrid_value,$ini_value);
+				} elsif ($osgrid_enabled == true) {
+					compareValues($section,$parameter,$osgrid_value,$ini_value);
+				} elsif($opensim_enabled_default == true) {
+					compareValues($section,$parameter,$opensim_value,$ini_value);				
+				} else {
+					print "$section;$parameter;$opensim_value;$ini_value;not_enabled\n";						
+				}
+			} elsif ($grid eq "metropolis") {
+				if ($aki_enabled == true) {
+					compareValues($section,$parameter,$aki_metro_value,$ini_value);
+				} elsif ($metro_enabled == true) {
+					compareValues($section,$parameter,$metro_value,$ini_value);
+				} elsif($opensim_enabled_default == true) {
+					compareValues($section,$parameter,$opensim_value,$ini_value);				
+				} else {
+					print "$section;$parameter;$opensim_value;$ini_value;not_enabled\n";						
+				}			
+	        } elsif ($grid eq "dereos") {
+	            if ($aki_enabled == true) {
+	                compareValues($section,$parameter,$aki_dereos_value,$ini_value);
+	            } elsif ($dereos_enabled == true) {
+	                compareValues($section,$parameter,$dereos_value,$ini_value);
+	            } elsif($opensim_enabled_default == true) {
+	                compareValues($section,$parameter,$opensim_value,$ini_value);               
+	            } else {
+	                print "$section;$parameter;$opensim_value;$ini_value;not_enabled\n";                        
+	            }           
 			}
-		} elsif ($grid eq "metropolis") {
-			if ($aki_enabled == true) {
-				compareValues($section,$parameter,$aki_value,$ini_value);
-			} elsif ($metro_enabled == true) {
-				compareValues($section,$parameter,$metro_value,$ini_value);
-			} elsif($opensim_enabled_default == true) {
-				compareValues($section,$parameter,$opensim_value,$ini_value);				
-			} else {
-				print "$section;$parameter;$opensim_value;$ini_value;not_enabled\n";						
-			}			
-        } elsif ($grid eq "dereos") {
-            if ($aki_enabled == true) {
-                compareValues($section,$parameter,$aki_value,$ini_value);
-            } elsif ($dereos_enabled == true) {
-                compareValues($section,$parameter,$dereos_value,$ini_value);
-            } elsif($opensim_enabled_default == true) {
-                compareValues($section,$parameter,$opensim_value,$ini_value);               
-            } else {
-                print "$section;$parameter;$opensim_value;$ini_value;not_enabled\n";                        
-            }           
-		}
+        } else {
+            print "$section;$parameter;--;$ini_value;globally_disabled\n";                                	
+        }
     }
 }
 
