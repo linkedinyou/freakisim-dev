@@ -229,6 +229,7 @@ namespace OpenSim.Framework
                     reqnum, method, url);
 
             string errorMessage = "unknown error";
+            ServicePointManagerTimeoutSupport.ResetHosts();
             int tickstart = Environment.TickCount;
             int tickdata = 0;
             string strBuffer = null;
@@ -415,6 +416,7 @@ namespace OpenSim.Framework
                     reqnum, method, url);
             
             string errorMessage = "unknown error";
+            ServicePointManagerTimeoutSupport.ResetHosts();
             int tickstart = Environment.TickCount;
             int tickdata = 0;
             string queryString = null;
@@ -787,6 +789,7 @@ namespace OpenSim.Framework
                 m_log.DebugFormat("[LOGHTTP]: HTTP OUT {0} AsynchronousRequestObject {1} to {2}",
                     reqnum, verb, requestUrl);
 
+            ServicePointManagerTimeoutSupport.ResetHosts();
             int tickstart = Environment.TickCount;
             int tickdata = 0;
 
@@ -989,6 +992,7 @@ namespace OpenSim.Framework
                 m_log.DebugFormat("[LOGHTTP]: HTTP OUT {0} SynchronousRestForms {1} to {2}",
                     reqnum, verb, requestUrl);
 
+            ServicePointManagerTimeoutSupport.ResetHosts();
             int tickstart = Environment.TickCount;
             int tickdata = 0;
 
@@ -1187,6 +1191,7 @@ namespace OpenSim.Framework
                 m_log.DebugFormat("[LOGHTTP]: HTTP OUT {0} SynchronousRestObject {1} to {2}",
                     reqnum, verb, requestUrl);
 
+            ServicePointManagerTimeoutSupport.ResetHosts();
             int tickstart = Environment.TickCount;
             int tickdata = 0;
 
