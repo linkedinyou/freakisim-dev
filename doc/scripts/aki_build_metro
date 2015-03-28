@@ -82,13 +82,6 @@ else
 	tar xvf $new_version.tar.gz
 fi
 
-# copy the (possibly new) scripts
-if [ "$test_version" != "" ] ; then
-  cp $OSINS/$test_version/doc/scripts/* $OSINS/bin
-else
-  cp $OSINS/$new_version/doc/scripts/* $OSINS/bin
-fi
-
 #build the sim 
 if [ "$test_version" != "" ] ; then
 	cd $OSINS/$test_version
@@ -122,6 +115,16 @@ else
 fi
 
 cd $OSINS
+
+echo "Copying the (possibly new) scripts"
+
+# copy the (possibly new) scripts
+if [ "$test_version" != "" ] ; then
+  cp $OSINS/$test_version/doc/scripts/* $OSINS/bin
+else
+  cp $OSINS/$new_version/doc/scripts/* $OSINS/bin
+fi
+
 
 # Housekeeping
 if [ "$test_version" != "" ] ; then
