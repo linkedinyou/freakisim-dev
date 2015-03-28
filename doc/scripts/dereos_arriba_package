@@ -19,7 +19,7 @@ cp -R $SRCDIR/arribasim-dev  $SRCDIR/$VERSION
 cd $SRCDIR/$VERSION
 rm -R -f .git
 # copy some files into the documents folder
-cp -R $SRCDIR/freakisim-dev/doc $SRCDIR/$VERSION/doc
+cp -R $SRCDIR/freakisim-dev/doc/* $SRCDIR/$VERSION/doc
 cd $SRCDIR
 
 # create the tar.gz and copy it to the distribution directory
