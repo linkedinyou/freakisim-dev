@@ -53,7 +53,7 @@ mozroots --import --sync
 # Das geschieht mit dieser Befehlskette. Wenn der Prozess
 # noch am laufen ist, wird die Variable "running" einen Inhalt haben
 # ansonsten wird sie leer sein. 
-running=`ps ax|grep $SCREENID|grep -v grep|grep -v "dereos_arriba_install"`
+running=`ps ax|grep $SCREENID|grep -v grep|grep -v "dereos_freaki_install"`
 
 echo $running
 
