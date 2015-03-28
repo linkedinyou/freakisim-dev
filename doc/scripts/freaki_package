@@ -29,9 +29,9 @@ cp $SRCDIR/arribasim-libs/bin/ThreadedClasses.dll $SRCDIR/$VERSION/bin
 cp $SRCDIR/arribasim-libs/bin/Warp3D.dll $SRCDIR/$VERSION/bin
 
 # Copy module source
-cp -R $SRCDIRrribasim-dev/addon-modules/OpenSimProfile $SRCDIR/$VERSION/addon-modules
-cp -R $SRCDIRrribasim-dev/addon-modules/OpenSimSearch $SRCDIR/$VERSION/addon-modules
-cp -R $SRCDIRrribasim-dev/addon-modules/OpenSim.Currency $SRCDIR/$VERSION/addon-modules
+cp -R $SRCDIR/arribasim-dev/addon-modules/OpenSimProfile $SRCDIR/$VERSION/addon-modules
+cp -R $SRCDIR/arribasim-dev/addon-modules/OpenSimSearch $SRCDIR/$VERSION/addon-modules
+cp -R $SRCDIR/arribasim-dev/addon-modules/OpenSim.Currency $SRCDIR/$VERSION/addon-modules
 
 tar cfz $VERSION.tar.gz $VERSION
 cp $VERSION.tar.gz /srv/www/vhosts/suai.dyndns.org
