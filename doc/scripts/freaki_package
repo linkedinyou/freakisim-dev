@@ -11,7 +11,7 @@ SRCDIR=/home/opensim/src
 cd $SRCDIR
 
 # copying the correct tag into an extra directory
-cp -R $SRCDIR/freakisim  $SRCDIR/$VERSION
+cp -R $SRCDIR/freakisim-dev  $SRCDIR/$VERSION
 
 # remove the .git folder
 cd $SRCDIR/$VERSION
