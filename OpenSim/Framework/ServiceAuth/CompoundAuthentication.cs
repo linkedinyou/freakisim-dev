@@ -25,41 +25,56 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-using System.Reflection;
-using System.Runtime.InteropServices;
+using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.Net;
 
-// General information about an assembly is controlled through the following
-// set of attributes. Change these attribute values to modify the information
-// associated with an assembly.
+namespace OpenSim.Framework.ServiceAuth
+{
+    public class CompoundAuthentication : IServiceAuth
+    {
+        public string Name { get { return "Compound"; } }
 
-[assembly : AssemblyTitle("OpenSim.Data.Null")]
-[assembly : AssemblyDescription("")]
-[assembly : AssemblyConfiguration("")]
-[assembly : AssemblyCompany("http://opensimulator.org")]
-[assembly : AssemblyProduct("OpenSim.Data.Null")]
-[assembly : AssemblyCopyright("Copyright (c) OpenSimulator.org Developers 2007-2009")]
-[assembly : AssemblyTrademark("")]
-[assembly : AssemblyCulture("")]
+        private List<IServiceAuth> m_authentications = new List<IServiceAuth>();
 
-// Setting ComVisible to false makes the types in this assembly not visible
-// to COM components.  If you need to access a type in this assembly from
-// COM, set the ComVisible attribute to true on that type.
+        public int Count { get { return m_authentications.Count; } }
 
-[assembly : ComVisible(false)]
+        public List<IServiceAuth> GetAuthentors()
+        {
+            return new List<IServiceAuth>(m_authentications);
+        }
 
-// The following GUID is for the ID of the typelib if this project is exposed to COM
+        public void AddAuthenticator(IServiceAuth auth)
+        {
+            m_authentications.Add(auth);
+        }
 
-[assembly : Guid("b4a1656d-de22-4080-a970-fd8166acbf16")]
+        public void RemoveAuthenticator(IServiceAuth auth)
+        {
+            m_authentications.Remove(auth);
+        }
 
-// Version information for an assembly consists of the following four values:
-//
-//      Major Version
-//      Minor Version
-//      Build Number
-//      Revision
-//
-// You can specify all the values or you can default the Revision and Build Numbers
-// by using the '*' as shown below:
+        public void AddAuthorization(NameValueCollection headers) 
+        {
+            foreach (IServiceAuth auth in m_authentications)
+                auth.AddAuthorization(headers);
+        }
 
-[assembly : AssemblyVersion("0.47.11.*")]
+        public bool Authenticate(string data)
+        {
+            return m_authentications.TrueForAll(a => a.Authenticate(data));
+        }
 
+        public bool Authenticate(NameValueCollection requestHeaders, AddHeaderDelegate d, out HttpStatusCode statusCode)
+        {
+            foreach (IServiceAuth auth in m_authentications)
+            {
+                if (!auth.Authenticate(requestHeaders, d, out statusCode))
+                    return false;
+            }
+
+            statusCode = HttpStatusCode.OK;
+            return true;
+        }
+    }
+}
