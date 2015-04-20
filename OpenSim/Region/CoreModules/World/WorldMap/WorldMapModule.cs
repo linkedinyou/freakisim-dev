@@ -99,6 +99,8 @@ namespace OpenSim.Region.CoreModules.World.WorldMap
                 = Util.GetConfigVarFromSections<int>(config, "BlacklistTimeout", configSections, 10 * 60) * 1000;
 
             m_DisableMapItemsRequest = Util.GetConfigVarFromSections<bool>(config, "DisableMapItemsRequest", configSections, false);
+            // AKIDO Stupido Info ... but want to see it, will be removed ASAP
+            m_log.InfoFormat ("DisableMapItemRequest is: {0}", m_DisableMapItemsRequest);
         }
 
         public virtual void AddRegion (Scene scene)
@@ -771,8 +773,11 @@ namespace OpenSim.Region.CoreModules.World.WorldMap
 
             blacklisted = m_blacklistedregions.ContainsKey(regionhandle);
 
-            if (blacklisted || m_DisableMapItemsRequest)
-                return new OSDMap();
+            if (blacklisted || m_DisableMapItemsRequest) {
+                // AKIDO stupido Info ... but i want to see it ... will be removed ASAP
+                m_log.Info("DisableMapItemRequest or backlisted in place");
+                return (new OSDMap ());
+            }
 
             UUID requestID = UUID.Random();
             if(!m_cachedRegionMapItemsAddress.TryGetValue(regionhandle, out httpserver))
