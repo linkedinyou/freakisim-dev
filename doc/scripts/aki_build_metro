@@ -30,11 +30,6 @@ OSBACK="/home/opensim/backup"
 # Uebersteuerung
 test_version=$1
 
-PATH="/home/opensim/bin/mono/bin:$PATH"
-PKG_CONFIG_PATH="/home/opensim/bin/mono/lib/pkgconfig:$PKG_CONFIG_PATH"
-MANPATH="/home/opensim/bin/mono/share/man:$MANPATH"
-LD_LIBRARY_PATH="/home/opensim/bin/mono/lib:$LD_LIBRARY_PATH"
-
 mono --version > /tmp/osbuild.mono.txt
 
 cd $OSINS
