@@ -452,6 +452,9 @@ namespace OpenSim.Services.Connectors
 
         public List<GridRegion> GetRegionRange(UUID scopeID, int xmin, int xmax, int ymin, int ymax)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             Dictionary<string, object> sendData = new Dictionary<string, object>();
 
             sendData["SCOPEID"] = scopeID.ToString();

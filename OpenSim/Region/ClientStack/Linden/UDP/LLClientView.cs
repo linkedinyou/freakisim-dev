@@ -8817,6 +8817,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleMapBlockRequest(IClientAPI sender, Packet Pack)
         {
+            if (m_log.IsDebugEnabled) {
+                m_log.DebugFormat ("{0} ", System.Reflection.MethodBase.GetCurrentMethod ().Name);
+            }
             MapBlockRequestPacket MapRequest = (MapBlockRequestPacket)Pack;
 
             #region Packet Session and User Check
