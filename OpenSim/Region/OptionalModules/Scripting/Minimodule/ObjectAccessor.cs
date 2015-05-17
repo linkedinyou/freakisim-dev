@@ -39,15 +39,15 @@ namespace OpenSim.Region.OptionalModules.Scripting.Minimodule
     internal class IObjEnum : System.MarshalByRefObject, IEnumerator<IObject>
     {
         private readonly Scene m_scene;
-        private readonly IEnumerator<EntityBase> m_sogEnum;
+        private readonly IEnumerator<IEntityBase> m_sogEnum;
         private readonly ISecurityCredential m_security;
-        private readonly List<EntityBase> m_entities;
+        private readonly List<IEntityBase> m_entities;
 
         public IObjEnum(Scene scene, ISecurityCredential security)
         {
             m_scene = scene;
             m_security = security;
-            m_entities = new List<EntityBase>(m_scene.Entities.GetEntities());
+            m_entities = new List<IEntityBase>(m_scene.Entities.GetEntities());
             m_sogEnum = m_entities.GetEnumerator();
         }
 

@@ -472,7 +472,7 @@ namespace OpenSim.Region.Framework.Scenes
 //                "[SCENE GRAPH]: Deleting scene object with uuid {0}, resultOfObjectLinked = {1}",
 //                uuid, resultOfObjectLinked);
 
-            EntityBase entity;
+            IEntityBase entity;
             if (!Entities.TryGetValue(uuid, out entity) || (!(entity is SceneObjectGroup)))
                 return false;
 
@@ -917,7 +917,7 @@ namespace OpenSim.Region.Framework.Scenes
         /// <returns>null if no scene object group containing that prim is found</returns>
         public SceneObjectGroup GetGroupByPrim(uint localID)
         {
-            EntityBase entity;
+            IEntityBase entity;
             if (Entities.TryGetValue(localID, out entity))
                 return entity as SceneObjectGroup;
 
@@ -962,8 +962,8 @@ namespace OpenSim.Region.Framework.Scenes
                 }
             }
 
-            EntityBase[] entityList = GetEntities();
-            foreach (EntityBase ent in entityList)
+            IEntityBase[] entityList = GetEntities();
+            foreach (IEntityBase ent in entityList)
             {
                 //m_log.DebugFormat("Looking at entity {0}", ent.UUID);
                 if (ent is SceneObjectGroup)
@@ -1022,8 +1022,8 @@ namespace OpenSim.Region.Framework.Scenes
                 }
             }
 
-            EntityBase[] entityList = GetEntities();
-            foreach (EntityBase ent in entityList)
+            IEntityBase[] entityList = GetEntities();
+            foreach (IEntityBase ent in entityList)
             {
                 if (ent is SceneObjectGroup)
                 {
@@ -1052,8 +1052,8 @@ namespace OpenSim.Region.Framework.Scenes
             // Primitive Ray Tracing
             float closestDistance = 280f;
             EntityIntersection result = new EntityIntersection();
-            EntityBase[] EntityList = GetEntities();
-            foreach (EntityBase ent in EntityList)
+            IEntityBase[] EntityList = GetEntities();
+            foreach (IEntityBase ent in EntityList)
             {
                 if (ent is SceneObjectGroup)
                 {
@@ -1149,7 +1149,7 @@ namespace OpenSim.Region.Framework.Scenes
             SceneObjectGroup so = null;
 
             Entities.Find(
-                delegate(EntityBase entity)
+                delegate(IEntityBase entity)
                 {
                     if (entity is SceneObjectGroup)
                     {
@@ -1191,7 +1191,7 @@ namespace OpenSim.Region.Framework.Scenes
             SceneObjectPart sop = null;
 
             Entities.Find(
-                delegate(EntityBase entity)
+                delegate(IEntityBase entity)
                 {
                     if (entity is SceneObjectGroup)
                     {
@@ -1232,7 +1232,7 @@ namespace OpenSim.Region.Framework.Scenes
         /// it
         /// </summary>
         /// <returns></returns>
-        protected internal EntityBase[] GetEntities()
+        protected internal IEntityBase[] GetEntities()
         {
             return Entities.GetEntities();
         }
@@ -1989,8 +1989,8 @@ namespace OpenSim.Region.Framework.Scenes
             UUID objid = UUID.Zero;
             SceneObjectPart obj = null;
 
-            EntityBase[] entityList = GetEntities();
-            foreach (EntityBase ent in entityList)
+            IEntityBase[] entityList = GetEntities();
+            foreach (IEntityBase ent in entityList)
             {
                 if (ent is SceneObjectGroup)
                 {

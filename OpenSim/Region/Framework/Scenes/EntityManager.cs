@@ -36,15 +36,15 @@ namespace OpenSim.Region.Framework.Scenes
     {
 //        private static readonly ILog m_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         
-        private readonly ThreadedClasses.RwLockedDoubleDictionary<UUID, uint, EntityBase> m_entities
-            = new ThreadedClasses.RwLockedDoubleDictionary<UUID, uint, EntityBase>();
+        private readonly ThreadedClasses.RwLockedDoubleDictionary<UUID, uint, IEntityBase> m_entities
+            = new ThreadedClasses.RwLockedDoubleDictionary<UUID, uint, IEntityBase>();
 
         public int Count
         {
             get { return m_entities.Count; }
         }
 
-        public void Add(EntityBase entity)
+        public void Add(IEntityBase entity)
         {
             m_entities.Add(entity.UUID, entity.LocalId, entity);
         }
@@ -74,12 +74,12 @@ namespace OpenSim.Region.Framework.Scenes
             return m_entities.Remove(id);
         }
 
-        public EntityBase[] GetAllByType<T>()
+        public IEntityBase[] GetAllByType<T>()
         {
-            List<EntityBase> tmp = new List<EntityBase>();
+            List<IEntityBase> tmp = new List<IEntityBase>();
 
             ForEach(
-                delegate(EntityBase entity)
+                delegate(IEntityBase entity)
                 {
                     if (entity is T)
                         tmp.Add(entity);
@@ -89,42 +89,42 @@ namespace OpenSim.Region.Framework.Scenes
             return tmp.ToArray();
         }
 
-        public EntityBase[] GetEntities()
+        public IEntityBase[] GetEntities()
         {
-            List<EntityBase> tmp = new List<EntityBase>(m_entities.Count);
-            ForEach(delegate(EntityBase entity) { tmp.Add(entity); });
+            List<IEntityBase> tmp = new List<IEntityBase>(m_entities.Count);
+            ForEach(delegate(IEntityBase entity) { tmp.Add(entity); });
             return tmp.ToArray();
         }
 
-        public void ForEach(Action<EntityBase> action)
+        public void ForEach(Action<IEntityBase> action)
         {
             m_entities.ForEach(action);
         }
 
-        public EntityBase Find(Predicate<EntityBase> predicate)
+        public IEntityBase Find(Predicate<IEntityBase> predicate)
         {
             try
             {
-                m_entities.ForEach(delegate(EntityBase eb)
+                m_entities.ForEach(delegate(IEntityBase eb)
                 {
                     if (predicate(eb))
                     {
-                        throw new ThreadedClasses.ReturnValueException<EntityBase>(eb);
+                        throw new ThreadedClasses.ReturnValueException<IEntityBase>(eb);
                     }
                 });
             }
-            catch(ThreadedClasses.ReturnValueException<EntityBase> e)
+            catch(ThreadedClasses.ReturnValueException<IEntityBase> e)
             {
                 return e.Value;
             }
             return null;
         }
 
-        public EntityBase this[UUID id]
+        public IEntityBase this[UUID id]
         {
             get
             {
-                EntityBase entity;
+                IEntityBase entity;
                 m_entities.TryGetValue(id, out entity);
                 return entity;
             }
@@ -134,11 +134,11 @@ namespace OpenSim.Region.Framework.Scenes
             }
         }
 
-        public EntityBase this[uint localID]
+        public IEntityBase this[uint localID]
         {
             get
             {
-                EntityBase entity;
+                IEntityBase entity;
                 m_entities.TryGetValue(localID, out entity);
                 return entity;
             }
@@ -148,12 +148,12 @@ namespace OpenSim.Region.Framework.Scenes
             }
         }
 
-        public bool TryGetValue(UUID key, out EntityBase obj)
+        public bool TryGetValue(UUID key, out IEntityBase obj)
         {
             return m_entities.TryGetValue(key, out obj);
         }
 
-        public bool TryGetValue(uint key, out EntityBase obj)
+        public bool TryGetValue(uint key, out IEntityBase obj)
         {
             return m_entities.TryGetValue(key, out obj);
         }

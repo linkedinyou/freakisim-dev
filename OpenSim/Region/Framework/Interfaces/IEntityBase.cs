@@ -25,18 +25,39 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-using OpenSim.Region.Framework.Scenes;
+using OpenMetaverse;
+using OpenSim.Framework;
 
-namespace OpenSim.Region.OptionalModules.Scripting.ObjectModules
+namespace OpenSim.Region.Framework.Scenes
 {
-    interface IObjectModule
+    public interface IEntityBase : ISceneEntity
     {
-        void Add(IEntityBase entity, Scene scene);
-        void Start();
-        void Stop();
-        void Tick();
+        /// <summary>
+        /// The scene to which this entity belongs
+        /// </summary>
+        Scene Scene { get; }
 
-        string ClassName { get; }
-        bool IsShared { get; }
+        /// <summary>
+        /// Signals whether this entity was in a scene but has since been removed from it.
+        /// </summary>
+        bool IsDeleted { get; }
+
+        /// <summary>
+        /// Current velocity of the entity.
+        /// </summary>
+        Vector3 Velocity { get; }
+
+        /// <summary>
+        /// Performs any updates that need to be done at each frame, as opposed to immediately.
+        /// These included scheduled updates and updates that occur due to physics processing.
+        /// </summary>
+        void Update();
+
+        new Vector3 AbsolutePosition { get; set; }
+        /// <summary>
+        /// Copies the entity
+        /// </summary>
+        /// <returns></returns>
+        // EntityBase Copy ();
     }
 }

@@ -109,8 +109,8 @@ namespace OpenSim.Region.Framework.Scenes
                     {
                         m_log.Info("Stopping all Scripts in Scene");
 
-                        EntityBase[] entities = Entities.GetEntities();
-                        foreach (EntityBase ent in entities)
+                        IEntityBase[] entities = Entities.GetEntities();
+                        foreach (IEntityBase ent in entities)
                         {
                             if (ent is SceneObjectGroup)
                                 ((SceneObjectGroup)ent).RemoveScriptInstances(false);
@@ -120,8 +120,8 @@ namespace OpenSim.Region.Framework.Scenes
                     {
                         m_log.Info("Starting all Scripts in Scene");
     
-                        EntityBase[] entities = Entities.GetEntities();
-                        foreach (EntityBase ent in entities)
+                        IEntityBase[] entities = Entities.GetEntities();
+                        foreach (IEntityBase ent in entities)
                         {
                             if (ent is SceneObjectGroup)
                             {
@@ -2337,8 +2337,8 @@ namespace OpenSim.Region.Framework.Scenes
         {
             lock (Entities)
             {
-                EntityBase[] entities = Entities.GetEntities();
-                foreach (EntityBase e in entities)
+                IEntityBase[] entities = Entities.GetEntities();
+                foreach (IEntityBase e in entities)
                 {
                     if (e is SceneObjectGroup)
                     {
@@ -4549,8 +4549,8 @@ namespace OpenSim.Region.Framework.Scenes
         /// </summary>
         public void ForceClientUpdate()
         {
-            EntityBase[] entityList = GetEntities();
-            foreach (EntityBase ent in entityList)
+            IEntityBase[] entityList = GetEntities();
+            foreach (IEntityBase ent in entityList)
             {
                 if (ent is SceneObjectGroup)
                 {
@@ -4568,8 +4568,8 @@ namespace OpenSim.Region.Framework.Scenes
         {
             m_log.DebugFormat("Searching for Primitive: '{0}'", cmdparams[2]);
 
-            EntityBase[] entityList = GetEntities();
-            foreach (EntityBase ent in entityList)
+            IEntityBase[] entityList = GetEntities();
+            foreach (IEntityBase ent in entityList)
             {
                 if (ent is SceneObjectGroup)
                 {
@@ -4975,7 +4975,7 @@ namespace OpenSim.Region.Framework.Scenes
         /// will not affect the original list of objects in the scene.
         /// </summary>
         /// <returns></returns>
-        public EntityBase[] GetEntities()
+        public IEntityBase[] GetEntities()
         {
             return m_sceneGraph.GetEntities();
         }
@@ -4995,8 +4995,8 @@ namespace OpenSim.Region.Framework.Scenes
 
         public void CleanTempObjects()
         {
-            EntityBase[] entities = GetEntities();
-            foreach (EntityBase obj in entities)
+            IEntityBase[] entities = GetEntities();
+            foreach (IEntityBase obj in entities)
             {
                 if (obj is SceneObjectGroup)
                 {

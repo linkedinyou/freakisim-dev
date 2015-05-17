@@ -95,8 +95,19 @@ namespace OpenSim.Region.Framework.Scenes
     /// A scene object group is conceptually an object in the scene.  The object is constituted of SceneObjectParts
     /// (often known as prims), one of which is considered the root part.
     /// </summary>
-    public partial class SceneObjectGroup : EntityBase, ISceneObject
+    public partial class SceneObjectGroup : IEntityBase, ISceneObject
     {
+        public Scene Scene
+        {
+            get { return m_scene; }
+        }
+        protected Scene m_scene;
+
+        /// <summary>
+        /// Signals whether this entity was in a scene but has since been removed from it.
+        /// </summary>
+        public bool IsDeleted { get; protected internal set; }
+
         // Axis selection bitmask used by SetAxisRotation()
         // Just happen to be the same bits used by llSetStatus() and defined in ScriptBaseClass.
         public enum axisSelect : int
@@ -311,7 +322,7 @@ namespace OpenSim.Region.Framework.Scenes
         /// <summary>
         /// The name of an object grouping is always the same as its root part
         /// </summary>
-        public override string Name
+        public string Name
         {
             get { return RootPart.Name; }
             set { RootPart.Name = value; }
@@ -456,7 +467,7 @@ namespace OpenSim.Region.Framework.Scenes
         /// <summary>
         /// The absolute position of this scene object in the scene
         /// </summary>
-        public override Vector3 AbsolutePosition
+        public Vector3 AbsolutePosition
         {
             get { return m_rootPart.GroupPosition; }
             set
@@ -633,7 +644,7 @@ namespace OpenSim.Region.Framework.Scenes
             }
         }
 
-        public override Vector3 Velocity
+        public Vector3 Velocity
         {
             get { return RootPart.Velocity; }
             set { RootPart.Velocity = value; }
@@ -663,13 +674,13 @@ namespace OpenSim.Region.Framework.Scenes
             m_log.DebugFormat("[SCENE OBJECT]: Crossing agent {0} {1} completed.", agent.Firstname, agent.Lastname);
         }
 
-        public override uint LocalId
+        public uint LocalId
         {
             get { return m_rootPart.LocalId; }
             set { m_rootPart.LocalId = value; }
         }
 
-        public override UUID UUID
+        public UUID UUID
         {
             get { return m_rootPart.UUID; }
             set 
@@ -2050,7 +2061,7 @@ namespace OpenSim.Region.Framework.Scenes
 
         #endregion
 
-        public override void Update()
+        public void Update()
         {
             // Check that the group was not deleted before the scheduled update
             // FIXME: This is merely a temporary measure to reduce the incidence of failure when

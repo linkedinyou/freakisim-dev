@@ -1059,7 +1059,7 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
                 return objectname;
             }
 
-            EntityBase SensedObject;
+            IEntityBase SensedObject;
             World.Entities.TryGetValue(objecUUID, out SensedObject);
 
             if (SensedObject == null)

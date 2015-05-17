@@ -193,7 +193,7 @@ namespace OpenSim.Region.CoreModules.World.Land
             client.OnSetStartLocationRequest += ClientOnSetHome;
 
 
-            EntityBase presenceEntity;
+            IEntityBase presenceEntity;
             if (m_scene.Entities.TryGetValue(client.AgentId, out presenceEntity) && presenceEntity is ScenePresence)
             {
                 SendLandUpdate((ScenePresence)presenceEntity, true);
@@ -1043,8 +1043,8 @@ namespace OpenSim.Region.CoreModules.World.Land
 //                m_scene.RegionInfo.RegionName);
             
             ResetOverMeRecords();
-            EntityBase[] entities = m_scene.Entities.GetEntities();
-            foreach (EntityBase obj in entities)
+            IEntityBase[] entities = m_scene.Entities.GetEntities();
+            foreach (IEntityBase obj in entities)
             {
                 if (obj != null)
                 {

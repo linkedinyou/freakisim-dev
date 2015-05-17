@@ -590,6 +590,8 @@
       <Reference name="System.Xml"/>
       <Reference name="System.Drawing"/>
       <Reference name="System.Web"/>
+      <Reference name="Akka" path="../../../bin/lib/Akka.1.0.1/net45/"/>
+      <Reference name="Newtonsoft.Json" path="../../../bin/lib/Newtonsoft.Json.6.0.8/net45/"/>            
       <Reference name="OpenMetaverseTypes" path="../../../bin/"/>
       <Reference name="OpenMetaverse.StructuredData" path="../../../bin/"/>
       <Reference name="OpenMetaverse" path="../../../bin/"/>
@@ -1762,6 +1764,8 @@
       <Reference name="System.Xml"/>
       <Reference name="Mono.Addins" path="../../../bin/"/>
       <Reference name="NDesk.Options" path="../../../bin/"/>
+      <Reference name="Akka" path="../../../bin/lib/Akka.1.0.1/net45/"/>
+      <Reference name="Newtonsoft.Json" path="../../../bin/lib/Newtonsoft.Json.6.0.8/net45/"/>      
       <Reference name="OpenMetaverseTypes" path="../../../bin/"/>
       <Reference name="OpenMetaverse.StructuredData" path="../../../bin/"/>
       <Reference name="OpenMetaverse" path="../../../bin/"/>

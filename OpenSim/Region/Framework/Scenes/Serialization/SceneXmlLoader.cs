@@ -82,8 +82,8 @@ namespace OpenSim.Region.Framework.Scenes.Serialization
             int primCount = 0;
             stream.WriteLine("<scene>\n");
 
-            EntityBase[] entityList = scene.GetEntities();
-            foreach (EntityBase ent in entityList)
+            IEntityBase[] entityList = scene.GetEntities();
+            foreach (IEntityBase ent in entityList)
             {
                 if (ent is SceneObjectGroup)
                 {
@@ -123,7 +123,7 @@ namespace OpenSim.Region.Framework.Scenes.Serialization
         // Called by scene serializer (save xml2)
         public static void SavePrimsToXml2(Scene scene, string fileName)
         {
-            EntityBase[] entityList = scene.GetEntities();
+            IEntityBase[] entityList = scene.GetEntities();
             SavePrimListToXml2(entityList, fileName);
         }
 
@@ -134,10 +134,10 @@ namespace OpenSim.Region.Framework.Scenes.Serialization
                 "[SERIALISER]: Saving prims with name {0} in xml2 format for region {1} to {2}",
                 primName, scene.RegionInfo.RegionName, fileName);
 
-            EntityBase[] entityList = scene.GetEntities();
-            List<EntityBase> primList = new List<EntityBase>();
+            IEntityBase[] entityList = scene.GetEntities();
+            List<IEntityBase> primList = new List<IEntityBase>();
 
-            foreach (EntityBase ent in entityList)
+            foreach (IEntityBase ent in entityList)
             {
                 if (ent is SceneObjectGroup)
                 {
@@ -154,12 +154,12 @@ namespace OpenSim.Region.Framework.Scenes.Serialization
         // Called by REST Application plugin
         public static void SavePrimsToXml2(Scene scene, TextWriter stream, Vector3 min, Vector3 max)
         {
-            EntityBase[] entityList = scene.GetEntities();
+            IEntityBase[] entityList = scene.GetEntities();
             SavePrimListToXml2(entityList, stream, min, max);
         }
 
         // Called here only. Should be private?
-        public static void SavePrimListToXml2(EntityBase[] entityList, string fileName)
+        public static void SavePrimListToXml2(IEntityBase[] entityList, string fileName)
         {
             FileStream file = new FileStream(fileName, FileMode.Create);
             try
@@ -181,14 +181,14 @@ namespace OpenSim.Region.Framework.Scenes.Serialization
         }
 
         // Called here only. Should be private?
-        public static void SavePrimListToXml2(EntityBase[] entityList, TextWriter stream, Vector3 min, Vector3 max)
+        public static void SavePrimListToXml2(IEntityBase[] entityList, TextWriter stream, Vector3 min, Vector3 max)
         {
             XmlTextWriter writer = new XmlTextWriter(stream);
 
             int primCount = 0;
             stream.WriteLine("<scene>\n");
 
-            foreach (EntityBase ent in entityList)
+            foreach (IEntityBase ent in entityList)
             {
                 if (ent is SceneObjectGroup)
                 {

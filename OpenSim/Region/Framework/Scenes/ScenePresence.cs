@@ -31,6 +31,8 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Threading;
 using System.Timers;
+using Akka;
+using Akka.Actor;
 using Timer = System.Timers.Timer;
 using OpenMetaverse;
 using log4net;
@@ -73,10 +75,57 @@ namespace OpenSim.Region.Framework.Scenes
 
     public delegate void SendCoarseLocationsMethod(UUID scene, ScenePresence presence, List<Vector3> coarseLocations, List<UUID> avatarUUIDs);
 
-    public class ScenePresence : EntityBase, IScenePresence
+    //    public class ScenePresence : ReceiveActor, EntityBase, IScenePresence  
+    public class ScenePresence : IEntityBase, IScenePresence  
     {
         private static readonly ILog m_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         private static readonly String LogHeader = "[SCENE PRESENCE]";
+
+        /// <summary>
+        /// Signals whether this entity was in a scene but has since been removed from it.
+        /// </summary>
+        public bool IsDeleted { get; protected internal set; }
+
+        public Scene Scene
+        {
+            get { return m_scene; }
+        }
+        // protected Scene m_scene;
+        private Scene m_scene;
+
+
+        public UUID UUID
+        {
+            get { return m_uuid; }
+            set { m_uuid = value; }
+        }
+        // protected UUID m_uuid;
+        private UUID m_uuid;
+
+        
+        /// <summary>
+        /// The name of this entity
+        /// </summary>
+        public string Name
+        {
+            get { return m_name; }
+            set { m_name = value; }
+        }
+        // protected string m_name;
+        private string m_name;
+
+        
+        public uint LocalId
+        {
+            get { return m_localId; }
+            set
+            {
+                m_localId = value;
+//                m_log.DebugFormat("[ENTITY BASE]: Set part {0} to local id {1}", Name, m_localId);
+            }
+        }
+        // protected uint m_localId;
+        private uint m_localId;
 
 //        ~ScenePresence()
 //        {
@@ -521,7 +570,7 @@ namespace OpenSim.Region.Framework.Scenes
         /// <summary>
         /// Position of this avatar relative to the region the avatar is in
         /// </summary>
-        public override Vector3 AbsolutePosition
+        public Vector3 AbsolutePosition
         {
             get
             {
@@ -584,6 +633,7 @@ namespace OpenSim.Region.Framework.Scenes
                 TriggerScenePresenceUpdated();
             }
         }
+        private Vector3 m_pos;
 
         /// <summary>
         /// If sitting, returns the offset position from the prim the avatar is sitting on.
@@ -611,7 +661,7 @@ namespace OpenSim.Region.Framework.Scenes
         /// <remarks>
         /// So when sat on a vehicle this will be 0.  To get velocity with respect to the world use GetWorldVelocity()
         /// </remarks>
-        public override Vector3 Velocity
+        public Vector3 Velocity
         {
             get
             {
@@ -647,6 +697,8 @@ namespace OpenSim.Region.Framework.Scenes
 //                    Scene.RegionInfo.RegionName, Name, m_velocity);
             }
         }
+        private Vector3 m_velocity;
+
 /*
         public override Vector3 AngularVelocity
         {
@@ -3207,7 +3259,7 @@ namespace OpenSim.Region.Framework.Scenes
 
         #region Overridden Methods
 
-        public override void Update()
+        public void Update()
         {
             if (IsChildAgent == false)
             {
@@ -3373,8 +3425,8 @@ namespace OpenSim.Region.Framework.Scenes
                 SendOtherAgentsAvatarDataToMe();
                 SendOtherAgentsAppearanceToMe();
 
-                EntityBase[] entities = Scene.Entities.GetEntities();
-                foreach (EntityBase e in entities)
+                IEntityBase[] entities = Scene.Entities.GetEntities();
+                foreach (IEntityBase e in entities)
                 {
                     if (e != null && e is SceneObjectGroup)
                         ((SceneObjectGroup)e).SendFullUpdateToClient(ControllingClient);

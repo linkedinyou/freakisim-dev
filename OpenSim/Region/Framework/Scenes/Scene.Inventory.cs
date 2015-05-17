@@ -69,8 +69,8 @@ namespace OpenSim.Region.Framework.Scenes
 
             int scriptsValidForStarting = 0;
 
-            EntityBase[] entities = Entities.GetEntities();
-            foreach (EntityBase group in entities)
+            IEntityBase[] entities = Entities.GetEntities();
+            foreach (IEntityBase group in entities)
             {
                 if (group is SceneObjectGroup)
                 {

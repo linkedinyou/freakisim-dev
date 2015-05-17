@@ -80,10 +80,10 @@ namespace OpenSim.Region.CoreModules.World.Serialiser
         {
             string xmlstream = "<scene>";
 
-            EntityBase[] EntityList = scene.GetEntities();
+            IEntityBase[] EntityList = scene.GetEntities();
             List<string> EntityXml = new List<string>();
 
-            foreach (EntityBase ent in EntityList)
+            foreach (IEntityBase ent in EntityList)
             {
                 if (ent is SceneObjectGroup)
                 {

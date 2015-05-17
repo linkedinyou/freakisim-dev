@@ -33,6 +33,8 @@ using System;
 using System.IO;
 using System.Net;
 using System.Reflection;
+using Akka;
+using Akka.Actor;
 
 namespace OpenSim
 {
@@ -65,6 +67,12 @@ namespace OpenSim
         /// Instance of the OpenSim class.  This could be OpenSim or OpenSimBackground depending on the configuration
         /// </summary>
         protected static OpenSimBase m_sim = null;
+
+
+        /// <summary>
+        /// Instance of the Akka Actor Systemm.
+        /// </summary>
+        protected static ActorSystem actorSystem = null;
 
         //could move our main function into OpenSimMain and kill this class
         public static void Main(string[] args)
@@ -309,6 +317,9 @@ namespace OpenSim
 
             // load Crash directory config
             m_crashDir = configSource.Configs["Startup"].GetString("crash_dir", m_crashDir);           
+
+            // Starting the Akka Actor System
+            actorSystem = ActorSystem.Create("OpenSim");
 
             if (background)
             {

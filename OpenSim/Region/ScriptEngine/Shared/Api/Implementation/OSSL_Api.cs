@@ -582,7 +582,7 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
             m_host.AddScriptLPS(1);
             if (World.Entities.ContainsKey(target))
             {
-                EntityBase entity;
+                IEntityBase entity;
                 if (World.Entities.TryGetValue(target, out entity))
                 {
                     if (entity is SceneObjectGroup)

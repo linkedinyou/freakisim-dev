@@ -37,7 +37,7 @@ using PermissionMask = OpenSim.Framework.PermissionMask;
 
 namespace OpenSim.Region.Framework.Scenes
 {
-    public partial class SceneObjectGroup : EntityBase
+    public partial class SceneObjectGroup : IEntityBase
     {
         private static readonly ILog m_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 

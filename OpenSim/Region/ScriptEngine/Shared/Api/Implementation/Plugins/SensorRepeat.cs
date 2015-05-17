@@ -288,23 +288,23 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api.Plugins
 
         private List<SensedEntity> doObjectSensor(SensorInfo ts)
         {
-            List<EntityBase> Entities;
+            List<IEntityBase> Entities;
             List<SensedEntity> sensedEntities = new List<SensedEntity>();
 
             // If this is an object sense by key try to get it directly
             // rather than getting a list to scan through
             if (ts.keyID != UUID.Zero)
             {
-                EntityBase e = null;
+                IEntityBase e = null;
                 m_CmdManager.m_ScriptEngine.World.Entities.TryGetValue(ts.keyID, out e);
                 if (e == null)
                     return sensedEntities;
-                Entities = new List<EntityBase>();
+                Entities = new List<IEntityBase>();
                 Entities.Add(e);
             }
             else
             {
-                Entities = new List<EntityBase>(m_CmdManager.m_ScriptEngine.World.GetEntities());
+                Entities = new List<IEntityBase>(m_CmdManager.m_ScriptEngine.World.GetEntities());
             }
             SceneObjectPart SensePoint = ts.host;
 
@@ -349,7 +349,7 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api.Plugins
 
             bool nameSearch = !string.IsNullOrEmpty(ts.name);
 
-            foreach (EntityBase ent in Entities)
+            foreach (IEntityBase ent in Entities)
             {
                 bool keep = true;
 

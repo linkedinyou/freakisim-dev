@@ -304,14 +304,14 @@ namespace OpenSim.Region.CoreModules.World.LegacyMap
             ITerrainChannel hm = whichScene.Heightmap;
             tc = Environment.TickCount;
             m_log.Debug("[MAPTILE]: Generating Maptile Step 2: Object Volume Profile");
-            EntityBase[] objs = whichScene.GetEntities();
+            IEntityBase[] objs = whichScene.GetEntities();
             List<float> z_sortheights = new List<float>();
             List<uint> z_localIDs = new List<uint>();
             Dictionary<uint, DrawStruct> z_sort = new Dictionary<uint, DrawStruct>();
 
             try 
             {
-                foreach (EntityBase obj in objs)
+                foreach (IEntityBase obj in objs)
                 {
                     // Only draw the contents of SceneObjectGroup
                     if (obj is SceneObjectGroup)

@@ -216,7 +216,7 @@ namespace OpenSim.Region.CoreModules.World.Archiver
         {
             m_log.InfoFormat("[ARCHIVER]: Writing region {0}", scene.RegionInfo.RegionName);
 
-            EntityBase[] entities = scene.GetEntities();
+            IEntityBase[] entities = scene.GetEntities();
             List<SceneObjectGroup> sceneObjects = new List<SceneObjectGroup>();
 
             int numObjectsSkippedPermissions = 0;
@@ -225,7 +225,7 @@ namespace OpenSim.Region.CoreModules.World.Archiver
             // FIXME: Would be nicer to have this as a proper list in SceneGraph, since lots of methods
             // end up having to do this
             IPermissionsModule permissionsModule = scene.RequestModuleInterface<IPermissionsModule>();
-            foreach (EntityBase entity in entities)
+            foreach (IEntityBase entity in entities)
             {
                 if (entity is SceneObjectGroup)
                 {
