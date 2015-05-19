@@ -26,6 +26,8 @@
  */
 
 using log4net;
+using Akka;
+using Akka.Actor;
 using OpenMetaverse;
 using OpenSim.Framework;
 using OpenSim.Region.Framework.Interfaces;
@@ -42,7 +44,7 @@ namespace OpenSim.Region.Framework.Scenes
     /// <summary>
     /// Manager for adding, closing and restarting scenes.
     /// </summary>
-    public class SceneManager
+    public class SceneManager: ReceiveActor
     {
         private static readonly ILog m_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 

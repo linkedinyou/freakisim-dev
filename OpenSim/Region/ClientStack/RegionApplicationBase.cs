@@ -52,7 +52,7 @@ namespace OpenSim.Region.ClientStack
         protected IEstateDataService m_estateDataService;
         protected ClientStackManager m_clientStackManager;
 
-        public SceneManager SceneManager { get; protected set; }
+        // public SceneManager SceneManager { get; protected set; }
         public NetworkServersInfo NetServersInfo { get { return m_networkServersInfo; } }
         public ISimulationDataService SimulationDataService { get { return m_simulationDataService; } }
         public IEstateDataService EstateDataService { get { return m_estateDataService; } }
@@ -74,7 +74,7 @@ namespace OpenSim.Region.ClientStack
 
         protected override void StartupSpecific()
         {
-            SceneManager = SceneManager.Instance;
+            // SceneManager = SceneManager.Instance;
             m_clientStackManager = CreateClientStackManager();
 
             Initialize();

@@ -592,8 +592,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private void HandlePacketCommand(string module, string[] args)
         {
-            if (SceneManager.Instance.CurrentScene != null && SceneManager.Instance.CurrentScene != m_scene)
-                return;
+            // FREAKKI Move to Console
+            // if (SceneManager.Instance.CurrentScene != null && SceneManager.Instance.CurrentScene != m_scene)
+            //    return;
 
             bool setAsDefaultLevel = false;
             OptionSet optionSet = new OptionSet().Add("default", o => setAsDefaultLevel = o != null);
@@ -649,8 +650,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private void HandleStartCommand(string module, string[] args)
         {
-            if (SceneManager.Instance.CurrentScene != null && SceneManager.Instance.CurrentScene != m_scene)
-                return;
+            // FREAKKI move Command to Console
+            // if (SceneManager.Instance.CurrentScene != null && SceneManager.Instance.CurrentScene != m_scene)
+            //    return;
 
             if (args.Length != 4)
             {
@@ -669,8 +671,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private void HandleStopCommand(string module, string[] args)
         {
-            if (SceneManager.Instance.CurrentScene != null && SceneManager.Instance.CurrentScene != m_scene)
-                return;
+            // FREAKKI move to Console
+            // if (SceneManager.Instance.CurrentScene != null && SceneManager.Instance.CurrentScene != m_scene)
+            //    return;
 
             if (args.Length != 4)
             {
@@ -689,8 +692,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private void HandlePoolCommand(string module, string[] args)
         {
-            if (SceneManager.Instance.CurrentScene != null && SceneManager.Instance.CurrentScene != m_scene)
-                return;
+            // FREAKKI move to Console
+            // if (SceneManager.Instance.CurrentScene != null && SceneManager.Instance.CurrentScene != m_scene)
+            //    return;
 
             if (args.Length != 4)
             {
@@ -726,8 +730,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private void HandleAgentUpdateCommand(string module, string[] args)
         {
-            if (SceneManager.Instance.CurrentScene != null && SceneManager.Instance.CurrentScene != m_scene)
-                return;
+            // FREAKKI move to Console
+            // if (SceneManager.Instance.CurrentScene != null && SceneManager.Instance.CurrentScene != m_scene)
+            //    return;
 
             m_discardAgentUpdates = !m_discardAgentUpdates;
 
@@ -737,8 +742,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private void HandleStatusCommand(string module, string[] args)
         {
-            if (SceneManager.Instance.CurrentScene != null && SceneManager.Instance.CurrentScene != m_scene)
-                return;
+            // FREAKKI move to Console
+            // if (SceneManager.Instance.CurrentScene != null && SceneManager.Instance.CurrentScene != m_scene)
+            //    return;
 
             MainConsole.Instance.OutputFormat(
                 "IN  LLUDP packet processing for {0} is {1}", m_scene.Name, IsRunningInbound ? "enabled" : "disabled");
