@@ -25,6 +25,11 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using System.Text;
 using log4net;
 using Mono.Addins;
 using Nini.Config;
@@ -35,16 +40,8 @@ using OpenSim.Framework.Servers;
 using OpenSim.Framework.Servers.HttpServer;
 using OpenSim.Region.Framework.Interfaces;
 using OpenSim.Region.Framework.Scenes;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading;
-using Caps = OpenSim.Framework.Capabilities.Caps;
 
-namespace OpenSim.Region.CoreModules.Framework
+namespace OpenSim.Region.CoreModules.Framework.Caps
 {
     [Extension(Path = "/OpenSim/RegionModules", NodeName = "RegionModule", Id = "CapabilitiesModule")]
     public class CapabilitiesModule : INonSharedRegionModule, ICapabilitiesModule
@@ -58,13 +55,13 @@ namespace OpenSim.Region.CoreModules.Framework
         /// <summary>
         /// Each agent has its own capabilities handler.
         /// </summary>
-        private ThreadedClasses.RwLockedDictionary<UUID, Caps> m_capsObjects = new ThreadedClasses.RwLockedDictionary<UUID, Caps>();
+        private ThreadedClasses.RwLockedDictionary<UUID, OpenSim.Framework.Capabilities.Caps> m_capsObjects = new ThreadedClasses.RwLockedDictionary<UUID, OpenSim.Framework.Capabilities.Caps>();
 
         private ThreadedClasses.RwLockedDictionary<UUID, string> m_capsPaths = new ThreadedClasses.RwLockedDictionary<UUID, string>();
 
         private ThreadedClasses.RwLockedDictionary<UUID, ThreadedClasses.RwLockedDictionary<ulong, string>> m_childrenSeeds
             = new ThreadedClasses.RwLockedDictionary<UUID, ThreadedClasses.RwLockedDictionary<ulong, string>>();
-        
+
         public void Initialise(IConfigSource source)
         {
         }
@@ -74,24 +71,6 @@ namespace OpenSim.Region.CoreModules.Framework
             m_scene = scene;
             m_scene.RegisterModuleInterface<ICapabilitiesModule>(this);
 
-            MainConsole.Instance.Commands.AddCommand(
-                "Comms", false, "show caps list",
-                "show caps list",
-                "Shows list of registered capabilities for users.", HandleShowCapsListCommand);
-
-            MainConsole.Instance.Commands.AddCommand(
-                "Comms", false, "show caps stats by user",
-                "show caps stats by user [<first-name> <last-name>]",
-                "Shows statistics on capabilities use by user.",
-                "If a user name is given, then prints a detailed breakdown of caps use ordered by number of requests received.",
-                HandleShowCapsStatsByUserCommand);
-
-            MainConsole.Instance.Commands.AddCommand(
-                "Comms", false, "show caps stats by cap",
-                "show caps stats by cap [<cap-name>]",
-                "Shows statistics on capabilities use by capability.",
-                "If a capability name is given, then prints a detailed breakdown of use by each user.",
-                HandleShowCapsStatsByCapCommand);
         }
 
         public void RegionLoaded(Scene scene)
@@ -119,15 +98,27 @@ namespace OpenSim.Region.CoreModules.Framework
             get { return null; }
         }
 
+        public Scene MScene
+        {
+            set { m_scene = value; }
+            get { return m_scene; }
+        }
+
+        public Scene MScene1
+        {
+            set { m_scene = value; }
+            get { return m_scene; }
+        }
+
         public void CreateCaps(UUID agentId)
         {
             if (m_scene.RegionInfo.EstateSettings.IsBanned(agentId))
                 return;
 
-            Caps caps;
+            OpenSim.Framework.Capabilities.Caps caps;
             String capsObjectPath = GetCapsPath(agentId);
 
-            caps = new Caps(MainServer.Instance, m_scene.RegionInfo.ExternalHostName,
+            caps = new OpenSim.Framework.Capabilities.Caps(MainServer.Instance, m_scene.RegionInfo.ExternalHostName,
                     (MainServer.Instance == null) ? 0: MainServer.Instance.Port,
                     capsObjectPath, agentId, m_scene.RegionInfo.RegionName);
 
@@ -142,7 +133,7 @@ namespace OpenSim.Region.CoreModules.Framework
             m_childrenSeeds.Remove(agentId);
 
             
-            Caps caps;
+            OpenSim.Framework.Capabilities.Caps caps;
             if(m_capsObjects.Remove(agentId, out caps))
             {
                 caps.DeregisterHandlers();
@@ -156,9 +147,9 @@ namespace OpenSim.Region.CoreModules.Framework
             }
         }
         
-        public Caps GetCapsForUser(UUID agentId)
+        public OpenSim.Framework.Capabilities.Caps GetCapsForUser(UUID agentId)
         {
-            Caps caps;
+            OpenSim.Framework.Capabilities.Caps caps;
             if(m_capsObjects.TryGetValue(agentId, out caps))
             {
                 return caps;
@@ -243,62 +234,7 @@ namespace OpenSim.Region.CoreModules.Framework
             }
         }
 
-        private void HandleShowCapsListCommand(string module, string[] cmdParams)
-        {
-            if (SceneManager.Instance.CurrentScene != null && SceneManager.Instance.CurrentScene != m_scene)
-                return;
-
-            StringBuilder capsReport = new StringBuilder();
-            capsReport.AppendFormat("Region {0}:\n", m_scene.RegionInfo.RegionName);
-
-            m_capsObjects.ForEach(delegate(KeyValuePair<UUID, Caps> kvp)
-            {
-                capsReport.AppendFormat("** User {0}:\n", kvp.Key);
-                Caps caps = kvp.Value;
-
-                for (IDictionaryEnumerator kvp2 = caps.CapsHandlers.GetCapsDetails(false, null).GetEnumerator(); kvp2.MoveNext(); )
-                {
-                    Uri uri = new Uri(kvp2.Value.ToString());
-                    capsReport.AppendFormat(m_showCapsCommandFormat, kvp2.Key, uri.PathAndQuery);
-                }
-
-                foreach (KeyValuePair<string, PollServiceEventArgs> kvp2 in caps.GetPollHandlers())
-                    capsReport.AppendFormat(m_showCapsCommandFormat, kvp2.Key, kvp2.Value.Url);
-
-                foreach (KeyValuePair<string, string> kvp3 in caps.ExternalCapsHandlers)
-                    capsReport.AppendFormat(m_showCapsCommandFormat, kvp3.Key, kvp3.Value);
-            });
-
-            MainConsole.Instance.Output(capsReport.ToString());
-        }
-
-        private void HandleShowCapsStatsByCapCommand(string module, string[] cmdParams)
-        {
-            if (SceneManager.Instance.CurrentScene != null && SceneManager.Instance.CurrentScene != m_scene)
-                return;
-
-            if (cmdParams.Length != 5 && cmdParams.Length != 6)
-            {
-                MainConsole.Instance.Output("Usage: show caps stats by cap [<cap-name>]");
-                return;
-            }
-
-            StringBuilder sb = new StringBuilder();
-            sb.AppendFormat("Region {0}:\n", m_scene.Name);
-
-            if (cmdParams.Length == 5)
-            {
-                BuildSummaryStatsByCapReport(sb);
-            }
-            else if (cmdParams.Length == 6)
-            {
-                BuildDetailedStatsByCapReport(sb, cmdParams[5]);
-            }
-
-            MainConsole.Instance.Output(sb.ToString());
-        }
-
-        private void BuildDetailedStatsByCapReport(StringBuilder sb, string capName)
+        public void BuildDetailedStatsByCapReport(StringBuilder sb, string capName)
         {
             sb.AppendFormat("Capability name {0}\n", capName);
 
@@ -314,7 +250,7 @@ namespace OpenSim.Region.CoreModules.Framework
             m_scene.ForEachScenePresence(
                 sp =>
                 {
-                    Caps caps = m_scene.CapsModule.GetCapsForUser(sp.UUID);
+                    OpenSim.Framework.Capabilities.Caps caps = m_scene.CapsModule.GetCapsForUser(sp.UUID);
 
                     if (caps == null)
                         return;
@@ -347,7 +283,7 @@ namespace OpenSim.Region.CoreModules.Framework
             sb.Append(cdt.ToString());
         }
 
-        private void BuildSummaryStatsByCapReport(StringBuilder sb)
+        public void BuildSummaryStatsByCapReport(StringBuilder sb)
         {
             ConsoleDisplayTable cdt = new ConsoleDisplayTable();
             cdt.AddColumn("Name", 34);
@@ -361,7 +297,7 @@ namespace OpenSim.Region.CoreModules.Framework
             m_scene.ForEachScenePresence(
                 sp =>
                 {
-                    Caps caps = m_scene.CapsModule.GetCapsForUser(sp.UUID);
+                    OpenSim.Framework.Capabilities.Caps caps = m_scene.CapsModule.GetCapsForUser(sp.UUID);
 
                     if (caps == null)
                         return;            
@@ -407,41 +343,7 @@ namespace OpenSim.Region.CoreModules.Framework
             sb.Append(cdt.ToString());
         }
 
-        private void HandleShowCapsStatsByUserCommand(string module, string[] cmdParams)
-        {
-            if (SceneManager.Instance.CurrentScene != null && SceneManager.Instance.CurrentScene != m_scene)
-                return;
-
-            if (cmdParams.Length != 5 && cmdParams.Length != 7)
-            {
-                MainConsole.Instance.Output("Usage: show caps stats by user [<first-name> <last-name>]");
-                return;
-            }
-
-            StringBuilder sb = new StringBuilder();
-            sb.AppendFormat("Region {0}:\n", m_scene.Name);
-
-            if (cmdParams.Length == 5)
-            {
-                BuildSummaryStatsByUserReport(sb);
-            }
-            else if (cmdParams.Length == 7)
-            {
-                string firstName = cmdParams[5];
-                string lastName = cmdParams[6];
-
-                ScenePresence sp = m_scene.GetScenePresence(firstName, lastName);
-
-                if (sp == null)
-                    return;
-
-                BuildDetailedStatsByUserReport(sb, sp);
-            }
-
-            MainConsole.Instance.Output(sb.ToString());
-        }
-
-        private void BuildDetailedStatsByUserReport(StringBuilder sb, ScenePresence sp)
+        public void BuildDetailedStatsByUserReport(StringBuilder sb, ScenePresence sp)
         {
             sb.AppendFormat("Avatar name {0}, type {1}\n", sp.Name, sp.IsChildAgent ? "child" : "root");
 
@@ -451,26 +353,26 @@ namespace OpenSim.Region.CoreModules.Framework
             cdt.AddColumn("Req Handled", 12);
             cdt.Indent = 2;
 
-            Caps caps = m_scene.CapsModule.GetCapsForUser(sp.UUID);
+            OpenSim.Framework.Capabilities.Caps caps = m_scene.CapsModule.GetCapsForUser(sp.UUID);
 
             if (caps == null)
                 return;
 
-            List<CapTableRow> capRows = new List<CapTableRow>();
+            List<CapabilitiesModule.CapTableRow> capRows = new List<CapabilitiesModule.CapTableRow>();
 
             foreach (IRequestHandler reqHandler in caps.CapsHandlers.GetCapsHandlers().Values)
-                capRows.Add(new CapTableRow(reqHandler.Name, reqHandler.RequestsReceived, reqHandler.RequestsHandled));
+                capRows.Add(new CapabilitiesModule.CapTableRow(reqHandler.Name, reqHandler.RequestsReceived, reqHandler.RequestsHandled));
 
             foreach (KeyValuePair<string, PollServiceEventArgs> kvp in caps.GetPollHandlers())
-                capRows.Add(new CapTableRow(kvp.Key, kvp.Value.RequestsReceived, kvp.Value.RequestsHandled));
+                capRows.Add(new CapabilitiesModule.CapTableRow(kvp.Key, kvp.Value.RequestsReceived, kvp.Value.RequestsHandled));
 
-            foreach (CapTableRow ctr in capRows.OrderByDescending(ctr => ctr.RequestsReceived))
+            foreach (CapabilitiesModule.CapTableRow ctr in capRows.OrderByDescending(ctr => ctr.RequestsReceived))
                 cdt.AddRow(ctr.Name, ctr.RequestsReceived, ctr.RequestsHandled);            
 
             sb.Append(cdt.ToString());
         }
 
-        private void BuildSummaryStatsByUserReport(StringBuilder sb)
+        public void BuildSummaryStatsByUserReport(StringBuilder sb)
         {
             ConsoleDisplayTable cdt = new ConsoleDisplayTable();
             cdt.AddColumn("Name", 32);
@@ -482,7 +384,7 @@ namespace OpenSim.Region.CoreModules.Framework
             m_scene.ForEachScenePresence(
                 sp =>
                 {
-                    Caps caps = m_scene.CapsModule.GetCapsForUser(sp.UUID);
+                    OpenSim.Framework.Capabilities.Caps caps = m_scene.CapsModule.GetCapsForUser(sp.UUID);
 
                     if (caps == null)
                         return;

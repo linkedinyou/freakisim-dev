@@ -152,11 +152,12 @@ namespace OpenSim.Region.CoreModules.World.Archiver
             ArchiveScenesGroup scenesGroup = new ArchiveScenesGroup();
             if (MultiRegionFormat)
             {
-                m_log.InfoFormat("[ARCHIVER]: Saving {0} regions", SceneManager.Instance.Scenes.Count);
-                SceneManager.Instance.ForEachScene(delegate(Scene scene)
-                {
-                    scenesGroup.AddScene(scene);
-                });
+                //m_log.InfoFormat("[ARCHIVER]: Saving {0} regions", SceneManager.Instance.Scenes.Count);
+                // FREAKKI SceneManager.Instance.ForEachScene(delegate(Scene scene)
+                //{
+                //    scenesGroup.AddScene(scene);
+                //});
+                throw new FreAkkiRefactoringException("ArchiveRegion ... pending");
             }
             else
             {

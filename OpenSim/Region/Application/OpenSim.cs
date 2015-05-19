@@ -197,11 +197,11 @@ namespace OpenSim
             PrintFileToConsole("startuplogo.txt");
 
             // For now, start at the 'root' level by default
-            if (SceneManager.Scenes.Count == 1) // If there is only one region, select it
-                ChangeSelectedRegion("region",
-                                     new string[] {"change", "region", SceneManager.Scenes[0].RegionInfo.RegionName});
-            else
-                ChangeSelectedRegion("region", new string[] {"change", "region", "root"});
+            // FREAKKI if (SceneManager.Scenes.Count == 1) // If there is only one region, select it
+            //    ChangeSelectedRegion("region",
+            //                         new string[] {"change", "region", SceneManager.Scenes[0].RegionInfo.RegionName});
+            //else
+            //    ChangeSelectedRegion("region", new string[] {"change", "region", "root"});
 
             //Run Startup Commands
             if (String.IsNullOrEmpty(m_startupCommandsFile))
@@ -228,200 +228,201 @@ namespace OpenSim
         /// </summary>
         private void RegisterConsoleCommands()
         {
-            MainServer.RegisterHttpConsoleCommands(m_console);
+            // MainServer.RegisterHttpConsoleCommands(m_console);
 
-            m_console.Commands.AddCommand("Objects", false, "force update",
-                                          "force update",
-                                          "Force the update of all objects on clients",
-                                          HandleForceUpdate);
+            //m_console.Commands.AddCommand("Objects", false, "force update",
+            //                              "force update",
+            //                              "Force the update of all objects on clients",
+            // FREAKKI                            HandleForceUpdate);
 
-            m_console.Commands.AddCommand("General", false, "change region",
-                                          "change region <region name>",
-                                          "Change current console region", 
-                                          ChangeSelectedRegion);
+            //m_console.Commands.AddCommand("General", false, "change region",
+            //                              "change region <region name>",
+            //                              "Change current console region", 
+            // FREAKKI                             ChangeSelectedRegion);
 
-            m_console.Commands.AddCommand("Archiving", false, "save xml",
-                                          "save xml",
-                                          "Save a region's data in XML format", 
-                                          SaveXml);
+//            m_console.Commands.AddCommand("Archiving", false, "save xml",
+//                                          "save xml",
+//                                          "Save a region's data in XML format", 
+// FREAKKI                                         SaveXml);
 
-            m_console.Commands.AddCommand("Archiving", false, "save xml2",
-                                          "save xml2",
-                                          "Save a region's data in XML2 format", 
-                                          SaveXml2);
+//            m_console.Commands.AddCommand("Archiving", false, "save xml2",
+//                                          "save xml2",
+//                                          "Save a region's data in XML2 format", 
+// FREAKKI                                         SaveXml2);
 
-            m_console.Commands.AddCommand("Archiving", false, "load xml",
-                                          "load xml [-newIDs [<x> <y> <z>]]",
-                                          "Load a region's data from XML format",
-                                          LoadXml);
+//            m_console.Commands.AddCommand("Archiving", false, "load xml",
+//                                          "load xml [-newIDs [<x> <y> <z>]]",
+//                                          "Load a region's data from XML format",
+// FREAKKI                                         LoadXml);
 
-            m_console.Commands.AddCommand("Archiving", false, "load xml2",
-                                          "load xml2",
-                                          "Load a region's data from XML2 format", 
-                                          LoadXml2);
+//            m_console.Commands.AddCommand("Archiving", false, "load xml2",
+//                                          "load xml2",
+//                                          "Load a region's data from XML2 format", 
+// FREAKKI                                         LoadXml2);
 
-            m_console.Commands.AddCommand("Archiving", false, "save prims xml2",
-                                          "save prims xml2 [<prim name> <file name>]",
-                                          "Save named prim to XML2", 
-                                          SavePrimsXml2);
+//            m_console.Commands.AddCommand("Archiving", false, "save prims xml2",
+//                                          "save prims xml2 [<prim name> <file name>]",
+//                                          "Save named prim to XML2", 
+// FREAKKI                                         SavePrimsXml2);
 
-            m_console.Commands.AddCommand("Archiving", false, "load oar",
-                                          "load oar [--merge] [--persist-uuids] [--skip-assets]"
-                                             + " [--force-terrain] [--force-parcels]"
-                                             + " [--no-objects]"
-                                             + " [--rotation degrees] [--rotation-center \"<x,y,z>\"]"
-                                             + " [--displacement \"<x,y,z>\"]"
-                                             + " [--default-user \"User Name\"]"
-                                             + " [<OAR path>]",
-                                          "Load a region's data from an OAR archive.",
-                                          "--merge will merge the OAR with the existing scene (suppresses terrain and parcel info loading)." + Environment.NewLine
-                                          + "--skip-assets will load the OAR but ignore the assets it contains." + Environment.NewLine
-                                          + "--persist-uuids will restore the saved uuids from the oar (not to be combined with --merge)" + Environment.NewLine
-                                          + "--displacement will add this value to the position of every object loaded" + Environment.NewLine
-                                          + "--force-terrain forces the loading of terrain from the oar (undoes suppression done by --merge)" + Environment.NewLine
-                                          + "--force-parcels forces the loading of parcels from the oar (undoes suppression done by --merge)" + Environment.NewLine
-                                          + "--rotation specified rotation to be applied to the oar. Specified in degrees." + Environment.NewLine
-                                          + "--rotation-center Location (relative to original OAR) to apply rotation. Default is <128,128,0>" + Environment.NewLine
-                                          + "--no-objects suppresses the addition of any objects (good for loading only the terrain)" + Environment.NewLine
-                                          + "The path can be either a filesystem location or a URI."
-                                          + "  If this is not given then the command looks for an OAR named region.oar in the current directory.",
-                                          LoadOar);
+//            m_console.Commands.AddCommand("Archiving", false, "load oar",
+//                                          "load oar [--merge] [--persist-uuids] [--skip-assets]"
+//                                             + " [--force-terrain] [--force-parcels]"
+//                                             + " [--no-objects]"
+//                                             + " [--rotation degrees] [--rotation-center \"<x,y,z>\"]"
+//                                             + " [--displacement \"<x,y,z>\"]"
+//                                             + " [--default-user \"User Name\"]"
+//                                             + " [<OAR path>]",
+//                                          "Load a region's data from an OAR archive.",
+//                                          "--merge will merge the OAR with the existing scene (suppresses terrain and parcel info loading)." + Environment.NewLine
+//                                          + "--skip-assets will load the OAR but ignore the assets it contains." + Environment.NewLine
+//                                          + "--persist-uuids will restore the saved uuids from the oar (not to be combined with --merge)" + Environment.NewLine
+//                                          + "--displacement will add this value to the position of every object loaded" + Environment.NewLine
+//                                          + "--force-terrain forces the loading of terrain from the oar (undoes suppression done by --merge)" + Environment.NewLine
+//                                          + "--force-parcels forces the loading of parcels from the oar (undoes suppression done by --merge)" + Environment.NewLine
+//                                          + "--rotation specified rotation to be applied to the oar. Specified in degrees." + Environment.NewLine
+//                                          + "--rotation-center Location (relative to original OAR) to apply rotation. Default is <128,128,0>" + Environment.NewLine
+//                                          + "--no-objects suppresses the addition of any objects (good for loading only the terrain)" + Environment.NewLine
+//                                          + "The path can be either a filesystem location or a URI."
+//                                          + "  If this is not given then the command looks for an OAR named region.oar in the current directory.",
+// FREAKKI                                         LoadOar);
 
-            m_console.Commands.AddCommand("Archiving", false, "save oar",
-                                          //"save oar [-v|--version=<N>] [-p|--profile=<url>] [<OAR path>]",
-                                          "save oar [-h|--home=<url>] [--noassets] [--publish] [--perm=<permissions>] [--all] [<OAR path>]",
-                                          "Save a region's data to an OAR archive.",
-//                                          "-v|--version=<N> generates scene objects as per older versions of the serialization (e.g. -v=0)" + Environment.NewLine
-                                          "-h|--home=<url> adds the url of the profile service to the saved user information.\n"
-                                          + "--noassets stops assets being saved to the OAR.\n"
-                                          + "--publish saves an OAR stripped of owner and last owner information.\n"
-                                          + "   on reload, the estate owner will be the owner of all objects\n"
-                                          + "   this is useful if you're making oars generally available that might be reloaded to the same grid from which you published\n"
-                                          + "--perm=<permissions> stops objects with insufficient permissions from being saved to the OAR.\n"
-                                          + "   <permissions> can contain one or more of these characters: \"C\" = Copy, \"T\" = Transfer\n"
-                                          + "--all saves all the regions in the simulator, instead of just the current region.\n"
-                                          + "The OAR path must be a filesystem path."
-                                          + " If this is not given then the oar is saved to region.oar in the current directory.",
-                                          SaveOar);
+//            m_console.Commands.AddCommand("Archiving", false, "save oar",
+//                                          //"save oar [-v|--version=<N>] [-p|--profile=<url>] [<OAR path>]",
+//                                          "save oar [-h|--home=<url>] [--noassets] [--publish] [--perm=<permissions>] [--all] [<OAR path>]",
+//                                          "Save a region's data to an OAR archive.",
+////                                          "-v|--version=<N> generates scene objects as per older versions of the serialization (e.g. -v=0)" + Environment.NewLine
+//                                          "-h|--home=<url> adds the url of the profile service to the saved user information.\n"
+//                                          + "--noassets stops assets being saved to the OAR.\n"
+//                                          + "--publish saves an OAR stripped of owner and last owner information.\n"
+//                                          + "   on reload, the estate owner will be the owner of all objects\n"
+//                                          + "   this is useful if you're making oars generally available that might be reloaded to the same grid from which you published\n"
+//                                          + "--perm=<permissions> stops objects with insufficient permissions from being saved to the OAR.\n"
+//                                          + "   <permissions> can contain one or more of these characters: \"C\" = Copy, \"T\" = Transfer\n"
+//                                          + "--all saves all the regions in the simulator, instead of just the current region.\n"
+//                                          + "The OAR path must be a filesystem path."
+//                                          + " If this is not given then the oar is saved to region.oar in the current directory.",
+// FREAKKI                                         SaveOar);
 
-            m_console.Commands.AddCommand("Objects", false, "edit scale",
-                                          "edit scale <name> <x> <y> <z>",
-                                          "Change the scale of a named prim", 
-                                          HandleEditScale);
+            //m_console.Commands.AddCommand("Objects", false, "edit scale",
+            //                              "edit scale <name> <x> <y> <z>",
+            //                              "Change the scale of a named prim", 
+            // FREAKKI                             HandleEditScale);
 
-            m_console.Commands.AddCommand("Objects", false, "rotate scene",
-                                          "rotate scene <degrees> [centerX, centerY]",
-                                          "Rotates all scene objects around centerX, centerY (defailt 128, 128) (please back up your region before using)",
-                                          HandleRotateScene);
+            //m_console.Commands.AddCommand("Objects", false, "rotate scene",
+            //                              "rotate scene <degrees> [centerX, centerY]",
+            //                              "Rotates all scene objects around centerX, centerY (defailt 128, 128) (please back up your region before using)",
+            // FREAKKI                             HandleRotateScene);
 
-            m_console.Commands.AddCommand("Objects", false, "scale scene",
-                                          "scale scene <factor>",
-                                          "Scales the scene objects (please back up your region before using)",
-                                          HandleScaleScene);
+            //m_console.Commands.AddCommand("Objects", false, "scale scene",
+            //                              "scale scene <factor>",
+            //                              "Scales the scene objects (please back up your region before using)",
+            // FREAKKI                             HandleScaleScene);
 
-            m_console.Commands.AddCommand("Objects", false, "translate scene",
-                                          "translate scene xOffset yOffset zOffset",
-                                          "translates the scene objects (please back up your region before using)",
-                                          HandleTranslateScene);
+            //m_console.Commands.AddCommand("Objects", false, "translate scene",
+            //                              "translate scene xOffset yOffset zOffset",
+            //                              "translates the scene objects (please back up your region before using)",
+            // FREAKKI                             HandleTranslateScene);
 
-            m_console.Commands.AddCommand("Users", false, "kick user",
-                                          "kick user <first> <last> [--force] [message]",
-                                          "Kick a user off the simulator",
-                                          "The --force option will kick the user without any checks to see whether it's already in the process of closing\n"
-                                          + "Only use this option if you are sure the avatar is inactive and a normal kick user operation does not removed them",
-                                          KickUserCommand);
+            // m_console.Commands.AddCommand("Users", false, "kick user",
+            //                              "kick user <first> <last> [--force] [message]",
+            //                              "Kick a user off the simulator",
+            //                              "The --force option will kick the user without any checks to see whether it's already in the process of closing\n"
+            //                              + "Only use this option if you are sure the avatar is inactive and a normal kick user operation does not removed them",
+            // FREAKKI                             KickUserCommand);
 
-            m_console.Commands.AddCommand("Users", false, "show users",
-                                          "show users [full]",
-                                          "Show user data for users currently on the region", 
-                                          "Without the 'full' option, only users actually on the region are shown."
-                                            + "  With the 'full' option child agents of users in neighbouring regions are also shown.",
-                                          HandleShow);
+            //m_console.Commands.AddCommand("Users", false, "show users",
+            //                              "show users [full]",
+            //                              "Show user data for users currently on the region", 
+            //                              "Without the 'full' option, only users actually on the region are shown."
+            //                                + "  With the 'full' option child agents of users in neighbouring regions are also shown.",
+            // FREAKKI                             HandleShow);
 
-            m_console.Commands.AddCommand("Comms", false, "show connections",
-                                          "show connections",
-                                          "Show connection data", 
-                                          HandleShow);
+            //m_console.Commands.AddCommand("Comms", false, "show connections",
+            //                              "show connections",
+            //                              "Show connection data", 
+            // FREAKKI                             HandleShow);
 
-            m_console.Commands.AddCommand("Comms", false, "show circuits",
-                                          "show circuits",
-                                          "Show agent circuit data", 
-                                          HandleShow);
+            //m_console.Commands.AddCommand("Comms", false, "show circuits",
+            //                              "show circuits",
+            //                              "Show agent circuit data", 
+            // FREAKKI                             HandleShow);
 
-            m_console.Commands.AddCommand("Comms", false, "show pending-objects",
-                                          "show pending-objects",
-                                          "Show # of objects on the pending queues of all scene viewers", 
-                                          HandleShow);
+            //m_console.Commands.AddCommand("Comms", false, "show pending-objects",
+            //                              "show pending-objects",
+            //                              "Show # of objects on the pending queues of all scene viewers", 
+            // FREAKKI                              HandleShow);
 
-            m_console.Commands.AddCommand("General", false, "show modules",
-                                          "show modules",
-                                          "Show module data", 
-                                          HandleShow);
+            //m_console.Commands.AddCommand("General", false, "show modules",
+            //                              "show modules",
+            //                              "Show module data", 
+            // FREAKKI                             HandleShow);
 
-            m_console.Commands.AddCommand("Regions", false, "show regions",
-                                          "show regions",
-                                          "Show region data", 
-                                          HandleShow);
+            //m_console.Commands.AddCommand("Regions", false, "show regions",
+            //                              "show regions",
+            //                              "Show region data", 
+            // FREAKKI                             HandleShow);
             
-            m_console.Commands.AddCommand("Regions", false, "show ratings",
-                                          "show ratings",
-                                          "Show rating data", 
-                                          HandleShow);
+            //m_console.Commands.AddCommand("Regions", false, "show ratings",
+            //                              "show ratings",
+            //                              "Show rating data", 
+            // FREAKKI                             HandleShow);
 
-            m_console.Commands.AddCommand("Objects", false, "backup",
-                                          "backup",
-                                          "Persist currently unsaved object changes immediately instead of waiting for the normal persistence call.", 
-                                          RunCommand);
+            //m_console.Commands.AddCommand("Objects", false, "backup",
+            //                              "backup",
+            //                              "Persist currently unsaved object changes immediately instead of waiting for the normal persistence call.", 
+            // FREAKKI                             RunCommand);
 
-            m_console.Commands.AddCommand("Regions", false, "create region",
-                                          "create region [\"region name\"] <region_file.ini>",
-                                          "Create a new region.",
-                                          "The settings for \"region name\" are read from <region_file.ini>. Paths specified with <region_file.ini> are relative to your Regions directory, unless an absolute path is given."
-                                          + " If \"region name\" does not exist in <region_file.ini>, it will be added." + Environment.NewLine
-                                          + "Without \"region name\", the first region found in <region_file.ini> will be created." + Environment.NewLine
-                                          + "If <region_file.ini> does not exist, it will be created.",
-                                          HandleCreateRegion);
+            //m_console.Commands.AddCommand("Regions", false, "create region",
+            //                              "create region [\"region name\"] <region_file.ini>",
+            //                              "Create a new region.",
+            //                              "The settings for \"region name\" are read from <region_file.ini>. Paths specified with <region_file.ini> are relative to your Regions directory, unless an absolute path is given."
+            //                              + " If \"region name\" does not exist in <region_file.ini>, it will be added." + Environment.NewLine
+            //                              + "Without \"region name\", the first region found in <region_file.ini> will be created." + Environment.NewLine
+            //                              + "If <region_file.ini> does not exist, it will be created.",
+            // FREAKKI                             HandleCreateRegion);
 
-            m_console.Commands.AddCommand("Regions", false, "restart",
-                                          "restart",
-                                          "Restart all sims in this instance", 
-                                          RunCommand);
+            //m_console.Commands.AddCommand("Regions", false, "restart",
+            //                              "restart",
+            //                              "Restart all sims in this instance", 
+            // FREAKKI                             RunCommand);
 
-            m_console.Commands.AddCommand("General", false, "command-script",
-                                          "command-script <script>",
-                                          "Run a command script from file", 
-                                          RunCommand);
+            //m_console.Commands.AddCommand("General", false, "command-script",
+            //                              "command-script <script>",
+            //                              "Run a command script from file", 
+            // FREAKKI                             RunCommand);
 
-            m_console.Commands.AddCommand("Regions", false, "remove-region",
-                                          "remove-region <name>",
-                                          "Remove a region from this simulator", 
-                                          RunCommand);
+            //m_console.Commands.AddCommand("Regions", false, "remove-region",
+            //                              "remove-region <name>",
+            //                              "Remove a region from this simulator", 
+            // FREAKKI                             RunCommand);
 
-            m_console.Commands.AddCommand("Regions", false, "delete-region",
-                                          "delete-region <name>",
-                                          "Delete a region from disk", 
-                                          RunCommand);
+            //m_console.Commands.AddCommand("Regions", false, "delete-region",
+            //                              "delete-region <name>",
+            //                              "Delete a region from disk", 
+            // FREAKKI                             RunCommand);
 
-            m_console.Commands.AddCommand("Estates", false, "estate create",
-                                          "estate create <owner UUID> <estate name>",
-                                          "Creates a new estate with the specified name, owned by the specified user."
-                                          + " Estate name must be unique.",
-                                          CreateEstateCommand);
+            //m_console.Commands.AddCommand("Estates", false, "estate create",
+            //                              "estate create <owner UUID> <estate name>",
+            //                              "Creates a new estate with the specified name, owned by the specified user."
+            //                              + " Estate name must be unique.",
+            // FREAKKI                             CreateEstateCommand);
 
-            m_console.Commands.AddCommand("Estates", false, "estate set owner",
-                                          "estate set owner <estate-id>[ <UUID> | <Firstname> <Lastname> ]",
-                                          "Sets the owner of the specified estate to the specified UUID or user. ",
-                                          SetEstateOwnerCommand);
+            //m_console.Commands.AddCommand("Estates", false, "estate set owner",
+            //                              "estate set owner <estate-id>[ <UUID> | <Firstname> <Lastname> ]",
+            //                              "Sets the owner of the specified estate to the specified UUID or user. ",
+            // FREAKKI                             SetEstateOwnerCommand);
 
-            m_console.Commands.AddCommand("Estates", false, "estate set name",
-                                          "estate set name <estate-id> <new name>",
-                                          "Sets the name of the specified estate to the specified value. New name must be unique.",
-                                          SetEstateNameCommand);
+            //m_console.Commands.AddCommand("Estates", false, "estate set name",
+            //                              "estate set name <estate-id> <new name>",
+            //                              "Sets the name of the specified estate to the specified value. New name must be unique.",
+            // FREAKKI                             SetEstateNameCommand);
 
-            m_console.Commands.AddCommand("Estates", false, "estate link region",
-                                          "estate link region <estate ID> <region ID>",
-                                          "Attaches the specified region to the specified estate.",
-                                          EstateLinkRegionCommand);
+            //m_console.Commands.AddCommand("Estates", false, "estate link region",
+            //                              "estate link region <estate ID> <region ID>",
+            //                              "Attaches the specified region to the specified estate.",
+            // FREAKKI                             EstateLinkRegionCommand);
+            throw new FreAkkiRefactoringException("RegisterConsoleCommands");
         }
 
         protected override void ShutdownSpecific()
@@ -468,45 +469,46 @@ namespace OpenSim
         /// <param name="cmdparams">name of avatar to kick</param>
         private void KickUserCommand(string module, string[] cmdparams)
         {
-            bool force = false;
+            //bool force = false;
             
-            OptionSet options = new OptionSet().Add("f|force", delegate (string v) { force = v != null; });
+            //OptionSet options = new OptionSet().Add("f|force", delegate (string v) { force = v != null; });
 
-            List<string> mainParams = options.Parse(cmdparams);
+            //List<string> mainParams = options.Parse(cmdparams);
 
-            if (mainParams.Count < 4)
-                return;
+            //if (mainParams.Count < 4)
+            //    return;
 
-            string alert = null;
-            if (mainParams.Count > 4)
-                alert = String.Format("\n{0}\n", String.Join(" ", cmdparams, 4, cmdparams.Length - 4));
+            //string alert = null;
+            //if (mainParams.Count > 4)
+            //    alert = String.Format("\n{0}\n", String.Join(" ", cmdparams, 4, cmdparams.Length - 4));
 
-            IList agents = SceneManager.GetCurrentSceneAvatars();
+            //IList agents = SceneManager.GetCurrentSceneAvatars();
 
-            foreach (ScenePresence presence in agents)
-            {
-                RegionInfo regionInfo = presence.Scene.RegionInfo;
+            //foreach (ScenePresence presence in agents)
+            //{
+            //    RegionInfo regionInfo = presence.Scene.RegionInfo;
 
-                if (presence.Firstname.ToLower().Equals(mainParams[2].ToLower()) &&
-                    presence.Lastname.ToLower().Equals(mainParams[3].ToLower()))
-                {
-                    MainConsole.Instance.Output(
-                        String.Format(
-                            "Kicking user: {0,-16} {1,-16} {2,-37} in region: {3,-16}",
-                            presence.Firstname, presence.Lastname, presence.UUID, regionInfo.RegionName));
+            //    if (presence.Firstname.ToLower().Equals(mainParams[2].ToLower()) &&
+            //        presence.Lastname.ToLower().Equals(mainParams[3].ToLower()))
+            //    {
+            //        MainConsole.Instance.Output(
+            //            String.Format(
+            //                "Kicking user: {0,-16} {1,-16} {2,-37} in region: {3,-16}",
+            //                presence.Firstname, presence.Lastname, presence.UUID, regionInfo.RegionName));
 
-                    // kick client...
-                    if (alert != null)
-                        presence.ControllingClient.Kick(alert);
-                    else
-                        presence.ControllingClient.Kick("\nThe OpenSim manager kicked you out.\n");
+            //        // kick client...
+            //        if (alert != null)
+            //            presence.ControllingClient.Kick(alert);
+            //        else
+            //            presence.ControllingClient.Kick("\nThe OpenSim manager kicked you out.\n");
 
-                    presence.Scene.CloseAgent(presence.UUID, force);
-                    break;
-                }
-            }
+            //        presence.Scene.CloseAgent(presence.UUID, force);
+            //        break;
+            //    }
+            //}
 
-            MainConsole.Instance.Output("");
+            //MainConsole.Instance.Output("");
+            throw new FreAkkiRefactoringException("KickUserCommand");
         }
 
         /// <summary>
@@ -535,8 +537,9 @@ namespace OpenSim
         /// <param name="args"></param>
         private void HandleForceUpdate(string module, string[] args)
         {
-            MainConsole.Instance.Output("Updating all clients");
-            SceneManager.ForceCurrentSceneClientUpdate();
+            //MainConsole.Instance.Output("Updating all clients");
+            // FREAKKI SceneManager.ForceCurrentSceneClientUpdate();
+            throw new FreAkkiRefactoringException("HandleForceUpdate");
         }
 
         /// <summary>
@@ -546,129 +549,133 @@ namespace OpenSim
         /// <param name="args">0,1, name, x, y, z</param>
         private void HandleEditScale(string module, string[] args)
         {
-            if (args.Length == 6)
-            {
-                SceneManager.HandleEditCommandOnCurrentScene(args);
-            }
-            else
-            {
-                MainConsole.Instance.Output("Argument error: edit scale <prim name> <x> <y> <z>");
-            }
+            //if (args.Length == 6)
+            //{
+            // FREAKKI   SceneManager.HandleEditCommandOnCurrentScene(args);
+            //}
+            //else
+            //{
+            //    MainConsole.Instance.Output("Argument error: edit scale <prim name> <x> <y> <z>");
+            //}
+            throw new FreAkkiRefactoringException("HandleEditScale");
         }
 
         private void HandleRotateScene(string module, string[] args)
         {
-            string usage = "Usage: rotate scene <angle in degrees> [centerX centerY] (centerX and centerY are optional and default to Constants.RegionSize / 2";
+            //string usage = "Usage: rotate scene <angle in degrees> [centerX centerY] (centerX and centerY are optional and default to Constants.RegionSize / 2";
 
-            float centerX = Constants.RegionSize * 0.5f;
-            float centerY = Constants.RegionSize * 0.5f;
+            //float centerX = Constants.RegionSize * 0.5f;
+            //float centerY = Constants.RegionSize * 0.5f;
 
-            if (args.Length < 3 || args.Length == 4)
-            {
-                MainConsole.Instance.Output(usage);
-                return;
-            }
+            //if (args.Length < 3 || args.Length == 4)
+            //{
+            //    MainConsole.Instance.Output(usage);
+            //    return;
+            //}
             
-            float angle = (float)(Convert.ToSingle(args[2]) / 180.0 * Math.PI);
-            OpenMetaverse.Quaternion rot = OpenMetaverse.Quaternion.CreateFromAxisAngle(0, 0, 1, angle);
+            //float angle = (float)(Convert.ToSingle(args[2]) / 180.0 * Math.PI);
+            //OpenMetaverse.Quaternion rot = OpenMetaverse.Quaternion.CreateFromAxisAngle(0, 0, 1, angle);
 
-            if (args.Length > 4)
-            {
-                centerX = Convert.ToSingle(args[3]);
-                centerY = Convert.ToSingle(args[4]);
-            }
+            //if (args.Length > 4)
+            //{
+            //    centerX = Convert.ToSingle(args[3]);
+            //    centerY = Convert.ToSingle(args[4]);
+            //}
 
-            Vector3 center = new Vector3(centerX, centerY, 0.0f);
+            //Vector3 center = new Vector3(centerX, centerY, 0.0f);
 
-            SceneManager.ForEachSelectedScene(delegate(Scene scene) 
-            {
-                scene.ForEachSOG(delegate(SceneObjectGroup sog)
-                {
-                    if (!sog.IsAttachment)
-                    {
-                        sog.RootPart.UpdateRotation(rot * sog.GroupRotation);
-                        Vector3 offset = sog.AbsolutePosition - center;
-                        offset *= rot;
-                        sog.UpdateGroupPosition(center + offset);
-                    }
-                });
-            });
+            //SceneManager.ForEachSelectedScene(delegate(Scene scene) 
+            //{
+            //    scene.ForEachSOG(delegate(SceneObjectGroup sog)
+            //    {
+            //        if (!sog.IsAttachment)
+            //        {
+            //            sog.RootPart.UpdateRotation(rot * sog.GroupRotation);
+            //            Vector3 offset = sog.AbsolutePosition - center;
+            //            offset *= rot;
+            //            sog.UpdateGroupPosition(center + offset);
+            //        }
+            //    });
+            //});
+            throw new FreAkkiRefactoringException("HandleRotateScene");
         }
 
         private void HandleScaleScene(string module, string[] args)
         {
-            string usage = "Usage: scale scene <factor>";
+            //string usage = "Usage: scale scene <factor>";
 
-            if (args.Length < 3)
-            {
-                MainConsole.Instance.Output(usage);
-                return;
-            }
+            //if (args.Length < 3)
+            //{
+            //    MainConsole.Instance.Output(usage);
+            //    return;
+            //}
 
-            float factor = (float)(Convert.ToSingle(args[2]));
+            //float factor = (float)(Convert.ToSingle(args[2]));
 
-            float minZ = float.MaxValue;
+            //float minZ = float.MaxValue;
 
-            SceneManager.ForEachSelectedScene(delegate(Scene scene)
-            {
-                scene.ForEachSOG(delegate(SceneObjectGroup sog)
-                {
-                    if (!sog.IsAttachment)
-                    {
-                        if (sog.RootPart.AbsolutePosition.Z < minZ)
-                            minZ = sog.RootPart.AbsolutePosition.Z;
-                    }
-                });
-            });
+            //SceneManager.ForEachSelectedScene(delegate(Scene scene)
+            //{
+            //    scene.ForEachSOG(delegate(SceneObjectGroup sog)
+            //    {
+            //        if (!sog.IsAttachment)
+            //        {
+            //            if (sog.RootPart.AbsolutePosition.Z < minZ)
+            //                minZ = sog.RootPart.AbsolutePosition.Z;
+            //        }
+            //    });
+            //});
 
-            SceneManager.ForEachSelectedScene(delegate(Scene scene)
-            {
-                scene.ForEachSOG(delegate(SceneObjectGroup sog)
-                {
-                    if (!sog.IsAttachment)
-                    {
-                        Vector3 tmpRootPos = sog.RootPart.AbsolutePosition;
-                        tmpRootPos.Z -= minZ;
-                        tmpRootPos *= factor;
-                        tmpRootPos.Z += minZ;
+            //SceneManager.ForEachSelectedScene(delegate(Scene scene)
+            //{
+            //    scene.ForEachSOG(delegate(SceneObjectGroup sog)
+            //    {
+            //        if (!sog.IsAttachment)
+            //        {
+            //            Vector3 tmpRootPos = sog.RootPart.AbsolutePosition;
+            //            tmpRootPos.Z -= minZ;
+            //            tmpRootPos *= factor;
+            //            tmpRootPos.Z += minZ;
 
-                        foreach (SceneObjectPart sop in sog.Parts)
-                        {
-                            if (sop.ParentID != 0)
-                                sop.OffsetPosition *= factor;
-                            sop.Scale *= factor;
-                        }
+            //            foreach (SceneObjectPart sop in sog.Parts)
+            //            {
+            //                if (sop.ParentID != 0)
+            //                    sop.OffsetPosition *= factor;
+            //                sop.Scale *= factor;
+            //            }
 
-                        sog.UpdateGroupPosition(tmpRootPos);
-                    }
-                });
-            });
+            //            sog.UpdateGroupPosition(tmpRootPos);
+            //        }
+            //    });
+            //});
+            throw new FreAkkiRefactoringException("HandleScaleScene");
         }
 
         private void HandleTranslateScene(string module, string[] args)
         {
-            string usage = "Usage: translate scene <xOffset, yOffset, zOffset>";
+            //string usage = "Usage: translate scene <xOffset, yOffset, zOffset>";
 
-            if (args.Length < 5)
-            {
-                MainConsole.Instance.Output(usage);
-                return;
-            }
+            //if (args.Length < 5)
+            //{
+            //    MainConsole.Instance.Output(usage);
+            //    return;
+            //}
 
-            float xOFfset = (float)Convert.ToSingle(args[2]);
-            float yOffset = (float)Convert.ToSingle(args[3]);
-            float zOffset = (float)Convert.ToSingle(args[4]);
+            //float xOFfset = (float)Convert.ToSingle(args[2]);
+            //float yOffset = (float)Convert.ToSingle(args[3]);
+            //float zOffset = (float)Convert.ToSingle(args[4]);
 
-            Vector3 offset = new Vector3(xOFfset, yOffset, zOffset);
+            //Vector3 offset = new Vector3(xOFfset, yOffset, zOffset);
 
-            SceneManager.ForEachSelectedScene(delegate(Scene scene)
-            {
-                scene.ForEachSOG(delegate(SceneObjectGroup sog)
-                {
-                    if (!sog.IsAttachment)
-                        sog.UpdateGroupPosition(sog.AbsolutePosition + offset);
-                });
-            });
+            //SceneManager.ForEachSelectedScene(delegate(Scene scene)
+            //{
+            //    scene.ForEachSOG(delegate(SceneObjectGroup sog)
+            //    {
+            //        if (!sog.IsAttachment)
+            //            sog.UpdateGroupPosition(sog.AbsolutePosition + offset);
+            //    });
+            //});
+            throw new FreAkkiRefactoringException("HandleTranslateScene");
         }
 
         /// <summary>
@@ -678,61 +685,62 @@ namespace OpenSim
         /// <param name="cmd">0,1,region name, region ini or XML file</param>
         private void HandleCreateRegion(string module, string[] cmd)
         {
-            string regionName = string.Empty;
-            string regionFile = string.Empty;
+            //string regionName = string.Empty;
+            //string regionFile = string.Empty;
 
-            if (cmd.Length == 3)
-            {
-                regionFile = cmd[2];
-            }
-            else if (cmd.Length > 3)
-            {
-                regionName = cmd[2];
-                regionFile = cmd[3];
-            }
+            //if (cmd.Length == 3)
+            //{
+            //    regionFile = cmd[2];
+            //}
+            //else if (cmd.Length > 3)
+            //{
+            //    regionName = cmd[2];
+            //    regionFile = cmd[3];
+            //}
 
-            string extension = Path.GetExtension(regionFile).ToLower();
-            bool isXml = extension.Equals(".xml");
-            bool isIni = extension.Equals(".ini");
+            //string extension = Path.GetExtension(regionFile).ToLower();
+            //bool isXml = extension.Equals(".xml");
+            //bool isIni = extension.Equals(".ini");
 
-            if (!isXml && !isIni)
-            {
-                MainConsole.Instance.Output("Usage: create region [\"region name\"] <region_file.ini>");
-                return;
-            }
+            //if (!isXml && !isIni)
+            //{
+            //    MainConsole.Instance.Output("Usage: create region [\"region name\"] <region_file.ini>");
+            //    return;
+            //}
 
-            if (!Path.IsPathRooted(regionFile))
-            {
-                string regionsDir = ConfigSource.Source.Configs["Startup"].GetString("regionload_regionsdir", "Regions").Trim();
-                regionFile = Path.Combine(regionsDir, regionFile);
-            }
+            //if (!Path.IsPathRooted(regionFile))
+            //{
+            //    string regionsDir = ConfigSource.Source.Configs["Startup"].GetString("regionload_regionsdir", "Regions").Trim();
+            //    regionFile = Path.Combine(regionsDir, regionFile);
+            //}
 
-            RegionInfo regInfo;
-            if (isXml)
-            {
-                regInfo = new RegionInfo(regionName, regionFile, false, ConfigSource.Source);
-            }
-            else
-            {
-                regInfo = new RegionInfo(regionName, regionFile, false, ConfigSource.Source, regionName);
-            }
+            //RegionInfo regInfo;
+            //if (isXml)
+            //{
+            //    regInfo = new RegionInfo(regionName, regionFile, false, ConfigSource.Source);
+            //}
+            //else
+            //{
+            //    regInfo = new RegionInfo(regionName, regionFile, false, ConfigSource.Source, regionName);
+            //}
 
-            Scene existingScene;
-            if (SceneManager.TryGetScene(regInfo.RegionID, out existingScene))
-            {
-                MainConsole.Instance.OutputFormat(
-                    "ERROR: Cannot create region {0} with ID {1}, this ID is already assigned to region {2}",
-                    regInfo.RegionName, regInfo.RegionID, existingScene.RegionInfo.RegionName);
+            //Scene existingScene;
+            //if (SceneManager.TryGetScene(regInfo.RegionID, out existingScene))
+            //{
+            //    MainConsole.Instance.OutputFormat(
+            //        "ERROR: Cannot create region {0} with ID {1}, this ID is already assigned to region {2}",
+            //        regInfo.RegionName, regInfo.RegionID, existingScene.RegionInfo.RegionName);
 
-                return;
-            }
+            //    return;
+            //}
 
-            bool changed = PopulateRegionEstateInfo(regInfo);
-            IScene scene;
-            CreateRegion(regInfo, true, out scene);
+            //bool changed = PopulateRegionEstateInfo(regInfo);
+            //IScene scene;
+            //CreateRegion(regInfo, true, out scene);
 
-            if (changed)
-	            regInfo.EstateSettings.Save();
+            //if (changed)
+            //    regInfo.EstateSettings.Save();
+            throw new FreAkkiRefactoringException("HandleCreateRegion");
         }
 
         /// <summary>
@@ -742,46 +750,47 @@ namespace OpenSim
         /// <param name="cmdparams">Additional arguments passed to the command</param>
         public void RunCommand(string module, string[] cmdparams)
         {
-            List<string> args = new List<string>(cmdparams);
-            if (args.Count < 1)
-                return;
+            //List<string> args = new List<string>(cmdparams);
+            //if (args.Count < 1)
+            //    return;
 
-            string command = args[0];
-            args.RemoveAt(0);
+            //string command = args[0];
+            //args.RemoveAt(0);
 
-            cmdparams = args.ToArray();
+            //cmdparams = args.ToArray();
 
-            switch (command)
-            {
-                case "backup":
-                    MainConsole.Instance.Output("Triggering save of pending object updates to persistent store");
-                    SceneManager.BackupCurrentScene();
-                    break;
+            //switch (command)
+            //{
+            //    case "backup":
+            //        MainConsole.Instance.Output("Triggering save of pending object updates to persistent store");
+            //        SceneManager.BackupCurrentScene();
+            //        break;
 
-                case "remove-region":
-                    string regRemoveName = CombineParams(cmdparams, 0);
+            //    case "remove-region":
+            //        string regRemoveName = CombineParams(cmdparams, 0);
 
-                    Scene removeScene;
-                    if (SceneManager.TryGetScene(regRemoveName, out removeScene))
-                        RemoveRegion(removeScene, false);
-                    else
-                        MainConsole.Instance.Output("No region with that name");
-                    break;
+            //        Scene removeScene;
+            //        if (SceneManager.TryGetScene(regRemoveName, out removeScene))
+            //            RemoveRegion(removeScene, false);
+            //        else
+            //            MainConsole.Instance.Output("No region with that name");
+            //        break;
 
-                case "delete-region":
-                    string regDeleteName = CombineParams(cmdparams, 0);
+            //    case "delete-region":
+            //        string regDeleteName = CombineParams(cmdparams, 0);
 
-                    Scene killScene;
-                    if (SceneManager.TryGetScene(regDeleteName, out killScene))
-                        RemoveRegion(killScene, true);
-                    else
-                        MainConsole.Instance.Output("no region with that name");
-                    break;
+            //        Scene killScene;
+            //        if (SceneManager.TryGetScene(regDeleteName, out killScene))
+            //            RemoveRegion(killScene, true);
+            //        else
+            //            MainConsole.Instance.Output("no region with that name");
+            //        break;
 
-                case "restart":
-                    SceneManager.RestartCurrentScene();
-                    break;
-            }
+            //    case "restart":
+            //        SceneManager.RestartCurrentScene();
+            //        break;
+            //}
+            throw new FreAkkiRefactoringException("RunCommand");
         }
 
         /// <summary>
@@ -790,19 +799,20 @@ namespace OpenSim
         /// <param name="cmdParams"></param>
         protected void ChangeSelectedRegion(string module, string[] cmdparams)
         {
-            if (cmdparams.Length > 2)
-            {
-                string newRegionName = CombineParams(cmdparams, 2);
+            //if (cmdparams.Length > 2)
+            //{
+            //    string newRegionName = CombineParams(cmdparams, 2);
 
-                if (!SceneManager.TrySetCurrentScene(newRegionName))
-                    MainConsole.Instance.Output(String.Format("Couldn't select region {0}", newRegionName));
-                else
-                    RefreshPrompt();
-            }
-            else
-            {
-                MainConsole.Instance.Output("Usage: change region <region name>");
-            }
+            //    if (!SceneManager.TrySetCurrentScene(newRegionName))
+            //        MainConsole.Instance.Output(String.Format("Couldn't select region {0}", newRegionName));
+            //    else
+            //        RefreshPrompt();
+            //}
+            //else
+            //{
+            //    MainConsole.Instance.Output("Usage: change region <region name>");
+            //}
+            throw new FreAkkiRefactoringException("ChangeSelectedRegion");
         }
 
         /// <summary>
@@ -810,37 +820,39 @@ namespace OpenSim
         /// </summary>
         private void RefreshPrompt()
         {
-            string regionName = (SceneManager.CurrentScene == null ? "root" : SceneManager.CurrentScene.RegionInfo.RegionName);
-            MainConsole.Instance.Output(String.Format("Currently selected region is {0}", regionName));
+//            string regionName = (SceneManager.CurrentScene == null ? "root" : SceneManager.CurrentScene.RegionInfo.RegionName);
+//            MainConsole.Instance.Output(String.Format("Currently selected region is {0}", regionName));
 
-//            m_log.DebugFormat("Original prompt is {0}", m_consolePrompt);
-            string prompt = m_consolePrompt;
+////            m_log.DebugFormat("Original prompt is {0}", m_consolePrompt);
+//            string prompt = m_consolePrompt;
 
-            // Replace "\R" with the region name
-            // Replace "\\" with "\"
-            prompt = m_consolePromptRegex.Replace(prompt, m =>
-            {
-//                m_log.DebugFormat("Matched {0}", m.Groups[2].Value);
-                if (m.Groups[2].Value == "R")
-                    return m.Groups[1].Value + regionName;
-                else
-                    return m.Groups[0].Value;
-            });
+//            // Replace "\R" with the region name
+//            // Replace "\\" with "\"
+//            prompt = m_consolePromptRegex.Replace(prompt, m =>
+//            {
+////                m_log.DebugFormat("Matched {0}", m.Groups[2].Value);
+//                if (m.Groups[2].Value == "R")
+//                    return m.Groups[1].Value + regionName;
+//                else
+//                    return m.Groups[0].Value;
+//            });
 
-            m_console.DefaultPrompt = prompt;
-            m_console.ConsoleScene = SceneManager.CurrentScene;
+//            m_console.DefaultPrompt = prompt;
+//            m_console.ConsoleScene = SceneManager.CurrentScene;
+            throw new FreAkkiRefactoringException("RefreshPrompt");
         }
 
         protected override void HandleRestartRegion(RegionInfo whichRegion)
         {
-            base.HandleRestartRegion(whichRegion);
+            //base.HandleRestartRegion(whichRegion);
  
-            // Where we are restarting multiple scenes at once, a previous call to RefreshPrompt may have set the 
-            // m_console.ConsoleScene to null (indicating all scenes).
-            if (m_console.ConsoleScene != null && whichRegion.RegionName == ((Scene)m_console.ConsoleScene).Name)
-                SceneManager.TrySetCurrentScene(whichRegion.RegionName);
+            //// Where we are restarting multiple scenes at once, a previous call to RefreshPrompt may have set the 
+            //// m_console.ConsoleScene to null (indicating all scenes).
+            //if (m_console.ConsoleScene != null && whichRegion.RegionName == ((Scene)m_console.ConsoleScene).Name)
+            //    SceneManager.TrySetCurrentScene(whichRegion.RegionName);
 
-            RefreshPrompt();
+            //RefreshPrompt();
+            throw new FreAkkiRefactoringException("HandleRestartRegion");
         }
 
         // see BaseOpenSimServer
@@ -851,187 +863,190 @@ namespace OpenSim
         /// <param name="cmd"></param>
         public override void HandleShow(string mod, string[] cmd)
         {
-            base.HandleShow(mod, cmd);
+            //base.HandleShow(mod, cmd);
 
-            List<string> args = new List<string>(cmd);
-            args.RemoveAt(0);
-            string[] showParams = args.ToArray();
+            //List<string> args = new List<string>(cmd);
+            //args.RemoveAt(0);
+            //string[] showParams = args.ToArray();
 
-            switch (showParams[0])
-            {
-                case "users":
-                    IList agents;
-                    if (showParams.Length > 1 && showParams[1] == "full")
-                    {
-                        agents = SceneManager.GetCurrentScenePresences();
-                    } else
-                    {
-                        agents = SceneManager.GetCurrentSceneAvatars();
-                    }
+            //switch (showParams[0])
+            //{
+            //    case "users":
+            //        IList agents;
+            //        if (showParams.Length > 1 && showParams[1] == "full")
+            //        {
+            //            agents = SceneManager.GetCurrentScenePresences();
+            //        } else
+            //        {
+            //            agents = SceneManager.GetCurrentSceneAvatars();
+            //        }
                 
-                    MainConsole.Instance.Output(String.Format("\nAgents connected: {0}\n", agents.Count));
+            //        MainConsole.Instance.Output(String.Format("\nAgents connected: {0}\n", agents.Count));
 
-                    MainConsole.Instance.Output(
-                        String.Format("{0,-16} {1,-16} {2,-37} {3,-11} {4,-16} {5,-30}", "Firstname", "Lastname",
-                                      "Agent ID", "Root/Child", "Region", "Position")
-                    );
+            //        MainConsole.Instance.Output(
+            //            String.Format("{0,-16} {1,-16} {2,-37} {3,-11} {4,-16} {5,-30}", "Firstname", "Lastname",
+            //                          "Agent ID", "Root/Child", "Region", "Position")
+            //        );
 
-                    foreach (ScenePresence presence in agents)
-                    {
-                        RegionInfo regionInfo = presence.Scene.RegionInfo;
-                        string regionName;
+            //        foreach (ScenePresence presence in agents)
+            //        {
+            //            RegionInfo regionInfo = presence.Scene.RegionInfo;
+            //            string regionName;
 
-                        if (regionInfo == null)
-                        {
-                            regionName = "Unresolvable";
-                        } else
-                        {
-                            regionName = regionInfo.RegionName;
-                        }
+            //            if (regionInfo == null)
+            //            {
+            //                regionName = "Unresolvable";
+            //            } else
+            //            {
+            //                regionName = regionInfo.RegionName;
+            //            }
 
-                        MainConsole.Instance.Output(
-                            String.Format(
-                                "{0,-16} {1,-16} {2,-37} {3,-11} {4,-16} {5,-30}",
-                                presence.Firstname,
-                                presence.Lastname,
-                                presence.UUID,
-                                presence.IsChildAgent ? "Child" : "Root",
-                                regionName,
-                                presence.AbsolutePosition.ToString())
-                        );
-                    }
+            //            MainConsole.Instance.Output(
+            //                String.Format(
+            //                    "{0,-16} {1,-16} {2,-37} {3,-11} {4,-16} {5,-30}",
+            //                    presence.Firstname,
+            //                    presence.Lastname,
+            //                    presence.UUID,
+            //                    presence.IsChildAgent ? "Child" : "Root",
+            //                    regionName,
+            //                    presence.AbsolutePosition.ToString())
+            //            );
+            //        }
 
-                    MainConsole.Instance.Output(String.Empty);
-                    break;
+            //        MainConsole.Instance.Output(String.Empty);
+            //        break;
 
-                case "connections":
-                    HandleShowConnections();
-                    break;
+            //    case "connections":
+            //        HandleShowConnections();
+            //        break;
 
-                case "circuits":
-                    HandleShowCircuits();
-                    break;
+            //    case "circuits":
+            //        HandleShowCircuits();
+            //        break;
 
-                case "modules":
-                    SceneManager.ForEachSelectedScene(
-                        scene => 
-                        {
-                            MainConsole.Instance.OutputFormat("Loaded region modules in {0} are:", scene.Name);
+            //    case "modules":
+            //        SceneManager.ForEachSelectedScene(
+            //            scene => 
+            //            {
+            //                MainConsole.Instance.OutputFormat("Loaded region modules in {0} are:", scene.Name);
 
-                            List<IRegionModuleBase> sharedModules = new List<IRegionModuleBase>();
-                            List<IRegionModuleBase> nonSharedModules = new List<IRegionModuleBase>();
+            //                List<IRegionModuleBase> sharedModules = new List<IRegionModuleBase>();
+            //                List<IRegionModuleBase> nonSharedModules = new List<IRegionModuleBase>();
 
-                            foreach (IRegionModuleBase module in scene.RegionModules.Values)
-                            {
-                                if (module.GetType().GetInterface("ISharedRegionModule") == null)
-                                    nonSharedModules.Add(module);
-                                else
-                                    sharedModules.Add(module);
-                            }
+            //                foreach (IRegionModuleBase module in scene.RegionModules.Values)
+            //                {
+            //                    if (module.GetType().GetInterface("ISharedRegionModule") == null)
+            //                        nonSharedModules.Add(module);
+            //                    else
+            //                        sharedModules.Add(module);
+            //                }
 
-                            foreach (IRegionModuleBase module in sharedModules.OrderBy(m => m.Name))
-                                MainConsole.Instance.OutputFormat("New Region Module (Shared): {0}", module.Name);
+            //                foreach (IRegionModuleBase module in sharedModules.OrderBy(m => m.Name))
+            //                    MainConsole.Instance.OutputFormat("New Region Module (Shared): {0}", module.Name);
 
-                            foreach (IRegionModuleBase module in nonSharedModules.OrderBy(m => m.Name))
-                                MainConsole.Instance.OutputFormat("New Region Module (Non-Shared): {0}", module.Name);
-                        }
-                    );
+            //                foreach (IRegionModuleBase module in nonSharedModules.OrderBy(m => m.Name))
+            //                    MainConsole.Instance.OutputFormat("New Region Module (Non-Shared): {0}", module.Name);
+            //            }
+            //        );
 
-                    MainConsole.Instance.Output("");
-                    break;
+            //        MainConsole.Instance.Output("");
+            //        break;
 
-                case "regions":
-                    ConsoleDisplayTable cdt = new ConsoleDisplayTable();
-                    cdt.AddColumn("Name", ConsoleDisplayUtil.RegionNameSize);
-                    cdt.AddColumn("ID", ConsoleDisplayUtil.UuidSize);
-                    cdt.AddColumn("Position", ConsoleDisplayUtil.CoordTupleSize);
-                    cdt.AddColumn("Port", ConsoleDisplayUtil.PortSize);
-                    cdt.AddColumn("Ready?", 6);
-                    cdt.AddColumn("Estate", ConsoleDisplayUtil.EstateNameSize);
-                    SceneManager.ForEachScene(
-                        scene => 
-                        { 
-                            RegionInfo ri = scene.RegionInfo; 
-                            cdt.AddRow(
-                                ri.RegionName, ri.RegionID, string.Format("{0},{1}", ri.RegionLocX, ri.RegionLocY), 
-                                ri.InternalEndPoint.Port, scene.Ready ? "Yes" : "No", ri.EstateSettings.EstateName);
-                        }
-                    );
+            //    case "regions":
+            //        ConsoleDisplayTable cdt = new ConsoleDisplayTable();
+            //        cdt.AddColumn("Name", ConsoleDisplayUtil.RegionNameSize);
+            //        cdt.AddColumn("ID", ConsoleDisplayUtil.UuidSize);
+            //        cdt.AddColumn("Position", ConsoleDisplayUtil.CoordTupleSize);
+            //        cdt.AddColumn("Port", ConsoleDisplayUtil.PortSize);
+            //        cdt.AddColumn("Ready?", 6);
+            //        cdt.AddColumn("Estate", ConsoleDisplayUtil.EstateNameSize);
+            //        SceneManager.ForEachScene(
+            //            scene => 
+            //            { 
+            //                RegionInfo ri = scene.RegionInfo; 
+            //                cdt.AddRow(
+            //                    ri.RegionName, ri.RegionID, string.Format("{0},{1}", ri.RegionLocX, ri.RegionLocY), 
+            //                    ri.InternalEndPoint.Port, scene.Ready ? "Yes" : "No", ri.EstateSettings.EstateName);
+            //            }
+            //        );
 
-                    MainConsole.Instance.Output(cdt.ToString());
-                    break;
+            //        MainConsole.Instance.Output(cdt.ToString());
+            //        break;
 
-                case "ratings":
-                    SceneManager.ForEachScene(
-                    delegate(Scene scene)
-                    {
-                        string rating = "";
-                        if (scene.RegionInfo.RegionSettings.Maturity == 1)
-                        {
-                            rating = "MATURE";
-                        }
-                        else if (scene.RegionInfo.RegionSettings.Maturity == 2)
-                        {
-                            rating = "ADULT";
-                        }
-                        else
-                        {
-                            rating = "PG";
-                        }
-                        MainConsole.Instance.Output(String.Format(
-                                   "Region Name: {0}, Region Rating {1}",
-                                   scene.RegionInfo.RegionName,
-                                   rating));
-                    });
-                    break;
-            }
+            //    case "ratings":
+            //        SceneManager.ForEachScene(
+            //        delegate(Scene scene)
+            //        {
+            //            string rating = "";
+            //            if (scene.RegionInfo.RegionSettings.Maturity == 1)
+            //            {
+            //                rating = "MATURE";
+            //            }
+            //            else if (scene.RegionInfo.RegionSettings.Maturity == 2)
+            //            {
+            //                rating = "ADULT";
+            //            }
+            //            else
+            //            {
+            //                rating = "PG";
+            //            }
+            //            MainConsole.Instance.Output(String.Format(
+            //                       "Region Name: {0}, Region Rating {1}",
+            //                       scene.RegionInfo.RegionName,
+            //                       rating));
+            //        });
+            //        break;
+            //}
+            throw new FreAkkiRefactoringException("HandleShow");
         }
 
         private void HandleShowCircuits()
         {
-            ConsoleDisplayTable cdt = new ConsoleDisplayTable();
-            cdt.AddColumn("Region", 20);
-            cdt.AddColumn("Avatar name", 24);
-            cdt.AddColumn("Type", 5);
-            cdt.AddColumn("Code", 10);
-            cdt.AddColumn("IP", 16);
-            cdt.AddColumn("Viewer Name", 24);
+            //ConsoleDisplayTable cdt = new ConsoleDisplayTable();
+            //cdt.AddColumn("Region", 20);
+            //cdt.AddColumn("Avatar name", 24);
+            //cdt.AddColumn("Type", 5);
+            //cdt.AddColumn("Code", 10);
+            //cdt.AddColumn("IP", 16);
+            //cdt.AddColumn("Viewer Name", 24);
 
-            SceneManager.ForEachScene(
-                s =>
-                {
-                    foreach (AgentCircuitData aCircuit in s.AuthenticateHandler.GetAgentCircuits().Values)
-                        cdt.AddRow(
-                            s.Name,
-                            aCircuit.Name,
-                            aCircuit.child ? "child" : "root",
-                            aCircuit.circuitcode.ToString(),
-                            aCircuit.IPAddress != null ? aCircuit.IPAddress.ToString() : "not set",
-                            Util.GetViewerName(aCircuit));
-                });
+            //SceneManager.ForEachScene(
+            //    s =>
+            //    {
+            //        foreach (AgentCircuitData aCircuit in s.AuthenticateHandler.GetAgentCircuits().Values)
+            //            cdt.AddRow(
+            //                s.Name,
+            //                aCircuit.Name,
+            //                aCircuit.child ? "child" : "root",
+            //                aCircuit.circuitcode.ToString(),
+            //                aCircuit.IPAddress != null ? aCircuit.IPAddress.ToString() : "not set",
+            //                Util.GetViewerName(aCircuit));
+            //    });
 
-            MainConsole.Instance.Output(cdt.ToString());
+            //MainConsole.Instance.Output(cdt.ToString());
+            throw new FreAkkiRefactoringException("HandleShowCircuits");
         }
 
         private void HandleShowConnections()
         {
-            ConsoleDisplayTable cdt = new ConsoleDisplayTable();
-            cdt.AddColumn("Region", 20);
-            cdt.AddColumn("Avatar name", 24);
-            cdt.AddColumn("Circuit code", 12);
-            cdt.AddColumn("Endpoint", 23);
-            cdt.AddColumn("Active?", 7);
+            //ConsoleDisplayTable cdt = new ConsoleDisplayTable();
+            //cdt.AddColumn("Region", 20);
+            //cdt.AddColumn("Avatar name", 24);
+            //cdt.AddColumn("Circuit code", 12);
+            //cdt.AddColumn("Endpoint", 23);
+            //cdt.AddColumn("Active?", 7);
 
-            SceneManager.ForEachScene(
-                s => s.ForEachClient(
-                    c => cdt.AddRow(
-                        s.Name,
-                        c.Name,
-                        c.CircuitCode.ToString(),
-                        c.RemoteEndPoint.ToString(),                
-                        c.IsActive.ToString())));
+            //SceneManager.ForEachScene(
+            //    s => s.ForEachClient(
+            //        c => cdt.AddRow(
+            //            s.Name,
+            //            c.Name,
+            //            c.CircuitCode.ToString(),
+            //            c.RemoteEndPoint.ToString(),                
+            //            c.IsActive.ToString())));
 
-            MainConsole.Instance.Output(cdt.ToString());
+            //MainConsole.Instance.Output(cdt.ToString());
+            throw new FreAkkiRefactoringException("HandleShowConnections");
         }
 
         /// <summary>
@@ -1041,14 +1056,15 @@ namespace OpenSim
         /// <param name="cmdparams"></param>
         protected void SavePrimsXml2(string module, string[] cmdparams)
         {
-            if (cmdparams.Length > 5)
-            {
-                SceneManager.SaveNamedPrimsToXml2(cmdparams[3], cmdparams[4]);
-            }
-            else
-            {
-                SceneManager.SaveNamedPrimsToXml2("Primitive", DEFAULT_PRIM_BACKUP_FILENAME);
-            }
+            //if (cmdparams.Length > 5)
+            //{
+            //    SceneManager.SaveNamedPrimsToXml2(cmdparams[3], cmdparams[4]);
+            //}
+            //else
+            //{
+            //    SceneManager.SaveNamedPrimsToXml2("Primitive", DEFAULT_PRIM_BACKUP_FILENAME);
+            //}
+            throw new FreAkkiRefactoringException("SavePrimsXml2");
         }
 
         /// <summary>
@@ -1058,16 +1074,17 @@ namespace OpenSim
         /// <param name="cmdparams"></param>
         protected void SaveXml(string module, string[] cmdparams)
         {
-            MainConsole.Instance.Output("PLEASE NOTE, save-xml is DEPRECATED and may be REMOVED soon.  If you are using this and there is some reason you can't use save-xml2, please file a mantis detailing the reason.");
+            //MainConsole.Instance.Output("PLEASE NOTE, save-xml is DEPRECATED and may be REMOVED soon.  If you are using this and there is some reason you can't use save-xml2, please file a mantis detailing the reason.");
 
-            if (cmdparams.Length > 0)
-            {
-                SceneManager.SaveCurrentSceneToXml(cmdparams[2]);
-            }
-            else
-            {
-                SceneManager.SaveCurrentSceneToXml(DEFAULT_PRIM_BACKUP_FILENAME);
-            }
+            //if (cmdparams.Length > 0)
+            //{
+            //    SceneManager.SaveCurrentSceneToXml(cmdparams[2]);
+            //}
+            //else
+            //{
+            //    SceneManager.SaveCurrentSceneToXml(DEFAULT_PRIM_BACKUP_FILENAME);
+            //}
+            throw new FreAkkiRefactoringException("SaveXml");
         }
 
         /// <summary>
@@ -1077,45 +1094,46 @@ namespace OpenSim
         /// <param name="cmdparams"></param>
         protected void LoadXml(string module, string[] cmdparams)
         {
-            MainConsole.Instance.Output("PLEASE NOTE, load-xml is DEPRECATED and may be REMOVED soon.  If you are using this and there is some reason you can't use load-xml2, please file a mantis detailing the reason.");
+            //MainConsole.Instance.Output("PLEASE NOTE, load-xml is DEPRECATED and may be REMOVED soon.  If you are using this and there is some reason you can't use load-xml2, please file a mantis detailing the reason.");
 
-            Vector3 loadOffset = new Vector3(0, 0, 0);
-            if (cmdparams.Length > 2)
-            {
-                bool generateNewIDS = false;
-                if (cmdparams.Length > 3)
-                {
-                    if (cmdparams[3] == "-newUID")
-                    {
-                        generateNewIDS = true;
-                    }
-                    if (cmdparams.Length > 4)
-                    {
-                        loadOffset.X = (float)Convert.ToDecimal(cmdparams[4], Culture.NumberFormatInfo);
-                        if (cmdparams.Length > 5)
-                        {
-                            loadOffset.Y = (float)Convert.ToDecimal(cmdparams[5], Culture.NumberFormatInfo);
-                        }
-                        if (cmdparams.Length > 6)
-                        {
-                            loadOffset.Z = (float)Convert.ToDecimal(cmdparams[6], Culture.NumberFormatInfo);
-                        }
-                        MainConsole.Instance.Output(String.Format("loadOffsets <X,Y,Z> = <{0},{1},{2}>",loadOffset.X,loadOffset.Y,loadOffset.Z));
-                    }
-                }
-                SceneManager.LoadCurrentSceneFromXml(cmdparams[2], generateNewIDS, loadOffset);
-            }
-            else
-            {
-                try
-                {
-                    SceneManager.LoadCurrentSceneFromXml(DEFAULT_PRIM_BACKUP_FILENAME, false, loadOffset);
-                }
-                catch (FileNotFoundException)
-                {
-                    MainConsole.Instance.Output("Default xml not found. Usage: load-xml <filename>");
-                }
-            }
+            //Vector3 loadOffset = new Vector3(0, 0, 0);
+            //if (cmdparams.Length > 2)
+            //{
+            //    bool generateNewIDS = false;
+            //    if (cmdparams.Length > 3)
+            //    {
+            //        if (cmdparams[3] == "-newUID")
+            //        {
+            //            generateNewIDS = true;
+            //        }
+            //        if (cmdparams.Length > 4)
+            //        {
+            //            loadOffset.X = (float)Convert.ToDecimal(cmdparams[4], Culture.NumberFormatInfo);
+            //            if (cmdparams.Length > 5)
+            //            {
+            //                loadOffset.Y = (float)Convert.ToDecimal(cmdparams[5], Culture.NumberFormatInfo);
+            //            }
+            //            if (cmdparams.Length > 6)
+            //            {
+            //                loadOffset.Z = (float)Convert.ToDecimal(cmdparams[6], Culture.NumberFormatInfo);
+            //            }
+            //            MainConsole.Instance.Output(String.Format("loadOffsets <X,Y,Z> = <{0},{1},{2}>",loadOffset.X,loadOffset.Y,loadOffset.Z));
+            //        }
+            //    }
+            //    SceneManager.LoadCurrentSceneFromXml(cmdparams[2], generateNewIDS, loadOffset);
+            //}
+            //else
+            //{
+            //    try
+            //    {
+            //        SceneManager.LoadCurrentSceneFromXml(DEFAULT_PRIM_BACKUP_FILENAME, false, loadOffset);
+            //    }
+            //    catch (FileNotFoundException)
+            //    {
+            //        MainConsole.Instance.Output("Default xml not found. Usage: load-xml <filename>");
+            //    }
+            //}
+            throw new FreAkkiRefactoringException("LoadXml");
         }
         /// <summary>
         /// Serialize region data to XML2Format
@@ -1124,14 +1142,15 @@ namespace OpenSim
         /// <param name="cmdparams"></param>
         protected void SaveXml2(string module, string[] cmdparams)
         {
-            if (cmdparams.Length > 2)
-            {
-                SceneManager.SaveCurrentSceneToXml2(cmdparams[2]);
-            }
-            else
-            {
-                SceneManager.SaveCurrentSceneToXml2(DEFAULT_PRIM_BACKUP_FILENAME);
-            }
+            //if (cmdparams.Length > 2)
+            //{
+            //    SceneManager.SaveCurrentSceneToXml2(cmdparams[2]);
+            //}
+            //else
+            //{
+            //    SceneManager.SaveCurrentSceneToXml2(DEFAULT_PRIM_BACKUP_FILENAME);
+            //}
+            throw new FreAkkiRefactoringException("SaveXml2");
         }
 
         /// <summary>
@@ -1141,28 +1160,29 @@ namespace OpenSim
         /// <param name="cmdparams"></param>
         protected void LoadXml2(string module, string[] cmdparams)
         {
-            if (cmdparams.Length > 2)
-            {
-                try
-                {
-                    SceneManager.LoadCurrentSceneFromXml2(cmdparams[2]);
-                }
-                catch (FileNotFoundException)
-                {
-                    MainConsole.Instance.Output("Specified xml not found. Usage: load xml2 <filename>");
-                }
-            }
-            else
-            {
-                try
-                {
-                    SceneManager.LoadCurrentSceneFromXml2(DEFAULT_PRIM_BACKUP_FILENAME);
-                }
-                catch (FileNotFoundException)
-                {
-                    MainConsole.Instance.Output("Default xml not found. Usage: load xml2 <filename>");
-                }
-            }
+            //if (cmdparams.Length > 2)
+            //{
+            //    try
+            //    {
+            //        SceneManager.LoadCurrentSceneFromXml2(cmdparams[2]);
+            //    }
+            //    catch (FileNotFoundException)
+            //    {
+            //        MainConsole.Instance.Output("Specified xml not found. Usage: load xml2 <filename>");
+            //    }
+            //}
+            //else
+            //{
+            //    try
+            //    {
+            //        SceneManager.LoadCurrentSceneFromXml2(DEFAULT_PRIM_BACKUP_FILENAME);
+            //    }
+            //    catch (FileNotFoundException)
+            //    {
+            //        MainConsole.Instance.Output("Default xml not found. Usage: load xml2 <filename>");
+            //    }
+            //}
+            throw new FreAkkiRefactoringException("LoadXml2");
         }
 
         /// <summary>
@@ -1171,14 +1191,15 @@ namespace OpenSim
         /// <param name="cmdparams"></param>
         protected void LoadOar(string module, string[] cmdparams)
         {
-            try
-            {
-                SceneManager.LoadArchiveToCurrentScene(cmdparams);
-            }
-            catch (Exception e)
-            {
-                MainConsole.Instance.Output(e.Message);
-            }
+            //try
+            //{
+            //    SceneManager.LoadArchiveToCurrentScene(cmdparams);
+            //}
+            //catch (Exception e)
+            //{
+            //    MainConsole.Instance.Output(e.Message);
+            //}
+            throw new FreAkkiRefactoringException("LoadOar");
         }
 
         /// <summary>
@@ -1187,231 +1208,236 @@ namespace OpenSim
         /// <param name="cmdparams"></param>
         protected void SaveOar(string module, string[] cmdparams)
         {
-            SceneManager.SaveCurrentSceneToArchive(cmdparams);
+            // SceneManager.SaveCurrentSceneToArchive(cmdparams);
+            throw new FreAkkiRefactoringException("SaveOar");
         }
 
         protected void CreateEstateCommand(string module, string[] args)
         {
-            string response = null;
-            UUID userID;
+            //string response = null;
+            //UUID userID;
 
-            if (args.Length == 2)
-            {
-                response = "No user specified.";
-            }
-            else if (!UUID.TryParse(args[2], out userID))
-            {
-                response = String.Format("{0} is not a valid UUID", args[2]);
-            }
-            else if (args.Length == 3)
-            {
-                response = "No estate name specified.";
-            }
-            else
-            {
-                Scene scene = SceneManager.CurrentOrFirstScene;
+            //if (args.Length == 2)
+            //{
+            //    response = "No user specified.";
+            //}
+            //else if (!UUID.TryParse(args[2], out userID))
+            //{
+            //    response = String.Format("{0} is not a valid UUID", args[2]);
+            //}
+            //else if (args.Length == 3)
+            //{
+            //    response = "No estate name specified.";
+            //}
+            //else
+            //{
+            //    Scene scene = SceneManager.CurrentOrFirstScene;
 
-                // TODO: Is there a better choice here?
-                UUID scopeID = UUID.Zero;
-                UserAccount account = scene.UserAccountService.GetUserAccount(scopeID, userID);
-                if (account == null)
-                {
-                    response = String.Format("Could not find user {0}", userID);
-                }
-                else
-                {
-                    // concatenate it all to "name"
-                    StringBuilder sb = new StringBuilder(args[3]);
-                    for (int i = 4; i < args.Length; i++)
-                        sb.Append (" " + args[i]);
-                    string estateName = sb.ToString().Trim();
+            //    // TODO: Is there a better choice here?
+            //    UUID scopeID = UUID.Zero;
+            //    UserAccount account = scene.UserAccountService.GetUserAccount(scopeID, userID);
+            //    if (account == null)
+            //    {
+            //        response = String.Format("Could not find user {0}", userID);
+            //    }
+            //    else
+            //    {
+            //        // concatenate it all to "name"
+            //        StringBuilder sb = new StringBuilder(args[3]);
+            //        for (int i = 4; i < args.Length; i++)
+            //            sb.Append (" " + args[i]);
+            //        string estateName = sb.ToString().Trim();
 
-                    // send it off for processing.
-                    IEstateModule estateModule = scene.RequestModuleInterface<IEstateModule>();
-                    response = estateModule.CreateEstate(estateName, userID);
-                    if (response == String.Empty)
-                    {
-                        List<int> estates = scene.EstateDataService.GetEstates(estateName);
-                        response = String.Format("Estate {0} created as \"{1}\"", estates.ElementAt(0), estateName);
-                    }
-                }
-            }
+            //        // send it off for processing.
+            //        IEstateModule estateModule = scene.RequestModuleInterface<IEstateModule>();
+            //        response = estateModule.CreateEstate(estateName, userID);
+            //        if (response == String.Empty)
+            //        {
+            //            List<int> estates = scene.EstateDataService.GetEstates(estateName);
+            //            response = String.Format("Estate {0} created as \"{1}\"", estates.ElementAt(0), estateName);
+            //        }
+            //    }
+            //}
 
-            // give the user some feedback
-            if (response != null)
-                MainConsole.Instance.Output(response);
+            //// give the user some feedback
+            //if (response != null)
+            //    MainConsole.Instance.Output(response);
+            throw new FreAkkiRefactoringException("CreateEstateCommand");
         }
 
         protected void SetEstateOwnerCommand(string module, string[] args)
         {
-            string response = null;
+            //string response = null;
 
-            Scene scene = SceneManager.CurrentOrFirstScene;
-            IEstateModule estateModule = scene.RequestModuleInterface<IEstateModule>();
+            //Scene scene = SceneManager.CurrentOrFirstScene;
+            //IEstateModule estateModule = scene.RequestModuleInterface<IEstateModule>();
 
-            if (args.Length == 3)
-            {
-                response = "No estate specified.";
-            }
-            else
-            {
-                int estateId;
-                if (!int.TryParse(args[3], out estateId))
-                {
-                    response = String.Format("\"{0}\" is not a valid ID for an Estate", args[3]);
-                }
-                else
-                {
-                    if (args.Length == 4)
-                    {
-                        response = "No user specified.";
-                    }
-                    else
-                    {
-                        UserAccount account = null;
+            //if (args.Length == 3)
+            //{
+            //    response = "No estate specified.";
+            //}
+            //else
+            //{
+            //    int estateId;
+            //    if (!int.TryParse(args[3], out estateId))
+            //    {
+            //        response = String.Format("\"{0}\" is not a valid ID for an Estate", args[3]);
+            //    }
+            //    else
+            //    {
+            //        if (args.Length == 4)
+            //        {
+            //            response = "No user specified.";
+            //        }
+            //        else
+            //        {
+            //            UserAccount account = null;
 
-                        // TODO: Is there a better choice here?
-                        UUID scopeID = UUID.Zero;
+            //            // TODO: Is there a better choice here?
+            //            UUID scopeID = UUID.Zero;
 
-                        string s1 = args[4];
-                        if (args.Length == 5)
-                        {
-                            // attempt to get account by UUID
-                            UUID u;
-                            if (UUID.TryParse(s1, out u))
-                            {
-                                account = scene.UserAccountService.GetUserAccount(scopeID, u);
-                                if (account == null)
-                                    response = String.Format("Could not find user {0}", s1);
-                            }
-                            else
-                            {
-                                response = String.Format("Invalid UUID {0}", s1);
-                            }
-                        }
-                        else
-                        {
-                            // attempt to get account by Firstname, Lastname
-                            string s2 = args[5];
-                            account = scene.UserAccountService.GetUserAccount(scopeID, s1, s2);
-                            if (account == null)
-                                response = String.Format("Could not find user {0} {1}", s1, s2);
-                        }
+            //            string s1 = args[4];
+            //            if (args.Length == 5)
+            //            {
+            //                // attempt to get account by UUID
+            //                UUID u;
+            //                if (UUID.TryParse(s1, out u))
+            //                {
+            //                    account = scene.UserAccountService.GetUserAccount(scopeID, u);
+            //                    if (account == null)
+            //                        response = String.Format("Could not find user {0}", s1);
+            //                }
+            //                else
+            //                {
+            //                    response = String.Format("Invalid UUID {0}", s1);
+            //                }
+            //            }
+            //            else
+            //            {
+            //                // attempt to get account by Firstname, Lastname
+            //                string s2 = args[5];
+            //                account = scene.UserAccountService.GetUserAccount(scopeID, s1, s2);
+            //                if (account == null)
+            //                    response = String.Format("Could not find user {0} {1}", s1, s2);
+            //            }
 
-                        // If it's valid, send it off for processing.
-                        if (account != null)
-                            response = estateModule.SetEstateOwner(estateId, account);
+            //            // If it's valid, send it off for processing.
+            //            if (account != null)
+            //                response = estateModule.SetEstateOwner(estateId, account);
 
-                        if (response == String.Empty)
-                        {
-                            response = String.Format("Estate owner changed to {0} ({1} {2})", account.PrincipalID, account.FirstName, account.LastName);
-                        }
-                    }
-                }
-            }
+            //            if (response == String.Empty)
+            //            {
+            //                response = String.Format("Estate owner changed to {0} ({1} {2})", account.PrincipalID, account.FirstName, account.LastName);
+            //            }
+            //        }
+            //    }
+            //}
 
-            // give the user some feedback
-            if (response != null)
-                MainConsole.Instance.Output(response);
+            //// give the user some feedback
+            //if (response != null)
+            //    MainConsole.Instance.Output(response);
+            throw new FreAkkiRefactoringException("SetEstateOwnerCommand");
         }
 
         protected void SetEstateNameCommand(string module, string[] args)
         {
-            string response = null;
+        //    string response = null;
 
-            Scene scene = SceneManager.CurrentOrFirstScene;
-            IEstateModule estateModule = scene.RequestModuleInterface<IEstateModule>();
+        //    Scene scene = SceneManager.CurrentOrFirstScene;
+        //    IEstateModule estateModule = scene.RequestModuleInterface<IEstateModule>();
 
-            if (args.Length == 3)
-            {
-                response = "No estate specified.";
-            }
-            else
-            {
-                int estateId;
-                if (!int.TryParse(args[3], out estateId))
-                {
-                    response = String.Format("\"{0}\" is not a valid ID for an Estate", args[3]);
-                }
-                else
-                {
-                    if (args.Length == 4)
-                    {
-                        response = "No name specified.";
-                    }
-                    else
-                    {
-                        // everything after the estate ID is "name"
-                        StringBuilder sb = new StringBuilder(args[4]);
-                        for (int i = 5; i < args.Length; i++)
-                            sb.Append (" " + args[i]);
+        //    if (args.Length == 3)
+        //    {
+        //        response = "No estate specified.";
+        //    }
+        //    else
+        //    {
+        //        int estateId;
+        //        if (!int.TryParse(args[3], out estateId))
+        //        {
+        //            response = String.Format("\"{0}\" is not a valid ID for an Estate", args[3]);
+        //        }
+        //        else
+        //        {
+        //            if (args.Length == 4)
+        //            {
+        //                response = "No name specified.";
+        //            }
+        //            else
+        //            {
+        //                // everything after the estate ID is "name"
+        //                StringBuilder sb = new StringBuilder(args[4]);
+        //                for (int i = 5; i < args.Length; i++)
+        //                    sb.Append (" " + args[i]);
 
-                        string estateName = sb.ToString();
+        //                string estateName = sb.ToString();
 
-                        // send it off for processing.
-                        response = estateModule.SetEstateName(estateId, estateName);
+        //                // send it off for processing.
+        //                response = estateModule.SetEstateName(estateId, estateName);
 
-                        if (response == String.Empty)
-                        {
-                            response = String.Format("Estate {0} renamed to \"{1}\"", estateId, estateName);
-                        }
-                    }
-                }
-            }
+        //                if (response == String.Empty)
+        //                {
+        //                    response = String.Format("Estate {0} renamed to \"{1}\"", estateId, estateName);
+        //                }
+        //            }
+        //        }
+        //    }
 
-            // give the user some feedback
-            if (response != null)
-                MainConsole.Instance.Output(response);
+        //    // give the user some feedback
+        //    if (response != null)
+        //        MainConsole.Instance.Output(response);
+            throw new FreAkkiRefactoringException("SetEstateNameCommand");
         }
 
         private void EstateLinkRegionCommand(string module, string[] args)
         {
-            int estateId =-1;
-            UUID regionId = UUID.Zero;
-            Scene scene = null;
-            string response = null;
+        //    int estateId =-1;
+        //    UUID regionId = UUID.Zero;
+        //    Scene scene = null;
+        //    string response = null;
 
-            if (args.Length == 3)
-            {
-                response = "No estate specified.";
-            }
-            else if (!int.TryParse(args [3], out estateId))
-            {
-                response = String.Format("\"{0}\" is not a valid ID for an Estate", args [3]);
-            }
-            else if (args.Length == 4)
-            {
-                response = "No region specified.";
-            }
-            else if (!UUID.TryParse(args[4], out regionId))
-            {
-                response = String.Format("\"{0}\" is not a valid UUID for a Region", args [4]);
-            }
-            else if (!SceneManager.TryGetScene(regionId, out scene))
-            {
-                // region may exist, but on a different sim.
-                response = String.Format("No access to Region \"{0}\"", args [4]);
-            }
+        //    if (args.Length == 3)
+        //    {
+        //        response = "No estate specified.";
+        //    }
+        //    else if (!int.TryParse(args [3], out estateId))
+        //    {
+        //        response = String.Format("\"{0}\" is not a valid ID for an Estate", args [3]);
+        //    }
+        //    else if (args.Length == 4)
+        //    {
+        //        response = "No region specified.";
+        //    }
+        //    else if (!UUID.TryParse(args[4], out regionId))
+        //    {
+        //        response = String.Format("\"{0}\" is not a valid UUID for a Region", args [4]);
+        //    }
+        //    else if (!SceneManager.TryGetScene(regionId, out scene))
+        //    {
+        //        // region may exist, but on a different sim.
+        //        response = String.Format("No access to Region \"{0}\"", args [4]);
+        //    }
 
-            if (response != null)
-            {
-                MainConsole.Instance.Output(response);
-                return;
-            }
+        //    if (response != null)
+        //    {
+        //        MainConsole.Instance.Output(response);
+        //        return;
+        //    }
 
-            // send it off for processing.
-            IEstateModule estateModule = scene.RequestModuleInterface<IEstateModule>();
-            response = estateModule.SetRegionEstate(scene.RegionInfo, estateId);
-            if (response == String.Empty)
-            {
-                estateModule.TriggerRegionInfoChange();
-                estateModule.sendRegionHandshakeToAll();
-                response = String.Format ("Region {0} is now attached to estate {1}", regionId, estateId);
-            }
+        //    // send it off for processing.
+        //    IEstateModule estateModule = scene.RequestModuleInterface<IEstateModule>();
+        //    response = estateModule.SetRegionEstate(scene.RegionInfo, estateId);
+        //    if (response == String.Empty)
+        //    {
+        //        estateModule.TriggerRegionInfoChange();
+        //        estateModule.sendRegionHandshakeToAll();
+        //        response = String.Format ("Region {0} is now attached to estate {1}", regionId, estateId);
+        //    }
 
-            // give the user some feedback
-            if (response != null)
-                MainConsole.Instance.Output (response);
+        //    // give the user some feedback
+        //    if (response != null)
+        //        MainConsole.Instance.Output (response);
+            throw new FreAkkiRefactoringException("EstateLinkRegionCommand");
         }
 
         #endregion

@@ -298,7 +298,8 @@ namespace OpenSim
 
         private void HandleCommanderCommand(string module, string[] cmd)
         {
-            SceneManager.SendCommandToPluginModules(cmd);
+            // FREAKKI SceneManager.SendCommandToPluginModules(cmd);
+            throw new FreAkkiRefactoringException("HandleCommanderCommand ... pending");
         }
 
         private void HandleCommanderHelp(string module, string[] cmd)
@@ -306,9 +307,10 @@ namespace OpenSim
             // Only safe for the interactive console, since it won't
             // let us come here unless both scene and commander exist
             //
-            ICommander moduleCommander = SceneManager.CurrentOrFirstScene.GetCommander(cmd[1].ToLower());
-            if (moduleCommander != null)
-                m_console.Output(moduleCommander.Help);
+            // FREAKKI ICommander moduleCommander = SceneManager.CurrentOrFirstScene.GetCommander(cmd[1].ToLower());
+            // if (moduleCommander != null)
+            //    m_console.Output(moduleCommander.Help);
+            throw new FreAkkiRefactoringException("HandleCommanderHelp(string module, string[] cmd) ... pending");
         }
 
         protected override void Initialize()
@@ -316,15 +318,15 @@ namespace OpenSim
             // Called from base.StartUp()
 
             m_httpServerPort = m_networkServersInfo.HttpListenerPort;
-            SceneManager.OnRestartSim += HandleRestartRegion;
+            // FREAKKI SceneManager.OnRestartSim += HandleRestartRegion;
 
             // Only enable the watchdogs when all regions are ready.  Otherwise we get false positives when cpu is
             // heavily used during initial startup.
             //
             // FIXME: It's also possible that region ready status should be flipped during an OAR load since this
             // also makes heavy use of the CPU.
-            SceneManager.OnRegionsReadyStatusChange
-                += sm => { MemoryWatchdog.Enabled = sm.AllRegionsReady; Watchdog.Enabled = sm.AllRegionsReady; };
+            // FREAKKI SceneManager.OnRegionsReadyStatusChange
+            //    += sm => { MemoryWatchdog.Enabled = sm.AllRegionsReady; Watchdog.Enabled = sm.AllRegionsReady; };
         }
 
         /// <summary>

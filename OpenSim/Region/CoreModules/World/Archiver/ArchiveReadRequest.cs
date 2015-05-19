@@ -418,63 +418,64 @@ namespace OpenSim.Region.CoreModules.World.Archiver
         /// <param name="dearchivedScenes"></param>
         private void FindAndLoadControlFile(out TarArchiveReader archive, out DearchiveScenesInfo dearchivedScenes)
         {
-            archive = new TarArchiveReader(m_loadStream);
-            dearchivedScenes = new DearchiveScenesInfo();
+            //archive = new TarArchiveReader(m_loadStream);
+            //dearchivedScenes = new DearchiveScenesInfo();
 
-            string filePath;
-            byte[] data;
-            TarArchiveReader.TarEntryType entryType;
-            bool firstFile = true;
+            //string filePath;
+            //byte[] data;
+            //TarArchiveReader.TarEntryType entryType;
+            //bool firstFile = true;
 
-            while ((data = archive.ReadEntry(out filePath, out entryType)) != null)
-            {
-                if (TarArchiveReader.TarEntryType.TYPE_DIRECTORY == entryType)
-                    continue;
+            //while ((data = archive.ReadEntry(out filePath, out entryType)) != null)
+            //{
+            //    if (TarArchiveReader.TarEntryType.TYPE_DIRECTORY == entryType)
+            //        continue;
                     
-                if (filePath == ArchiveConstants.CONTROL_FILE_PATH)
-                {
-                    LoadControlFile(filePath, data, dearchivedScenes);
+            //    if (filePath == ArchiveConstants.CONTROL_FILE_PATH)
+            //    {
+            //        LoadControlFile(filePath, data, dearchivedScenes);
 
-                    // Find which scenes are available in the simulator
-                    ArchiveScenesGroup simulatorScenes = new ArchiveScenesGroup();
-                    SceneManager.Instance.ForEachScene(delegate(Scene scene2)
-                    {
-                        simulatorScenes.AddScene(scene2);
-                    });
-                    simulatorScenes.CalcSceneLocations();
-                    dearchivedScenes.SetSimulatorScenes(m_rootScene, simulatorScenes);
+            //        // Find which scenes are available in the simulator
+            //        ArchiveScenesGroup simulatorScenes = new ArchiveScenesGroup();
+            // FREAKKI       SceneManager.Instance.ForEachScene(delegate(Scene scene2)
+            //        {
+            //            simulatorScenes.AddScene(scene2);
+            //        });
+            //        simulatorScenes.CalcSceneLocations();
+            //        dearchivedScenes.SetSimulatorScenes(m_rootScene, simulatorScenes);
 
-                    // If the control file wasn't the first file then reset the read pointer
-                    if (!firstFile)
-                    {
-                        m_log.Warn("Control file wasn't the first file in the archive");
-                        if (m_loadStream.CanSeek)
-                        {
-                            m_loadStream.Seek(0, SeekOrigin.Begin);
-                        }
-                        else if (m_loadPath != null)
-                        {
-                            archive.Close();
-                            archive = null;
-                            m_loadStream.Close();
-                            m_loadStream = null;
-                            m_loadStream = new GZipStream(ArchiveHelpers.GetStream(m_loadPath), CompressionMode.Decompress);
-                            archive = new TarArchiveReader(m_loadStream);
-                        }
-                        else
-                        {
-                            // There isn't currently a scenario where this happens, but it's best to add a check just in case
-                            throw new Exception("Error reading archive: control file wasn't the first file, and the input stream doesn't allow seeking");
-                        }
-                    }
+            //        // If the control file wasn't the first file then reset the read pointer
+            //        if (!firstFile)
+            //        {
+            //            m_log.Warn("Control file wasn't the first file in the archive");
+            //            if (m_loadStream.CanSeek)
+            //            {
+            //                m_loadStream.Seek(0, SeekOrigin.Begin);
+            //            }
+            //            else if (m_loadPath != null)
+            //            {
+            //                archive.Close();
+            //                archive = null;
+            //                m_loadStream.Close();
+            //                m_loadStream = null;
+            //                m_loadStream = new GZipStream(ArchiveHelpers.GetStream(m_loadPath), CompressionMode.Decompress);
+            //                archive = new TarArchiveReader(m_loadStream);
+            //            }
+            //            else
+            //            {
+            //                // There isn't currently a scenario where this happens, but it's best to add a check just in case
+            //                throw new Exception("Error reading archive: control file wasn't the first file, and the input stream doesn't allow seeking");
+            //            }
+            //        }
 
-                    return;
-                }
+            //        return;
+            //    }
 
-                firstFile = false;
-            }
+            //    firstFile = false;
+            //}
 
-            throw new Exception("Control file not found");
+            //throw new Exception("Control file not found");
+            throw new FreAkkiRefactoringException("FindAndLoadControlFile ... pending");
         }
         
         /// <summary>
