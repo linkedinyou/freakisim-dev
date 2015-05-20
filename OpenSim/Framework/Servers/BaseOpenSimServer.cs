@@ -37,13 +37,11 @@ using System.Timers;
 using Timer = System.Timers.Timer;
 using Nini.Config;
 
-namespace OpenSim.Framework.Servers
-{
+namespace OpenSim.Framework.Servers {
     /// <summary>
     /// Common base for the main OpenSimServers (user, grid, inventory, region, etc)
     /// </summary>
-    public abstract class BaseOpenSimServer : ServerBase
-    {
+    public abstract class BaseOpenSimServer : ServerBase {
         private static readonly ILog m_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         /// <summary>
@@ -52,29 +50,27 @@ namespace OpenSim.Framework.Servers
         /// </summary>
         private int m_periodDiagnosticTimerMS = 60 * 60 * 1000;
         private Timer m_periodicDiagnosticsTimer = new Timer(60 * 60 * 1000);
-        
+
         /// <summary>
         /// Random uuid for private data 
         /// </summary>
         protected string m_osSecret = String.Empty;
 
         protected BaseHttpServer m_httpServer;
-        public BaseHttpServer HttpServer
-        {
+        public BaseHttpServer HttpServer {
             get { return m_httpServer; }
         }
 
-        public BaseOpenSimServer() : base()
-        {
+        public BaseOpenSimServer()
+            : base() {
             // Random uuid for private data
             m_osSecret = UUID.Random().ToString();
         }
-        
+
         /// <summary>
         /// Must be overriden by child classes for their own server specific startup behaviour.
         /// </summary>
-        protected virtual void StartupSpecific()
-        {
+        protected virtual void StartupSpecific() {
             StatsManager.SimExtraStats = new SimExtraStatsCollector();
             RegisterCommonCommands();
             RegisterCommonComponents(Config);
@@ -83,15 +79,13 @@ namespace OpenSim.Framework.Servers
             int logShowStatsSeconds = startupConfig.GetInt("LogShowStatsSeconds", m_periodDiagnosticTimerMS / 1000);
             m_periodDiagnosticTimerMS = logShowStatsSeconds * 1000;
             m_periodicDiagnosticsTimer.Elapsed += new ElapsedEventHandler(LogDiagnostics);
-            if (m_periodDiagnosticTimerMS != 0)
-            {
+            if (m_periodDiagnosticTimerMS != 0) {
                 m_periodicDiagnosticsTimer.Interval = m_periodDiagnosticTimerMS;
                 m_periodicDiagnosticsTimer.Enabled = true;
             }
-        }       
+        }
 
-        protected override void ShutdownSpecific()
-        {            
+        protected override void ShutdownSpecific() {
             m_log.Info("[SHUTDOWN]: Shutdown processing on main thread complete.  Exiting...");
 
             RemovePIDFile();
@@ -100,7 +94,7 @@ namespace OpenSim.Framework.Servers
 
             Environment.Exit(0);
         }
-        
+
         /// <summary>
         /// Provides a list of help topics that are available.  Overriding classes should append their topics to the
         /// information returned when the base method is called.
@@ -114,8 +108,7 @@ namespace OpenSim.Framework.Servers
         /// <summary>
         /// Print statistics to the logfile, if they are active
         /// </summary>
-        protected void LogDiagnostics(object source, ElapsedEventArgs e)
-        {
+        protected void LogDiagnostics(object source, ElapsedEventArgs e) {
             StringBuilder sb = new StringBuilder("DIAGNOSTICS\n\n");
             sb.Append(GetUptimeReport());
             sb.Append(StatsManager.SimExtraStats.Report());
@@ -128,33 +121,27 @@ namespace OpenSim.Framework.Servers
         /// <summary>
         /// Performs initialisation of the scene, such as loading configuration from disk.
         /// </summary>
-        public virtual void Startup()
-        {            
+        public virtual void Startup() {
             StartupSpecific();
-            
+
             TimeSpan timeTaken = DateTime.Now - m_startuptime;
-            
+
             MainConsole.Instance.OutputFormat(
                 "PLEASE WAIT FOR LOGINS TO BE ENABLED ON REGIONS ONCE SCRIPTS HAVE STARTED.  Non-script portion of startup took {0}m {1}s.",
                 timeTaken.Minutes, timeTaken.Seconds);
         }
 
-        public string osSecret 
-        {
+        public string osSecret {
             // Secret uuid for the simulator
-            get { return m_osSecret; }            
+            get { return m_osSecret; }
         }
 
-        public string StatReport(IOSHttpRequest httpRequest)
-        {
+        public string StatReport(IOSHttpRequest httpRequest) {
             // If we catch a request for "callback", wrap the response in the value for jsonp
-            if (httpRequest.Query.ContainsKey("callback"))
-            {
-                return httpRequest.Query["callback"].ToString() + "(" + StatsManager.SimExtraStats.XReport((DateTime.Now - m_startuptime).ToString() , m_version) + ");";
-            } 
-            else 
-            {
-                return StatsManager.SimExtraStats.XReport((DateTime.Now - m_startuptime).ToString() , m_version);
+            if (httpRequest.Query.ContainsKey("callback")) {
+                return httpRequest.Query["callback"].ToString() + "(" + StatsManager.SimExtraStats.XReport((DateTime.Now - m_startuptime).ToString(), m_version) + ");";
+            } else {
+                return StatsManager.SimExtraStats.XReport((DateTime.Now - m_startuptime).ToString(), m_version);
             }
         }
     }

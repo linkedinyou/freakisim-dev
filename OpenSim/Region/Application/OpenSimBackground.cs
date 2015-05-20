@@ -30,26 +30,23 @@ using Nini.Config;
 using System.Reflection;
 using System.Threading;
 
-namespace OpenSim
-{
+namespace OpenSim {
     /// <summary>
     /// Consoleless OpenSimulator region server
     /// </summary>
-    public class OpenSimBackground : OpenSim
-    {
+    public class OpenSimBackground : OpenSim {
         private static readonly ILog m_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        private ManualResetEvent WorldHasComeToAnEnd = new ManualResetEvent(false);
+        private readonly ManualResetEvent WorldHasComeToAnEnd = new ManualResetEvent(false);
 
-        public OpenSimBackground(IConfigSource configSource) : base(configSource)
-        {
+        public OpenSimBackground(IConfigSource configSource)
+            : base(configSource) {
         }
 
         /// <summary>
         /// Performs initialisation of the scene, such as loading configuration from disk.
         /// </summary>
-        public override void Startup()
-        {
+        public override void Startup() {
             m_gui = false;
 
             base.Startup();
@@ -64,8 +61,7 @@ namespace OpenSim
         /// <summary>
         /// Performs any last-minute sanity checking and shuts down the region server
         /// </summary>
-        public override void Shutdown()
-        {
+        public override void Shutdown() {
             WorldHasComeToAnEnd.Set();
             m_log.Info("[OPENSIM MAIN]: World has come to an end");
             base.Shutdown();

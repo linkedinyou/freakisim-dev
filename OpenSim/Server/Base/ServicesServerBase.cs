@@ -37,10 +37,8 @@ using System.IO;
 using System.Reflection;
 using System.Xml;
 
-namespace OpenSim.Server.Base
-{
-    public class ServicesServerBase : ServerBase
-    {
+namespace OpenSim.Server.Base {
+    public class ServicesServerBase : ServerBase {
         // Logger
         //
         private static readonly ILog m_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
@@ -49,8 +47,7 @@ namespace OpenSim.Server.Base
         //
         protected string[] m_Arguments;
 
-        public string ConfigDirectory
-        {
+        public string ConfigDirectory {
             get;
             private set;
         }
@@ -61,8 +58,8 @@ namespace OpenSim.Server.Base
 
         // Handle all the automagical stuff
         //
-        public ServicesServerBase(string prompt, string[] args) : base()
-        {
+        public ServicesServerBase(string prompt, string[] args)
+            : base() {
             // Save raw arguments
             m_Arguments = args;
 
@@ -72,7 +69,7 @@ namespace OpenSim.Server.Base
             argvConfig.AddSwitch("Startup", "console", "c");
             argvConfig.AddSwitch("Startup", "logfile", "l");
             argvConfig.AddSwitch("Startup", "inifile", "i");
-            argvConfig.AddSwitch("Startup", "prompt",  "p");
+            argvConfig.AddSwitch("Startup", "prompt", "p");
             argvConfig.AddSwitch("Startup", "logconfig", "g");
 
             // Automagically create the ini file name
@@ -81,37 +78,30 @@ namespace OpenSim.Server.Base
             string logConfig = null;
 
             IConfig startupConfig = argvConfig.Configs["Startup"];
-            if (startupConfig != null)
-            {
+            if (startupConfig != null) {
                 // Check if a file name was given on the command line
                 iniFile = startupConfig.GetString("inifile", iniFile);
 
                 // Check if a prompt was given on the command line
                 prompt = startupConfig.GetString("prompt", prompt);
-                
+
                 // Check for a Log4Net config file on the command line
-                logConfig =startupConfig.GetString("logconfig", logConfig);
+                logConfig = startupConfig.GetString("logconfig", logConfig);
             }
 
             // Find out of the file name is a URI and remote load it if possible.
             // Load it as a local file otherwise.
             Uri configUri;
 
-            try
-            {
+            try {
                 if (Uri.TryCreate(iniFile, UriKind.Absolute, out configUri) &&
-                    configUri.Scheme == Uri.UriSchemeHttp)
-                {
+                    configUri.Scheme == Uri.UriSchemeHttp) {
                     XmlReader r = XmlReader.Create(iniFile);
                     Config = new XmlConfigSource(r);
-                }
-                else
-                {
+                } else {
                     Config = new IniConfigSource(iniFile);
                 }
-            }
-            catch (Exception e)
-            {
+            } catch (Exception e) {
                 System.Console.WriteLine("Error reading from config source.  {0}", e.Message);
                 Environment.Exit(1);
             }
@@ -119,15 +109,14 @@ namespace OpenSim.Server.Base
             // Merge OpSys env vars
             m_log.Info("[CONFIG]: Loading environment variables for Config");
             Util.MergeEnvironmentToConfig(Config);
-            
+
             // Merge the configuration from the command line into the loaded file
             Config.Merge(argvConfig);
 
             Config.ReplaceKeyValues();
 
             // Refresh the startupConfig post merge
-            if (Config.Configs["Startup"] != null)
-            {
+            if (Config.Configs["Startup"] != null) {
                 startupConfig = Config.Configs["Startup"];
             }
 
@@ -143,37 +132,28 @@ namespace OpenSim.Server.Base
             if (startupConfig != null)
                 consoleType = startupConfig.GetString("console", consoleType);
 
-            if (consoleType == "basic")
-            {
+            if (consoleType == "basic") {
                 MainConsole.Instance = new CommandConsole(prompt);
-            }
-            else if (consoleType == "rest")
-            {
+            } else if (consoleType == "rest") {
                 MainConsole.Instance = new RemoteConsole(prompt);
                 ((RemoteConsole)MainConsole.Instance).ReadConfig(Config);
-            }
-            else
-            {
+            } else {
                 MainConsole.Instance = new LocalConsole(prompt);
             }
 
             m_console = MainConsole.Instance;
 
-            if (logConfig != null)
-            {
+            if (logConfig != null) {
                 FileInfo cfg = new FileInfo(logConfig);
                 XmlConfigurator.Configure(cfg);
-            }
-            else
-            {
+            } else {
                 XmlConfigurator.Configure();
             }
 
             LogEnvironmentInformation();
             RegisterCommonAppenders(startupConfig);
 
-            if (startupConfig.GetString("PIDFile", String.Empty) != String.Empty)
-            {
+            if (startupConfig.GetString("PIDFile", String.Empty) != String.Empty) {
                 CreatePIDFile(startupConfig.GetString("PIDFile"));
             }
 
@@ -185,24 +165,18 @@ namespace OpenSim.Server.Base
             Initialise();
         }
 
-        public bool Running
-        {
+        public bool Running {
             get { return m_Running; }
         }
 
-        public virtual int Run()
-        {
+        public virtual int Run() {
             Watchdog.Enabled = true;
             MemoryWatchdog.Enabled = true;
 
-            while (m_Running)
-            {
-                try
-                {
+            while (m_Running) {
+                try {
                     MainConsole.Instance.Prompt();
-                }
-                catch (Exception e)
-                {
+                } catch (Exception e) {
                     m_log.ErrorFormat("Command error: {0}", e);
                 }
             }
@@ -212,20 +186,17 @@ namespace OpenSim.Server.Base
             return 0;
         }
 
-        protected override void ShutdownSpecific()
-        {
+        protected override void ShutdownSpecific() {
             m_Running = false;
             m_log.Info("[CONSOLE] Quitting");
 
             base.ShutdownSpecific();
         }
 
-        protected virtual void ReadConfig()
-        {
+        protected virtual void ReadConfig() {
         }
 
-        protected virtual void Initialise()
-        {
+        protected virtual void Initialise() {
         }
     }
 }

@@ -38,10 +38,8 @@ using System.Collections.Generic;
 using System.Net;
 using System.Reflection;
 
-namespace OpenSim.Region.ClientStack
-{
-    public abstract class RegionApplicationBase : BaseOpenSimServer
-    {
+namespace OpenSim.Region.ClientStack {
+    public abstract class RegionApplicationBase : BaseOpenSimServer {
         private static readonly ILog m_log
             = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
@@ -56,9 +54,9 @@ namespace OpenSim.Region.ClientStack
         public NetworkServersInfo NetServersInfo { get { return m_networkServersInfo; } }
         public ISimulationDataService SimulationDataService { get { return m_simulationDataService; } }
         public IEstateDataService EstateDataService { get { return m_estateDataService; } }
-       
+
         protected abstract void Initialize();
-        
+
         /// <summary>
         /// Get a new physics scene.
         /// </summary>
@@ -68,24 +66,22 @@ namespace OpenSim.Region.ClientStack
         /// </param>
         /// <returns></returns>
         protected abstract PhysicsScene GetPhysicsScene(string osSceneIdentifier, Vector3 regionExtent);
-        
+
         protected abstract ClientStackManager CreateClientStackManager();
         protected abstract Scene CreateScene(RegionInfo regionInfo, ISimulationDataService simDataService, IEstateDataService estateDataService, AgentCircuitManager circuitManager);
 
-        protected override void StartupSpecific()
-        {
+        protected override void StartupSpecific() {
             // SceneManager = SceneManager.Instance;
             m_clientStackManager = CreateClientStackManager();
 
             Initialize();
 
-            m_httpServer 
+            m_httpServer
                 = new BaseHttpServer(
-                    m_httpServerPort, m_networkServersInfo.HttpUsesSSL, m_networkServersInfo.httpSSLPort, 
+                    m_httpServerPort, m_networkServersInfo.HttpUsesSSL, m_networkServersInfo.httpSSLPort,
                     m_networkServersInfo.HttpSSLCN);
-            
-            if (m_networkServersInfo.HttpUsesSSL && (m_networkServersInfo.HttpListenerPort == m_networkServersInfo.httpSSLPort))
-            {
+
+            if (m_networkServersInfo.HttpUsesSSL && (m_networkServersInfo.HttpListenerPort == m_networkServersInfo.httpSSLPort)) {
                 m_log.Error("[REGION SERVER]: HTTP Server config failed.   HTTP Server and HTTPS server must be on different ports");
             }
 
@@ -96,8 +92,7 @@ namespace OpenSim.Region.ClientStack
             MainServer.Instance = m_httpServer;
 
             // "OOB" Server
-            if (m_networkServersInfo.ssl_listener)
-            {
+            if (m_networkServersInfo.ssl_listener) {
                 BaseHttpServer server = new BaseHttpServer(
                     m_networkServersInfo.https_port, m_networkServersInfo.ssl_listener, m_networkServersInfo.cert_path,
                     m_networkServersInfo.cert_pass);
@@ -106,7 +101,7 @@ namespace OpenSim.Region.ClientStack
                 MainServer.AddHttpServer(server);
                 server.Start();
             }
-            
+
             base.StartupSpecific();
         }
 
@@ -121,12 +116,11 @@ namespace OpenSim.Region.ClientStack
         /// </param>
         /// <returns></returns>
         protected PhysicsScene GetPhysicsScene(
-            string engine, string meshEngine, IConfigSource config, string osSceneIdentifier, Vector3 regionExtent)
-        {
+            string engine, string meshEngine, IConfigSource config, string osSceneIdentifier, Vector3 regionExtent) {
             PhysicsPluginManager physicsPluginManager;
             physicsPluginManager = new PhysicsPluginManager();
             physicsPluginManager.LoadPluginsFromAssemblies("Physics");
-            
+
             return physicsPluginManager.GetPhysicsScene(engine, meshEngine, config, osSceneIdentifier, regionExtent);
         }
     }
