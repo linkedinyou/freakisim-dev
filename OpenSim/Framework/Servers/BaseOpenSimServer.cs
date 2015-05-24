@@ -42,7 +42,7 @@ namespace OpenSim.Framework.Servers {
     /// Common base for the main OpenSimServers (user, grid, inventory, region, etc)
     /// </summary>
     public abstract class BaseOpenSimServer : ServerBase {
-        private static readonly ILog m_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog m_baseLog = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         /// <summary>
         /// This will control a periodic log printout of the current 'show stats' (if they are active) for this
@@ -85,8 +85,8 @@ namespace OpenSim.Framework.Servers {
             }
         }
 
-        protected override void ShutdownSpecific() {
-            m_log.Info("[SHUTDOWN]: Shutdown processing on main thread complete.  Exiting...");
+        protected void BaseShutdownSpecific() {
+            m_baseLog.Info("[SHUTDOWN]: Shutdown processing on main thread complete.  Exiting...");
 
             RemovePIDFile();
 
@@ -115,7 +115,7 @@ namespace OpenSim.Framework.Servers {
             sb.Append(Environment.NewLine);
             sb.Append(GetThreadsReport());
 
-            m_log.Debug(sb);
+            m_baseLog.Debug(sb);
         }
 
         /// <summary>

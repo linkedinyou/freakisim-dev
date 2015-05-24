@@ -94,7 +94,7 @@ namespace OpenSim.Region.OptionalModules.PhysicsParameters
         private const string ListInvocation = "physics list";
         private void InstallInterfaces()
         {
-            //if (!m_commandsLoaded)
+            // FREAKKI if (!m_commandsLoaded)
             //{
             //    MainConsole.Instance.Commands.AddCommand(
             //        "Regions", false, "physics set",
@@ -116,7 +116,7 @@ namespace OpenSim.Region.OptionalModules.PhysicsParameters
 
             //    m_commandsLoaded = true;
             //}
-            throw new FreAkkiRefactoringException("InstallInterfaces() ... pending");
+            // throw new FreAkkiRefactoringException("InstallInterfaces() ... pending");
         }
 
         // TODO: extend get so you can get a value from an individual localID

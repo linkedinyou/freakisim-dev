@@ -38,28 +38,11 @@ namespace OpenSim
         /// Initialize the Plugin
         /// </summary>
         /// <param name="openSim">The Application instance</param>
-        void Initialise(OpenSimBase openSim);
+        void Initialise(OpenSim openSim);
 
         /// <summary>
         /// Called when the application loading is completed 
         /// </summary>
         void PostInitialise();
-    }
-
-
-    public class ApplicationPluginInitialiser : PluginInitialiserBase
-    {
-        private OpenSimBase server;
-
-        public ApplicationPluginInitialiser(OpenSimBase s)
-        {
-            server = s;
-        }
-
-        public override void Initialise(IPlugin plugin)
-        {
-            IApplicationPlugin p = plugin as IApplicationPlugin;
-            p.Initialise(server);
-        }
     }
 }

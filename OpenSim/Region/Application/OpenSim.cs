@@ -41,18 +41,31 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Timers;
+using OpenSim.Framework.Servers.HttpServer;
+using OpenSim.Region.ClientStack;
+using OpenSim.Region.Physics.Manager;
+using OpenSim.Server.Base;
+using OpenSim.Services.UserAccountService;
 
-namespace OpenSim
-{
+namespace OpenSim {
     /// <summary>
     /// Interactive OpenSim region server
     /// </summary>
-    public class OpenSim : OpenSimBase
-    {
+    public class OpenSim : BaseOpenSimServer {
+        private const string PLUGIN_ASSET_CACHE = "/OpenSim/AssetCache";
+        private const string PLUGIN_ASSET_SERVER_CLIENT = "/OpenSim/AssetClient";
+        public const string ESTATE_SECTION_NAME = "Estates";
+
+        /// <value>
+        /// The file used to load and save prim backup xml if no filename has been specified
+        /// </value>
+        protected const string DEFAULT_PRIM_BACKUP_FILENAME = "prim-backup.xml";
+
         private static readonly ILog m_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         protected string m_startupCommandsFile;
@@ -74,37 +87,88 @@ namespace OpenSim
         private string m_timedScript = "disabled";
         private int m_timeInterval = 1200;
         private Timer m_scriptTimer;
+        protected string proxyUrl;
+        protected int proxyOffset = 0;
+        public string userStatsURI = String.Empty;
+        public string managedStatsURI = String.Empty;
+        protected bool m_autoCreateClientStack = true;
+        protected ConfigSettings m_configSettings;
+        protected ConfigurationLoader m_configLoader;
+        public ConsoleCommand CreateAccount = null;
+        protected List<IApplicationPlugin> m_plugins = new List<IApplicationPlugin>();
+        protected EnvConfigSource m_EnvConfigSource = new EnvConfigSource();
+        protected List<IClientNetworkServer> m_clientServers = new List<IClientNetworkServer>();
+        protected IRegistryCore m_applicationRegistry = new RegistryCore();
+        protected Dictionary<EndPoint, uint> m_clientCircuits = new Dictionary<EndPoint, uint>();
+        protected NetworkServersInfo m_networkServersInfo;
+        protected uint m_httpServerPort;
+        protected ISimulationDataService m_simulationDataService;
+        protected IEstateDataService m_estateDataService;
+        protected ClientStackManager m_clientStackManager;
 
-        public OpenSim(IConfigSource configSource) : base(configSource)
-        {
+        public OpenSim(IConfigSource configSource)
+            : base() {
+            LoadConfigSettings(configSource);
         }
 
-        protected override void ReadExtraConfigSettings()
-        {
-            base.ReadExtraConfigSettings();
+        public ConfigSettings ConfigurationSettings {
+            get { return m_configSettings; }
+            set { m_configSettings = value; }
+        }
+
+        /// <value>
+        /// The config information passed into the OpenSimulator region server.
+        /// </value>
+        public OpenSimConfigSource ConfigSource { get; private set; }
+
+        public List<IClientNetworkServer> ClientServers {
+            get { return m_clientServers; }
+        }
+
+        public EnvConfigSource envConfigSource {
+            get { return m_EnvConfigSource; }
+        }
+
+        public uint HttpServerPort {
+            get { return m_httpServerPort; }
+        }
+
+        public IRegistryCore ApplicationRegistry {
+            get { return m_applicationRegistry; }
+        }
+
+        public NetworkServersInfo NetServersInfo { get { return m_networkServersInfo; } }
+        public ISimulationDataService SimulationDataService { get { return m_simulationDataService; } }
+        public IEstateDataService EstateDataService { get { return m_estateDataService; } }
+
+        protected void ReadExtraConfigSettings() {
+
+            IConfig networkConfig = Config.Configs["Network"];
+            if (networkConfig != null) {
+                proxyUrl = networkConfig.GetString("proxy_url", "");
+                proxyOffset = Int32.Parse(networkConfig.GetString("proxy_offset", "0"));
+                m_consolePort = (uint)networkConfig.GetInt("console_port", 0);
+            }
+
 
             IConfig startupConfig = Config.Configs["Startup"];
-            IConfig networkConfig = Config.Configs["Network"];
 
             int stpMinThreads = 2;
             int stpMaxThreads = 15;
 
-            if (startupConfig != null)
-            {
+            if (startupConfig != null) {
+                Util.LogOverloads = startupConfig.GetBoolean("LogOverloads", true);
+
                 m_startupCommandsFile = startupConfig.GetString("startup_console_commands_file", "startup_commands.txt");
                 m_shutdownCommandsFile = startupConfig.GetString("shutdown_console_commands_file", "shutdown_commands.txt");
 
                 if (startupConfig.GetString("console", String.Empty) == String.Empty)
                     m_gui = startupConfig.GetBoolean("gui", false);
                 else
-                    m_consoleType= startupConfig.GetString("console", String.Empty);
-
-                if (networkConfig != null)
-                    m_consolePort = (uint)networkConfig.GetInt("console_port", 0);
+                    m_consoleType = startupConfig.GetString("console", String.Empty);
 
                 m_timedScript = startupConfig.GetString("timer_Script", "disabled");
-                if (m_timedScript != "disabled")
-                {
+                if (m_timedScript != "disabled") {
                     m_timeInterval = startupConfig.GetInt("timer_Interval", 1200);
                 }
 
@@ -127,8 +191,7 @@ namespace OpenSim
         /// <summary>
         /// Performs initialisation of the scene, such as loading configuration from disk.
         /// </summary>
-        protected override void StartupSpecific()
-        {
+        protected override void StartupSpecific() {
             m_log.Info("====================================================================");
             m_log.Info("========================= STARTING OPENSIM =========================");
             m_log.Info("====================================================================");
@@ -141,21 +204,18 @@ namespace OpenSim
             if (m_gui) // Driven by external GUI
             {
                 m_console = new CommandConsole("Region");
-            }
-            else
-            {
-                switch (m_consoleType)
-                {
-                case "basic":
-                    m_console = new CommandConsole("Region");
-                    break;
-                case "rest":
-                    m_console = new RemoteConsole("Region");
-                    ((RemoteConsole)m_console).ReadConfig(Config);
-                    break;
-                default:
-                    m_console = new LocalConsole("Region");
-                    break;
+            } else {
+                switch (m_consoleType) {
+                    case "basic":
+                        m_console = new CommandConsole("Region");
+                        break;
+                    case "rest":
+                        m_console = new RemoteConsole("Region");
+                        ((RemoteConsole)m_console).ReadConfig(Config);
+                        break;
+                    default:
+                        m_console = new LocalConsole("Region");
+                        break;
                 }
             }
 
@@ -163,30 +223,108 @@ namespace OpenSim
 
             LogEnvironmentInformation();
             RegisterCommonAppenders(Config.Configs["Startup"]);
-            RegisterConsoleCommands();
+            // FREAKKI RegisterConsoleCommands();
+
+            IConfig startupConfig = Config.Configs["Startup"];
+            if (startupConfig != null) {
+                string pidFile = startupConfig.GetString("PIDFile", String.Empty);
+                if (pidFile != String.Empty)
+                    CreatePIDFile(pidFile);
+
+                userStatsURI = startupConfig.GetString("Stats_URI", String.Empty);
+                managedStatsURI = startupConfig.GetString("ManagedStatsRemoteFetchURI", String.Empty);
+            }
+
+            // Load the simulation data service
+            IConfig simDataConfig = Config.Configs["SimulationDataStore"];
+            if (simDataConfig == null)
+                throw new Exception("Configuration file is missing the [SimulationDataStore] section.  Have you copied OpenSim.ini.example to OpenSim.ini to reference config-include/ files?");
+
+            string module = simDataConfig.GetString("LocalServiceModule", String.Empty);
+            if (String.IsNullOrEmpty(module))
+                throw new Exception("Configuration file is missing the LocalServiceModule parameter in the [SimulationDataStore] section.");
+
+            m_simulationDataService = ServerUtils.LoadPlugin<ISimulationDataService>(module, new object[] { Config });
+            if (m_simulationDataService == null)
+                throw new Exception(
+                    string.Format(
+                        "Could not load an ISimulationDataService implementation from {0}, as configured in the LocalServiceModule parameter of the [SimulationDataStore] config section.",
+                        module));
+
+            // Load the estate data service
+            IConfig estateDataConfig = Config.Configs["EstateDataStore"];
+            if (estateDataConfig == null)
+                throw new Exception("Configuration file is missing the [EstateDataStore] section.  Have you copied OpenSim.ini.example to OpenSim.ini to reference config-include/ files?");
+
+            module = estateDataConfig.GetString("LocalServiceModule", String.Empty);
+            if (String.IsNullOrEmpty(module))
+                throw new Exception("Configuration file is missing the LocalServiceModule parameter in the [EstateDataStore] section");
+
+            m_estateDataService = ServerUtils.LoadPlugin<IEstateDataService>(module, new object[] { Config });
+            if (m_estateDataService == null)
+                throw new Exception(
+                    string.Format(
+                        "Could not load an IEstateDataService implementation from {0}, as configured in the LocalServiceModule parameter of the [EstateDataStore] config section.",
+                        module));
+
+
+            // SceneManager = SceneManager.Instance;
+            m_clientStackManager = CreateClientStackManager();
+
+            Initialize();
+
+            m_httpServer
+                = new BaseHttpServer(
+                    m_httpServerPort, m_networkServersInfo.HttpUsesSSL, m_networkServersInfo.httpSSLPort,
+                    m_networkServersInfo.HttpSSLCN);
+
+            if (m_networkServersInfo.HttpUsesSSL && (m_networkServersInfo.HttpListenerPort == m_networkServersInfo.httpSSLPort)) {
+                m_log.Error("[REGION SERVER]: HTTP Server config failed.   HTTP Server and HTTPS server must be on different ports");
+            }
+
+            m_log.InfoFormat("[REGION SERVER]: Starting HTTP server on port {0}", m_httpServerPort);
+            m_httpServer.Start();
+
+            MainServer.AddHttpServer(m_httpServer);
+            MainServer.Instance = m_httpServer;
+
+            // "OOB" Server
+            if (m_networkServersInfo.ssl_listener) {
+                BaseHttpServer server = new BaseHttpServer(
+                    m_networkServersInfo.https_port, m_networkServersInfo.ssl_listener, m_networkServersInfo.cert_path,
+                    m_networkServersInfo.cert_pass);
+
+                m_log.InfoFormat("[REGION SERVER]: Starting HTTPS server on port {0}", server.Port);
+                MainServer.AddHttpServer(server);
+                server.Start();
+            }
 
             base.StartupSpecific();
 
-            MainServer.Instance.AddStreamHandler(new OpenSim.SimStatusHandler());
-            MainServer.Instance.AddStreamHandler(new OpenSim.XSimStatusHandler(this));
-            if (userStatsURI != String.Empty)
-                MainServer.Instance.AddStreamHandler(new OpenSim.UXSimStatusHandler(this));
+            LoadPlugins();
+            foreach (IApplicationPlugin plugin in m_plugins) {
+                plugin.PostInitialise();
+            }
 
-            if (managedStatsURI != String.Empty)
-            {
+            if (m_console != null)
+                AddPluginCommands(m_console);
+
+            MainServer.Instance.AddStreamHandler(new SimStatusHandler());
+            MainServer.Instance.AddStreamHandler(new XSimStatusHandler(this));
+
+            if (userStatsURI != String.Empty)
+                MainServer.Instance.AddStreamHandler(new UXSimStatusHandler(this));
+
+            if (managedStatsURI != String.Empty) {
                 string urlBase = String.Format("/{0}/", managedStatsURI);
                 MainServer.Instance.AddHTTPHandler(urlBase, StatsManager.HandleStatsRequest);
                 m_log.InfoFormat("[OPENSIM] Enabling remote managed stats fetch. URL = {0}", urlBase);
             }
 
-            if (m_console is RemoteConsole)
-            {
-                if (m_consolePort == 0)
-                {
+            if (m_console is RemoteConsole) {
+                if (m_consolePort == 0) {
                     ((RemoteConsole)m_console).SetServer(m_httpServer);
-                }
-                else
-                {
+                } else {
                     ((RemoteConsole)m_console).SetServer(MainServer.GetHttpServer(m_consolePort));
                 }
             }
@@ -204,21 +342,17 @@ namespace OpenSim
             //    ChangeSelectedRegion("region", new string[] {"change", "region", "root"});
 
             //Run Startup Commands
-            if (String.IsNullOrEmpty(m_startupCommandsFile))
-            {
+            if (String.IsNullOrEmpty(m_startupCommandsFile)) {
                 m_log.Info("[STARTUP]: No startup command script specified. Moving on...");
-            }
-            else
-            {
+            } else {
                 RunCommandScript(m_startupCommandsFile);
             }
 
             // Start timer script (run a script every xx seconds)
-            if (m_timedScript != "disabled")
-            {
+            if (m_timedScript != "disabled") {
                 m_scriptTimer = new Timer();
                 m_scriptTimer.Enabled = true;
-                m_scriptTimer.Interval = m_timeInterval*1000;
+                m_scriptTimer.Interval = m_timeInterval * 1000;
                 m_scriptTimer.Elapsed += RunAutoTimerScript;
             }
         }
@@ -226,8 +360,7 @@ namespace OpenSim
         /// <summary>
         /// Register standard set of region console commands
         /// </summary>
-        private void RegisterConsoleCommands()
-        {
+        private void RegisterConsoleCommands() {
             // MainServer.RegisterHttpConsoleCommands(m_console);
 
             //m_console.Commands.AddCommand("Objects", false, "force update",
@@ -240,69 +373,69 @@ namespace OpenSim
             //                              "Change current console region", 
             // FREAKKI                             ChangeSelectedRegion);
 
-//            m_console.Commands.AddCommand("Archiving", false, "save xml",
-//                                          "save xml",
-//                                          "Save a region's data in XML format", 
-// FREAKKI                                         SaveXml);
+            //            m_console.Commands.AddCommand("Archiving", false, "save xml",
+            //                                          "save xml",
+            //                                          "Save a region's data in XML format", 
+            // FREAKKI                                         SaveXml);
 
-//            m_console.Commands.AddCommand("Archiving", false, "save xml2",
-//                                          "save xml2",
-//                                          "Save a region's data in XML2 format", 
-// FREAKKI                                         SaveXml2);
+            //            m_console.Commands.AddCommand("Archiving", false, "save xml2",
+            //                                          "save xml2",
+            //                                          "Save a region's data in XML2 format", 
+            // FREAKKI                                         SaveXml2);
 
-//            m_console.Commands.AddCommand("Archiving", false, "load xml",
-//                                          "load xml [-newIDs [<x> <y> <z>]]",
-//                                          "Load a region's data from XML format",
-// FREAKKI                                         LoadXml);
+            //            m_console.Commands.AddCommand("Archiving", false, "load xml",
+            //                                          "load xml [-newIDs [<x> <y> <z>]]",
+            //                                          "Load a region's data from XML format",
+            // FREAKKI                                         LoadXml);
 
-//            m_console.Commands.AddCommand("Archiving", false, "load xml2",
-//                                          "load xml2",
-//                                          "Load a region's data from XML2 format", 
-// FREAKKI                                         LoadXml2);
+            //            m_console.Commands.AddCommand("Archiving", false, "load xml2",
+            //                                          "load xml2",
+            //                                          "Load a region's data from XML2 format", 
+            // FREAKKI                                         LoadXml2);
 
-//            m_console.Commands.AddCommand("Archiving", false, "save prims xml2",
-//                                          "save prims xml2 [<prim name> <file name>]",
-//                                          "Save named prim to XML2", 
-// FREAKKI                                         SavePrimsXml2);
+            //            m_console.Commands.AddCommand("Archiving", false, "save prims xml2",
+            //                                          "save prims xml2 [<prim name> <file name>]",
+            //                                          "Save named prim to XML2", 
+            // FREAKKI                                         SavePrimsXml2);
 
-//            m_console.Commands.AddCommand("Archiving", false, "load oar",
-//                                          "load oar [--merge] [--persist-uuids] [--skip-assets]"
-//                                             + " [--force-terrain] [--force-parcels]"
-//                                             + " [--no-objects]"
-//                                             + " [--rotation degrees] [--rotation-center \"<x,y,z>\"]"
-//                                             + " [--displacement \"<x,y,z>\"]"
-//                                             + " [--default-user \"User Name\"]"
-//                                             + " [<OAR path>]",
-//                                          "Load a region's data from an OAR archive.",
-//                                          "--merge will merge the OAR with the existing scene (suppresses terrain and parcel info loading)." + Environment.NewLine
-//                                          + "--skip-assets will load the OAR but ignore the assets it contains." + Environment.NewLine
-//                                          + "--persist-uuids will restore the saved uuids from the oar (not to be combined with --merge)" + Environment.NewLine
-//                                          + "--displacement will add this value to the position of every object loaded" + Environment.NewLine
-//                                          + "--force-terrain forces the loading of terrain from the oar (undoes suppression done by --merge)" + Environment.NewLine
-//                                          + "--force-parcels forces the loading of parcels from the oar (undoes suppression done by --merge)" + Environment.NewLine
-//                                          + "--rotation specified rotation to be applied to the oar. Specified in degrees." + Environment.NewLine
-//                                          + "--rotation-center Location (relative to original OAR) to apply rotation. Default is <128,128,0>" + Environment.NewLine
-//                                          + "--no-objects suppresses the addition of any objects (good for loading only the terrain)" + Environment.NewLine
-//                                          + "The path can be either a filesystem location or a URI."
-//                                          + "  If this is not given then the command looks for an OAR named region.oar in the current directory.",
-// FREAKKI                                         LoadOar);
+            //            m_console.Commands.AddCommand("Archiving", false, "load oar",
+            //                                          "load oar [--merge] [--persist-uuids] [--skip-assets]"
+            //                                             + " [--force-terrain] [--force-parcels]"
+            //                                             + " [--no-objects]"
+            //                                             + " [--rotation degrees] [--rotation-center \"<x,y,z>\"]"
+            //                                             + " [--displacement \"<x,y,z>\"]"
+            //                                             + " [--default-user \"User Name\"]"
+            //                                             + " [<OAR path>]",
+            //                                          "Load a region's data from an OAR archive.",
+            //                                          "--merge will merge the OAR with the existing scene (suppresses terrain and parcel info loading)." + Environment.NewLine
+            //                                          + "--skip-assets will load the OAR but ignore the assets it contains." + Environment.NewLine
+            //                                          + "--persist-uuids will restore the saved uuids from the oar (not to be combined with --merge)" + Environment.NewLine
+            //                                          + "--displacement will add this value to the position of every object loaded" + Environment.NewLine
+            //                                          + "--force-terrain forces the loading of terrain from the oar (undoes suppression done by --merge)" + Environment.NewLine
+            //                                          + "--force-parcels forces the loading of parcels from the oar (undoes suppression done by --merge)" + Environment.NewLine
+            //                                          + "--rotation specified rotation to be applied to the oar. Specified in degrees." + Environment.NewLine
+            //                                          + "--rotation-center Location (relative to original OAR) to apply rotation. Default is <128,128,0>" + Environment.NewLine
+            //                                          + "--no-objects suppresses the addition of any objects (good for loading only the terrain)" + Environment.NewLine
+            //                                          + "The path can be either a filesystem location or a URI."
+            //                                          + "  If this is not given then the command looks for an OAR named region.oar in the current directory.",
+            // FREAKKI                                         LoadOar);
 
-//            m_console.Commands.AddCommand("Archiving", false, "save oar",
-//                                          //"save oar [-v|--version=<N>] [-p|--profile=<url>] [<OAR path>]",
-//                                          "save oar [-h|--home=<url>] [--noassets] [--publish] [--perm=<permissions>] [--all] [<OAR path>]",
-//                                          "Save a region's data to an OAR archive.",
-////                                          "-v|--version=<N> generates scene objects as per older versions of the serialization (e.g. -v=0)" + Environment.NewLine
-//                                          "-h|--home=<url> adds the url of the profile service to the saved user information.\n"
-//                                          + "--noassets stops assets being saved to the OAR.\n"
-//                                          + "--publish saves an OAR stripped of owner and last owner information.\n"
-//                                          + "   on reload, the estate owner will be the owner of all objects\n"
-//                                          + "   this is useful if you're making oars generally available that might be reloaded to the same grid from which you published\n"
-//                                          + "--perm=<permissions> stops objects with insufficient permissions from being saved to the OAR.\n"
-//                                          + "   <permissions> can contain one or more of these characters: \"C\" = Copy, \"T\" = Transfer\n"
-//                                          + "--all saves all the regions in the simulator, instead of just the current region.\n"
-//                                          + "The OAR path must be a filesystem path."
-//                                          + " If this is not given then the oar is saved to region.oar in the current directory.",
-// FREAKKI                                         SaveOar);
+            //            m_console.Commands.AddCommand("Archiving", false, "save oar",
+            //                                          //"save oar [-v|--version=<N>] [-p|--profile=<url>] [<OAR path>]",
+            //                                          "save oar [-h|--home=<url>] [--noassets] [--publish] [--perm=<permissions>] [--all] [<OAR path>]",
+            //                                          "Save a region's data to an OAR archive.",
+            ////                                          "-v|--version=<N> generates scene objects as per older versions of the serialization (e.g. -v=0)" + Environment.NewLine
+            //                                          "-h|--home=<url> adds the url of the profile service to the saved user information.\n"
+            //                                          + "--noassets stops assets being saved to the OAR.\n"
+            //                                          + "--publish saves an OAR stripped of owner and last owner information.\n"
+            //                                          + "   on reload, the estate owner will be the owner of all objects\n"
+            //                                          + "   this is useful if you're making oars generally available that might be reloaded to the same grid from which you published\n"
+            //                                          + "--perm=<permissions> stops objects with insufficient permissions from being saved to the OAR.\n"
+            //                                          + "   <permissions> can contain one or more of these characters: \"C\" = Copy, \"T\" = Transfer\n"
+            //                                          + "--all saves all the regions in the simulator, instead of just the current region.\n"
+            //                                          + "The OAR path must be a filesystem path."
+            //                                          + " If this is not given then the oar is saved to region.oar in the current directory.",
+            // FREAKKI                                         SaveOar);
 
             //m_console.Commands.AddCommand("Objects", false, "edit scale",
             //                              "edit scale <name> <x> <y> <z>",
@@ -362,7 +495,7 @@ namespace OpenSim
             //                              "show regions",
             //                              "Show region data", 
             // FREAKKI                             HandleShow);
-            
+
             //m_console.Commands.AddCommand("Regions", false, "show ratings",
             //                              "show ratings",
             //                              "Show rating data", 
@@ -425,31 +558,18 @@ namespace OpenSim
             throw new FreAkkiRefactoringException("RegisterConsoleCommands");
         }
 
-        protected override void ShutdownSpecific()
-        {
-            if (m_shutdownCommandsFile != String.Empty)
-            {
-                RunCommandScript(m_shutdownCommandsFile);
-            }
-            
-            base.ShutdownSpecific();
-        }
-
         /// <summary>
         /// Timer to run a specific text file as console commands.  Configured in in the main ini file
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void RunAutoTimerScript(object sender, EventArgs e)
-        {
-            if (m_timedScript != "disabled")
-            {
+        private void RunAutoTimerScript(object sender, EventArgs e) {
+            if (m_timedScript != "disabled") {
                 RunCommandScript(m_timedScript);
             }
         }
 
-        private void WatchdogTimeoutHandler(Watchdog.ThreadWatchdogInfo twi)
-        {
+        private void WatchdogTimeoutHandler(Watchdog.ThreadWatchdogInfo twi) {
             int now = Environment.TickCount;
 
             m_log.ErrorFormat(
@@ -467,10 +587,9 @@ namespace OpenSim
         /// </summary>
         /// <param name="module"></param>
         /// <param name="cmdparams">name of avatar to kick</param>
-        private void KickUserCommand(string module, string[] cmdparams)
-        {
+        private void KickUserCommand(string module, string[] cmdparams) {
             //bool force = false;
-            
+
             //OptionSet options = new OptionSet().Add("f|force", delegate (string v) { force = v != null; });
 
             //List<string> mainParams = options.Parse(cmdparams);
@@ -515,15 +634,11 @@ namespace OpenSim
         /// Opens a file and uses it as input to the console command parser.
         /// </summary>
         /// <param name="fileName">name of file to use as input to the console</param>
-        private static void PrintFileToConsole(string fileName)
-        {
-            if (File.Exists(fileName))
-            {
-                using (StreamReader readFile = File.OpenText(fileName))
-                {
+        private static void PrintFileToConsole(string fileName) {
+            if (File.Exists(fileName)) {
+                using (StreamReader readFile = File.OpenText(fileName)) {
                     string currentLine;
-                    while ((currentLine = readFile.ReadLine()) != null)
-                    {
+                    while ((currentLine = readFile.ReadLine()) != null) {
                         m_log.Info("[!]" + currentLine);
                     }
                 }
@@ -535,8 +650,7 @@ namespace OpenSim
         /// </summary>
         /// <param name="module"></param>
         /// <param name="args"></param>
-        private void HandleForceUpdate(string module, string[] args)
-        {
+        private void HandleForceUpdate(string module, string[] args) {
             //MainConsole.Instance.Output("Updating all clients");
             // FREAKKI SceneManager.ForceCurrentSceneClientUpdate();
             throw new FreAkkiRefactoringException("HandleForceUpdate");
@@ -547,8 +661,7 @@ namespace OpenSim
         /// </summary>
         /// <param name="module"></param>
         /// <param name="args">0,1, name, x, y, z</param>
-        private void HandleEditScale(string module, string[] args)
-        {
+        private void HandleEditScale(string module, string[] args) {
             //if (args.Length == 6)
             //{
             // FREAKKI   SceneManager.HandleEditCommandOnCurrentScene(args);
@@ -560,8 +673,7 @@ namespace OpenSim
             throw new FreAkkiRefactoringException("HandleEditScale");
         }
 
-        private void HandleRotateScene(string module, string[] args)
-        {
+        private void HandleRotateScene(string module, string[] args) {
             //string usage = "Usage: rotate scene <angle in degrees> [centerX centerY] (centerX and centerY are optional and default to Constants.RegionSize / 2";
 
             //float centerX = Constants.RegionSize * 0.5f;
@@ -572,7 +684,7 @@ namespace OpenSim
             //    MainConsole.Instance.Output(usage);
             //    return;
             //}
-            
+
             //float angle = (float)(Convert.ToSingle(args[2]) / 180.0 * Math.PI);
             //OpenMetaverse.Quaternion rot = OpenMetaverse.Quaternion.CreateFromAxisAngle(0, 0, 1, angle);
 
@@ -600,8 +712,7 @@ namespace OpenSim
             throw new FreAkkiRefactoringException("HandleRotateScene");
         }
 
-        private void HandleScaleScene(string module, string[] args)
-        {
+        private void HandleScaleScene(string module, string[] args) {
             //string usage = "Usage: scale scene <factor>";
 
             //if (args.Length < 3)
@@ -651,8 +762,7 @@ namespace OpenSim
             throw new FreAkkiRefactoringException("HandleScaleScene");
         }
 
-        private void HandleTranslateScene(string module, string[] args)
-        {
+        private void HandleTranslateScene(string module, string[] args) {
             //string usage = "Usage: translate scene <xOffset, yOffset, zOffset>";
 
             //if (args.Length < 5)
@@ -683,8 +793,7 @@ namespace OpenSim
         /// </summary>
         /// <param name="module"></param>
         /// <param name="cmd">0,1,region name, region ini or XML file</param>
-        private void HandleCreateRegion(string module, string[] cmd)
-        {
+        private void HandleCreateRegion(string module, string[] cmd) {
             //string regionName = string.Empty;
             //string regionFile = string.Empty;
 
@@ -748,8 +857,7 @@ namespace OpenSim
         /// </summary>
         /// <param name="command">The first argument of the parameter (the command)</param>
         /// <param name="cmdparams">Additional arguments passed to the command</param>
-        public void RunCommand(string module, string[] cmdparams)
-        {
+        public void RunCommand(string module, string[] cmdparams) {
             //List<string> args = new List<string>(cmdparams);
             //if (args.Count < 1)
             //    return;
@@ -797,8 +905,7 @@ namespace OpenSim
         /// Change the currently selected region.  The selected region is that operated upon by single region commands.
         /// </summary>
         /// <param name="cmdParams"></param>
-        protected void ChangeSelectedRegion(string module, string[] cmdparams)
-        {
+        protected void ChangeSelectedRegion(string module, string[] cmdparams) {
             //if (cmdparams.Length > 2)
             //{
             //    string newRegionName = CombineParams(cmdparams, 2);
@@ -818,42 +925,29 @@ namespace OpenSim
         /// <summary>
         /// Refreshs prompt with the current selection details.
         /// </summary>
-        private void RefreshPrompt()
-        {
-//            string regionName = (SceneManager.CurrentScene == null ? "root" : SceneManager.CurrentScene.RegionInfo.RegionName);
-//            MainConsole.Instance.Output(String.Format("Currently selected region is {0}", regionName));
+        private void RefreshPrompt() {
+            //            string regionName = (SceneManager.CurrentScene == null ? "root" : SceneManager.CurrentScene.RegionInfo.RegionName);
+            //            MainConsole.Instance.Output(String.Format("Currently selected region is {0}", regionName));
 
-////            m_log.DebugFormat("Original prompt is {0}", m_consolePrompt);
-//            string prompt = m_consolePrompt;
+            ////            m_log.DebugFormat("Original prompt is {0}", m_consolePrompt);
+            //            string prompt = m_consolePrompt;
 
-//            // Replace "\R" with the region name
-//            // Replace "\\" with "\"
-//            prompt = m_consolePromptRegex.Replace(prompt, m =>
-//            {
-////                m_log.DebugFormat("Matched {0}", m.Groups[2].Value);
-//                if (m.Groups[2].Value == "R")
-//                    return m.Groups[1].Value + regionName;
-//                else
-//                    return m.Groups[0].Value;
-//            });
+            //            // Replace "\R" with the region name
+            //            // Replace "\\" with "\"
+            //            prompt = m_consolePromptRegex.Replace(prompt, m =>
+            //            {
+            ////                m_log.DebugFormat("Matched {0}", m.Groups[2].Value);
+            //                if (m.Groups[2].Value == "R")
+            //                    return m.Groups[1].Value + regionName;
+            //                else
+            //                    return m.Groups[0].Value;
+            //            });
 
-//            m_console.DefaultPrompt = prompt;
-//            m_console.ConsoleScene = SceneManager.CurrentScene;
+            //            m_console.DefaultPrompt = prompt;
+            //            m_console.ConsoleScene = SceneManager.CurrentScene;
             throw new FreAkkiRefactoringException("RefreshPrompt");
         }
 
-        protected override void HandleRestartRegion(RegionInfo whichRegion)
-        {
-            //base.HandleRestartRegion(whichRegion);
- 
-            //// Where we are restarting multiple scenes at once, a previous call to RefreshPrompt may have set the 
-            //// m_console.ConsoleScene to null (indicating all scenes).
-            //if (m_console.ConsoleScene != null && whichRegion.RegionName == ((Scene)m_console.ConsoleScene).Name)
-            //    SceneManager.TrySetCurrentScene(whichRegion.RegionName);
-
-            //RefreshPrompt();
-            throw new FreAkkiRefactoringException("HandleRestartRegion");
-        }
 
         // see BaseOpenSimServer
         /// <summary>
@@ -861,8 +955,7 @@ namespace OpenSim
         /// </summary>
         /// <param name="mod"></param>
         /// <param name="cmd"></param>
-        public override void HandleShow(string mod, string[] cmd)
-        {
+        public override void HandleShow(string mod, string[] cmd) {
             //base.HandleShow(mod, cmd);
 
             //List<string> args = new List<string>(cmd);
@@ -880,7 +973,7 @@ namespace OpenSim
             //        {
             //            agents = SceneManager.GetCurrentSceneAvatars();
             //        }
-                
+
             //        MainConsole.Instance.Output(String.Format("\nAgents connected: {0}\n", agents.Count));
 
             //        MainConsole.Instance.Output(
@@ -1000,8 +1093,7 @@ namespace OpenSim
             throw new FreAkkiRefactoringException("HandleShow");
         }
 
-        private void HandleShowCircuits()
-        {
+        private void HandleShowCircuits() {
             //ConsoleDisplayTable cdt = new ConsoleDisplayTable();
             //cdt.AddColumn("Region", 20);
             //cdt.AddColumn("Avatar name", 24);
@@ -1027,8 +1119,7 @@ namespace OpenSim
             throw new FreAkkiRefactoringException("HandleShowCircuits");
         }
 
-        private void HandleShowConnections()
-        {
+        private void HandleShowConnections() {
             //ConsoleDisplayTable cdt = new ConsoleDisplayTable();
             //cdt.AddColumn("Region", 20);
             //cdt.AddColumn("Avatar name", 24);
@@ -1054,8 +1145,7 @@ namespace OpenSim
         /// </summary>
         /// <param name="module"></param>
         /// <param name="cmdparams"></param>
-        protected void SavePrimsXml2(string module, string[] cmdparams)
-        {
+        protected void SavePrimsXml2(string module, string[] cmdparams) {
             //if (cmdparams.Length > 5)
             //{
             //    SceneManager.SaveNamedPrimsToXml2(cmdparams[3], cmdparams[4]);
@@ -1072,8 +1162,7 @@ namespace OpenSim
         /// </summary>
         /// <param name="module"></param>
         /// <param name="cmdparams"></param>
-        protected void SaveXml(string module, string[] cmdparams)
-        {
+        protected void SaveXml(string module, string[] cmdparams) {
             //MainConsole.Instance.Output("PLEASE NOTE, save-xml is DEPRECATED and may be REMOVED soon.  If you are using this and there is some reason you can't use save-xml2, please file a mantis detailing the reason.");
 
             //if (cmdparams.Length > 0)
@@ -1092,8 +1181,7 @@ namespace OpenSim
         /// </summary>
         /// <param name="module"></param>
         /// <param name="cmdparams"></param>
-        protected void LoadXml(string module, string[] cmdparams)
-        {
+        protected void LoadXml(string module, string[] cmdparams) {
             //MainConsole.Instance.Output("PLEASE NOTE, load-xml is DEPRECATED and may be REMOVED soon.  If you are using this and there is some reason you can't use load-xml2, please file a mantis detailing the reason.");
 
             //Vector3 loadOffset = new Vector3(0, 0, 0);
@@ -1140,8 +1228,7 @@ namespace OpenSim
         /// </summary>
         /// <param name="module"></param>
         /// <param name="cmdparams"></param>
-        protected void SaveXml2(string module, string[] cmdparams)
-        {
+        protected void SaveXml2(string module, string[] cmdparams) {
             //if (cmdparams.Length > 2)
             //{
             //    SceneManager.SaveCurrentSceneToXml2(cmdparams[2]);
@@ -1158,8 +1245,7 @@ namespace OpenSim
         /// </summary>
         /// <param name="module"></param>
         /// <param name="cmdparams"></param>
-        protected void LoadXml2(string module, string[] cmdparams)
-        {
+        protected void LoadXml2(string module, string[] cmdparams) {
             //if (cmdparams.Length > 2)
             //{
             //    try
@@ -1189,8 +1275,7 @@ namespace OpenSim
         /// Load a whole region from an opensimulator archive.
         /// </summary>
         /// <param name="cmdparams"></param>
-        protected void LoadOar(string module, string[] cmdparams)
-        {
+        protected void LoadOar(string module, string[] cmdparams) {
             //try
             //{
             //    SceneManager.LoadArchiveToCurrentScene(cmdparams);
@@ -1206,14 +1291,12 @@ namespace OpenSim
         /// Save a region to a file, including all the assets needed to restore it.
         /// </summary>
         /// <param name="cmdparams"></param>
-        protected void SaveOar(string module, string[] cmdparams)
-        {
+        protected void SaveOar(string module, string[] cmdparams) {
             // SceneManager.SaveCurrentSceneToArchive(cmdparams);
             throw new FreAkkiRefactoringException("SaveOar");
         }
 
-        protected void CreateEstateCommand(string module, string[] args)
-        {
+        protected void CreateEstateCommand(string module, string[] args) {
             //string response = null;
             //UUID userID;
 
@@ -1265,8 +1348,7 @@ namespace OpenSim
             throw new FreAkkiRefactoringException("CreateEstateCommand");
         }
 
-        protected void SetEstateOwnerCommand(string module, string[] args)
-        {
+        protected void SetEstateOwnerCommand(string module, string[] args) {
             //string response = null;
 
             //Scene scene = SceneManager.CurrentOrFirstScene;
@@ -1339,118 +1421,854 @@ namespace OpenSim
             throw new FreAkkiRefactoringException("SetEstateOwnerCommand");
         }
 
-        protected void SetEstateNameCommand(string module, string[] args)
-        {
-        //    string response = null;
+        protected void SetEstateNameCommand(string module, string[] args) {
+            //    string response = null;
 
-        //    Scene scene = SceneManager.CurrentOrFirstScene;
-        //    IEstateModule estateModule = scene.RequestModuleInterface<IEstateModule>();
+            //    Scene scene = SceneManager.CurrentOrFirstScene;
+            //    IEstateModule estateModule = scene.RequestModuleInterface<IEstateModule>();
 
-        //    if (args.Length == 3)
-        //    {
-        //        response = "No estate specified.";
-        //    }
-        //    else
-        //    {
-        //        int estateId;
-        //        if (!int.TryParse(args[3], out estateId))
-        //        {
-        //            response = String.Format("\"{0}\" is not a valid ID for an Estate", args[3]);
-        //        }
-        //        else
-        //        {
-        //            if (args.Length == 4)
-        //            {
-        //                response = "No name specified.";
-        //            }
-        //            else
-        //            {
-        //                // everything after the estate ID is "name"
-        //                StringBuilder sb = new StringBuilder(args[4]);
-        //                for (int i = 5; i < args.Length; i++)
-        //                    sb.Append (" " + args[i]);
+            //    if (args.Length == 3)
+            //    {
+            //        response = "No estate specified.";
+            //    }
+            //    else
+            //    {
+            //        int estateId;
+            //        if (!int.TryParse(args[3], out estateId))
+            //        {
+            //            response = String.Format("\"{0}\" is not a valid ID for an Estate", args[3]);
+            //        }
+            //        else
+            //        {
+            //            if (args.Length == 4)
+            //            {
+            //                response = "No name specified.";
+            //            }
+            //            else
+            //            {
+            //                // everything after the estate ID is "name"
+            //                StringBuilder sb = new StringBuilder(args[4]);
+            //                for (int i = 5; i < args.Length; i++)
+            //                    sb.Append (" " + args[i]);
 
-        //                string estateName = sb.ToString();
+            //                string estateName = sb.ToString();
 
-        //                // send it off for processing.
-        //                response = estateModule.SetEstateName(estateId, estateName);
+            //                // send it off for processing.
+            //                response = estateModule.SetEstateName(estateId, estateName);
 
-        //                if (response == String.Empty)
-        //                {
-        //                    response = String.Format("Estate {0} renamed to \"{1}\"", estateId, estateName);
-        //                }
-        //            }
-        //        }
-        //    }
+            //                if (response == String.Empty)
+            //                {
+            //                    response = String.Format("Estate {0} renamed to \"{1}\"", estateId, estateName);
+            //                }
+            //            }
+            //        }
+            //    }
 
-        //    // give the user some feedback
-        //    if (response != null)
-        //        MainConsole.Instance.Output(response);
+            //    // give the user some feedback
+            //    if (response != null)
+            //        MainConsole.Instance.Output(response);
             throw new FreAkkiRefactoringException("SetEstateNameCommand");
         }
 
-        private void EstateLinkRegionCommand(string module, string[] args)
-        {
-        //    int estateId =-1;
-        //    UUID regionId = UUID.Zero;
-        //    Scene scene = null;
-        //    string response = null;
+        private void EstateLinkRegionCommand(string module, string[] args) {
+            //    int estateId =-1;
+            //    UUID regionId = UUID.Zero;
+            //    Scene scene = null;
+            //    string response = null;
 
-        //    if (args.Length == 3)
-        //    {
-        //        response = "No estate specified.";
-        //    }
-        //    else if (!int.TryParse(args [3], out estateId))
-        //    {
-        //        response = String.Format("\"{0}\" is not a valid ID for an Estate", args [3]);
-        //    }
-        //    else if (args.Length == 4)
-        //    {
-        //        response = "No region specified.";
-        //    }
-        //    else if (!UUID.TryParse(args[4], out regionId))
-        //    {
-        //        response = String.Format("\"{0}\" is not a valid UUID for a Region", args [4]);
-        //    }
-        //    else if (!SceneManager.TryGetScene(regionId, out scene))
-        //    {
-        //        // region may exist, but on a different sim.
-        //        response = String.Format("No access to Region \"{0}\"", args [4]);
-        //    }
+            //    if (args.Length == 3)
+            //    {
+            //        response = "No estate specified.";
+            //    }
+            //    else if (!int.TryParse(args [3], out estateId))
+            //    {
+            //        response = String.Format("\"{0}\" is not a valid ID for an Estate", args [3]);
+            //    }
+            //    else if (args.Length == 4)
+            //    {
+            //        response = "No region specified.";
+            //    }
+            //    else if (!UUID.TryParse(args[4], out regionId))
+            //    {
+            //        response = String.Format("\"{0}\" is not a valid UUID for a Region", args [4]);
+            //    }
+            //    else if (!SceneManager.TryGetScene(regionId, out scene))
+            //    {
+            //        // region may exist, but on a different sim.
+            //        response = String.Format("No access to Region \"{0}\"", args [4]);
+            //    }
 
-        //    if (response != null)
-        //    {
-        //        MainConsole.Instance.Output(response);
-        //        return;
-        //    }
+            //    if (response != null)
+            //    {
+            //        MainConsole.Instance.Output(response);
+            //        return;
+            //    }
 
-        //    // send it off for processing.
-        //    IEstateModule estateModule = scene.RequestModuleInterface<IEstateModule>();
-        //    response = estateModule.SetRegionEstate(scene.RegionInfo, estateId);
-        //    if (response == String.Empty)
-        //    {
-        //        estateModule.TriggerRegionInfoChange();
-        //        estateModule.sendRegionHandshakeToAll();
-        //        response = String.Format ("Region {0} is now attached to estate {1}", regionId, estateId);
-        //    }
+            //    // send it off for processing.
+            //    IEstateModule estateModule = scene.RequestModuleInterface<IEstateModule>();
+            //    response = estateModule.SetRegionEstate(scene.RegionInfo, estateId);
+            //    if (response == String.Empty)
+            //    {
+            //        estateModule.TriggerRegionInfoChange();
+            //        estateModule.sendRegionHandshakeToAll();
+            //        response = String.Format ("Region {0} is now attached to estate {1}", regionId, estateId);
+            //    }
 
-        //    // give the user some feedback
-        //    if (response != null)
-        //        MainConsole.Instance.Output (response);
+            //    // give the user some feedback
+            //    if (response != null)
+            //        MainConsole.Instance.Output (response);
             throw new FreAkkiRefactoringException("EstateLinkRegionCommand");
         }
 
         #endregion
 
-        private static string CombineParams(string[] commandParams, int pos)
-        {
+        private static string CombineParams(string[] commandParams, int pos) {
             string result = String.Empty;
-            for (int i = pos; i < commandParams.Length; i++)
-            {
+            for (int i = pos; i < commandParams.Length; i++) {
                 result += commandParams[i] + " ";
             }
             result = result.TrimEnd(' ');
             return result;
+        }
+
+        protected void LoadConfigSettings(IConfigSource configSource) {
+            m_configLoader = new ConfigurationLoader();
+            ConfigSource = m_configLoader.LoadConfigSettings(configSource, envConfigSource, out m_configSettings, out m_networkServersInfo);
+            Config = ConfigSource.Source;
+            ReadExtraConfigSettings();
+        }
+
+        protected virtual void LoadPlugins() {
+            IConfig startupConfig = Config.Configs["Startup"];
+            string registryLocation = (startupConfig != null) ? startupConfig.GetString("RegistryLocation", String.Empty) : String.Empty;
+
+            // The location can also be specified in the environment. If there
+            // is no location in the configuration, we must call the constructor
+            // without a location parameter to allow that to happen.
+            if (registryLocation == String.Empty) {
+                using (PluginLoader<IApplicationPlugin> loader = new PluginLoader<IApplicationPlugin>(new ApplicationPluginInitialiser(this))) {
+                    loader.Load("/OpenSim/Startup");
+                    m_plugins = loader.Plugins;
+                }
+            } else {
+                using (PluginLoader<IApplicationPlugin> loader = new PluginLoader<IApplicationPlugin>(new ApplicationPluginInitialiser(this), registryLocation)) {
+                    loader.Load("/OpenSim/Startup");
+                    m_plugins = loader.Plugins;
+                }
+            }
+        }
+
+        protected override List<string> GetHelpTopics() {
+            // FREAKKI List<string> topics = base.GetHelpTopics();
+            //Scene s = SceneManager.CurrentOrFirstScene;
+            //if (s != null && s.GetCommanders() != null)
+            //    topics.AddRange(s.GetCommanders().Keys);
+
+            //return topics;
+            throw new FreAkkiRefactoringException("GetHelpTopics");
+        }
+
+        /// <summary>
+        /// Performs startup specific to the region server, including initialization of the scene 
+        /// such as loading configuration from disk.
+        /// </summary>
+
+        protected virtual void AddPluginCommands(ICommandConsole console) {
+            // FREAKKI List<string> topics = GetHelpTopics();
+
+            //foreach (string topic in topics)
+            //{
+            //    string capitalizedTopic = char.ToUpper(topic[0]) + topic.Substring(1);
+
+            //    // This is a hack to allow the user to enter the help command in upper or lowercase.  This will go
+            //    // away at some point.
+            //    console.Commands.AddCommand(capitalizedTopic, false, "help " + topic,
+            //                                  "help " + capitalizedTopic,
+            //                                  "Get help on plugin command '" + topic + "'",
+            //                                  HandleCommanderHelp);
+            //    console.Commands.AddCommand(capitalizedTopic, false, "help " + capitalizedTopic,
+            //                                  "help " + capitalizedTopic,
+            //                                  "Get help on plugin command '" + topic + "'",
+            //                                  HandleCommanderHelp);
+
+            //    ICommander commander = null;
+
+            //    Scene s = SceneManager.CurrentOrFirstScene;
+
+            //    if (s != null && s.GetCommanders() != null)
+            //    {
+            //        if (s.GetCommanders().ContainsKey(topic))
+            //            commander = s.GetCommanders()[topic];
+            //    }
+
+            //    if (commander == null)
+            //        continue;
+
+            //    foreach (string command in commander.Commands.Keys)
+            //    {
+            //        console.Commands.AddCommand(capitalizedTopic, false,
+            //                                      topic + " " + command,
+            //                                      topic + " " + commander.Commands[command].ShortHelp(),
+            //                                      String.Empty, HandleCommanderCommand);
+            //    }
+            //}
+        }
+
+        private void HandleCommanderCommand(string module, string[] cmd) {
+            // FREAKKI SceneManager.SendCommandToPluginModules(cmd);
+            throw new FreAkkiRefactoringException("HandleCommanderCommand ... pending");
+        }
+
+        private void HandleCommanderHelp(string module, string[] cmd) {
+            // Only safe for the interactive console, since it won't
+            // let us come here unless both scene and commander exist
+            //
+            // FREAKKI ICommander moduleCommander = SceneManager.CurrentOrFirstScene.GetCommander(cmd[1].ToLower());
+            // if (moduleCommander != null)
+            //    m_console.Output(moduleCommander.Help);
+            throw new FreAkkiRefactoringException("HandleCommanderHelp(string module, string[] cmd) ... pending");
+        }
+
+        protected void Initialize() {
+            // Called from base.StartUp()
+
+            m_httpServerPort = m_networkServersInfo.HttpListenerPort;
+            // FREAKKI SceneManager.OnRestartSim += HandleRestartRegion;
+
+            // Only enable the watchdogs when all regions are ready.  Otherwise we get false positives when cpu is
+            // heavily used during initial startup.
+            //
+            // FIXME: It's also possible that region ready status should be flipped during an OAR load since this
+            // also makes heavy use of the CPU.
+            // FREAKKI SceneManager.OnRegionsReadyStatusChange
+            //    += sm => { MemoryWatchdog.Enabled = sm.AllRegionsReady; Watchdog.Enabled = sm.AllRegionsReady; };
+        }
+
+        /// <summary>
+        /// Execute the region creation process.  This includes setting up scene infrastructure.
+        /// </summary>
+        /// <param name="regionInfo"></param>
+        /// <param name="portadd_flag"></param>
+        /// <returns></returns>
+        public List<IClientNetworkServer> CreateRegion(RegionInfo regionInfo, bool portadd_flag, out IScene scene) {
+            return CreateRegion(regionInfo, portadd_flag, false, out scene);
+        }
+
+        /// <summary>
+        /// Execute the region creation process.  This includes setting up scene infrastructure.
+        /// </summary>
+        /// <param name="regionInfo"></param>
+        /// <returns></returns>
+        public List<IClientNetworkServer> CreateRegion(RegionInfo regionInfo, out IScene scene) {
+            return CreateRegion(regionInfo, false, true, out scene);
+        }
+
+        /// <summary>
+        /// Execute the region creation process.  This includes setting up scene infrastructure.
+        /// </summary>
+        /// <param name="regionInfo"></param>
+        /// <param name="portadd_flag"></param>
+        /// <param name="do_post_init"></param>
+        /// <returns></returns>
+        public List<IClientNetworkServer> CreateRegion(RegionInfo regionInfo, bool portadd_flag, bool do_post_init, out IScene mscene) {
+            int port = regionInfo.InternalEndPoint.Port;
+
+            // set initial RegionID to originRegionID in RegionInfo. (it needs for loding prims)
+            // Commented this out because otherwise regions can't register with
+            // the grid as there is already another region with the same UUID
+            // at those coordinates. This is required for the load balancer to work.
+            // --Mike, 2009.02.25
+            //regionInfo.originRegionID = regionInfo.RegionID;
+
+            // set initial ServerURI
+            regionInfo.HttpPort = m_httpServerPort;
+            regionInfo.ServerURI = "http://" + regionInfo.ExternalHostName + ":" + regionInfo.HttpPort.ToString() + "/";
+
+            regionInfo.osSecret = m_osSecret;
+
+            if ((proxyUrl.Length > 0) && (portadd_flag)) {
+                // set proxy url to RegionInfo
+                regionInfo.proxyUrl = proxyUrl;
+                regionInfo.ProxyOffset = proxyOffset;
+                Util.XmlRpcCommand(proxyUrl, "AddPort", port, port + proxyOffset, regionInfo.ExternalHostName);
+            }
+
+            List<IClientNetworkServer> clientServers;
+            Scene scene = SetupScene(regionInfo, proxyOffset, Config, out clientServers);
+
+            m_log.Info("[MODULES]: Loading Region's modules (old style)");
+
+            // Use this in the future, the line above will be deprecated soon
+            m_log.Info("[REGIONMODULES]: Loading Region's modules (new style)");
+            IRegionModulesController controller;
+            if (ApplicationRegistry.TryGet(out controller)) {
+                controller.AddRegionToModules(scene);
+            } else m_log.Error("[REGIONMODULES]: The new RegionModulesController is missing...");
+
+            scene.SetModuleInterfaces();
+
+            while (regionInfo.EstateSettings.EstateOwner == UUID.Zero && MainConsole.Instance != null)
+                SetUpEstateOwner(scene);
+
+            // Prims have to be loaded after module configuration since some modules may be invoked during the load
+            scene.LoadPrimsFromStorage(regionInfo.originRegionID);
+
+            // TODO : Try setting resource for region xstats here on scene
+            MainServer.Instance.AddStreamHandler(new RegionStatsHandler(regionInfo));
+
+            scene.loadAllLandObjectsFromStorage(regionInfo.originRegionID);
+            scene.EventManager.TriggerParcelPrimCountUpdate();
+
+            try {
+                scene.RegisterRegionWithGrid();
+            } catch (Exception e) {
+                m_log.ErrorFormat(
+                    "[STARTUP]: Registration of region with grid failed, aborting startup due to {0} {1}",
+                    e.Message, e.StackTrace);
+
+                // Carrying on now causes a lot of confusion down the
+                // line - we need to get the user's attention
+                Environment.Exit(1);
+            }
+
+            // We need to do this after we've initialized the
+            // scripting engines.
+            scene.CreateScriptInstances();
+
+            // FREAKKI SceneManager.Add(scene);
+
+            if (m_autoCreateClientStack) {
+                foreach (IClientNetworkServer clientserver in clientServers) {
+                    m_clientServers.Add(clientserver);
+                    clientserver.Start();
+                }
+            }
+
+            scene.EventManager.OnShutdown += delegate() { ShutdownRegion(scene); };
+
+            mscene = scene;
+
+            return clientServers;
+        }
+
+        /// <summary>
+        /// Try to set up the estate owner for the given scene.
+        /// </summary>
+        /// <remarks>
+        /// The involves asking the user for information about the user on the console.  If the user does not already
+        /// exist then it is created.
+        /// </remarks>
+        /// <param name="scene"></param>
+        private void SetUpEstateOwner(Scene scene) {
+            RegionInfo regionInfo = scene.RegionInfo;
+
+            string estateOwnerFirstName = null;
+            string estateOwnerLastName = null;
+            string estateOwnerEMail = null;
+            string estateOwnerPassword = null;
+            string rawEstateOwnerUuid = null;
+
+            if (Config.Configs[ESTATE_SECTION_NAME] != null) {
+                string defaultEstateOwnerName
+                    = Config.Configs[ESTATE_SECTION_NAME].GetString("DefaultEstateOwnerName", "").Trim();
+                string[] ownerNames = defaultEstateOwnerName.Split(' ');
+
+                if (ownerNames.Length >= 2) {
+                    estateOwnerFirstName = ownerNames[0];
+                    estateOwnerLastName = ownerNames[1];
+                }
+
+                // Info to be used only on Standalone Mode
+                rawEstateOwnerUuid = Config.Configs[ESTATE_SECTION_NAME].GetString("DefaultEstateOwnerUUID", null);
+                estateOwnerEMail = Config.Configs[ESTATE_SECTION_NAME].GetString("DefaultEstateOwnerEMail", null);
+                estateOwnerPassword = Config.Configs[ESTATE_SECTION_NAME].GetString("DefaultEstateOwnerPassword", null);
+            }
+
+            MainConsole.Instance.OutputFormat("Estate {0} has no owner set.", regionInfo.EstateSettings.EstateName);
+            List<char> excluded = new List<char>(new char[1] { ' ' });
+
+
+            if (estateOwnerFirstName == null || estateOwnerLastName == null) {
+                estateOwnerFirstName = MainConsole.Instance.CmdPrompt("Estate owner first name", "Test", excluded);
+                estateOwnerLastName = MainConsole.Instance.CmdPrompt("Estate owner last name", "User", excluded);
+            }
+
+            UserAccount account
+                = scene.UserAccountService.GetUserAccount(regionInfo.ScopeID, estateOwnerFirstName, estateOwnerLastName);
+
+            if (account == null) {
+
+                // XXX: The LocalUserAccountServicesConnector is currently registering its inner service rather than
+                // itself!
+                //                    if (scene.UserAccountService is LocalUserAccountServicesConnector)
+                //                    {
+                //                        IUserAccountService innerUas
+                //                            = ((LocalUserAccountServicesConnector)scene.UserAccountService).UserAccountService;
+                //
+                //                        m_log.DebugFormat("B {0}", innerUas.GetType());
+                //
+                //                        if (innerUas is UserAccountService)
+                //                        {
+
+                if (scene.UserAccountService is UserAccountService) {
+                    if (estateOwnerPassword == null)
+                        estateOwnerPassword = MainConsole.Instance.PasswdPrompt("Password");
+
+                    if (estateOwnerEMail == null)
+                        estateOwnerEMail = MainConsole.Instance.CmdPrompt("Email");
+
+                    if (rawEstateOwnerUuid == null)
+                        rawEstateOwnerUuid = MainConsole.Instance.CmdPrompt("User ID", UUID.Random().ToString());
+
+                    UUID estateOwnerUuid = UUID.Zero;
+                    if (!UUID.TryParse(rawEstateOwnerUuid, out estateOwnerUuid)) {
+                        m_log.ErrorFormat("[OPENSIM]: ID {0} is not a valid UUID", rawEstateOwnerUuid);
+                        return;
+                    }
+
+                    // If we've been given a zero uuid then this signals that we should use a random user id
+                    if (estateOwnerUuid == UUID.Zero)
+                        estateOwnerUuid = UUID.Random();
+
+                    account
+                        = ((UserAccountService)scene.UserAccountService).CreateUser(
+                            regionInfo.ScopeID,
+                            estateOwnerUuid,
+                            estateOwnerFirstName,
+                            estateOwnerLastName,
+                            estateOwnerPassword,
+                            estateOwnerEMail);
+                }
+            }
+
+            if (account == null) {
+                m_log.ErrorFormat(
+                    "[OPENSIM]: Unable to store account. If this simulator is connected to a grid, you must create the estate owner account first at the grid level.");
+            } else {
+                regionInfo.EstateSettings.EstateOwner = account.PrincipalID;
+                regionInfo.EstateSettings.Save();
+            }
+        }
+
+        private void ShutdownRegion(Scene scene) {
+            m_log.DebugFormat("[SHUTDOWN]: Shutting down region {0}", scene.RegionInfo.RegionName);
+            IRegionModulesController controller;
+            if (ApplicationRegistry.TryGet<IRegionModulesController>(out controller)) {
+                controller.RemoveRegionFromModules(scene);
+            }
+        }
+
+        public void RemoveRegion(Scene scene, bool cleanup) {
+            //// only need to check this if we are not at the
+            //// root level
+            //if ((SceneManager.CurrentScene != null) &&
+            //    (SceneManager.CurrentScene.RegionInfo.RegionID == scene.RegionInfo.RegionID))
+            //{
+            //    SceneManager.TrySetCurrentScene("..");
+            //}
+
+            //if (cleanup)
+            //{
+            //    // only allow the console comand delete-region to remove objects from DB
+            //    scene.DeleteAllSceneObjects();
+            //}
+            // FREAKKI SceneManager.CloseScene(scene);
+            //ShutdownClientServer(scene.RegionInfo);
+
+            //if (!cleanup)
+            //    return;
+
+            //if (!String.IsNullOrEmpty(scene.RegionInfo.RegionFile))
+            //{
+            //    if (scene.RegionInfo.RegionFile.ToLower().EndsWith(".xml"))
+            //    {
+            //        File.Delete(scene.RegionInfo.RegionFile);
+            //        m_log.InfoFormat("[OPENSIM]: deleting region file \"{0}\"", scene.RegionInfo.RegionFile);
+            //    }
+            //    if (scene.RegionInfo.RegionFile.ToLower().EndsWith(".ini"))
+            //    {
+            //        try
+            //        {
+            //            IniConfigSource source = new IniConfigSource(scene.RegionInfo.RegionFile);
+            //            if (source.Configs[scene.RegionInfo.RegionName] != null)
+            //            {
+            //                source.Configs.Remove(scene.RegionInfo.RegionName);
+
+            //                if (source.Configs.Count == 0)
+            //                {
+            //                    File.Delete(scene.RegionInfo.RegionFile);
+            //                }
+            //                else
+            //                {
+            //                    source.Save(scene.RegionInfo.RegionFile);
+            //                }
+            //            }
+            //        }
+            //        catch (Exception)
+            //        {
+            //        }
+            //    }
+            //}
+        }
+
+        public void RemoveRegion(string name, bool cleanUp) {
+            // FREAKKI Scene target;
+            //if (SceneManager.TryGetScene(name, out target))
+            //    RemoveRegion(target, cleanUp);
+        }
+
+        /// <summary>
+        /// Remove a region from the simulator without deleting it permanently.
+        /// </summary>
+        /// <param name="scene"></param>
+        /// <returns></returns>
+        public void CloseRegion(Scene scene) {
+            //// only need to check this if we are not at the
+            //// root level
+            // FREAKKI if ((SceneManager.CurrentScene != null) &&
+            //    (SceneManager.CurrentScene.RegionInfo.RegionID == scene.RegionInfo.RegionID))
+            //{
+            //    SceneManager.TrySetCurrentScene("..");
+            //}
+
+            //SceneManager.CloseScene(scene);
+            //ShutdownClientServer(scene.RegionInfo);
+        }
+
+        /// <summary>
+        /// Remove a region from the simulator without deleting it permanently.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public void CloseRegion(string name) {
+            // FREAKKI Scene target;
+            //if (SceneManager.TryGetScene(name, out target))
+            //    CloseRegion(target);
+        }
+
+        /// <summary>
+        /// Create a scene and its initial base structures.
+        /// </summary>
+        /// <param name="regionInfo"></param>
+        /// <param name="clientServer"> </param>
+        /// <returns></returns>
+        protected Scene SetupScene(RegionInfo regionInfo, out List<IClientNetworkServer> clientServer) {
+            return SetupScene(regionInfo, 0, null, out clientServer);
+        }
+
+        /// <summary>
+        /// Create a scene and its initial base structures.
+        /// </summary>
+        /// <param name="regionInfo"></param>
+        /// <param name="proxyOffset"></param>
+        /// <param name="configSource"></param>
+        /// <param name="clientServer"> </param>
+        /// <returns></returns>
+        protected Scene SetupScene(
+            RegionInfo regionInfo, int proxyOffset, IConfigSource configSource, out List<IClientNetworkServer> clientServer) {
+            List<IClientNetworkServer> clientNetworkServers = null;
+
+            AgentCircuitManager circuitManager = new AgentCircuitManager();
+            IPAddress listenIP = regionInfo.InternalEndPoint.Address;
+            //if (!IPAddress.TryParse(regionInfo.InternalEndPoint, out listenIP))
+            //    listenIP = IPAddress.Parse("0.0.0.0");
+
+            uint port = (uint)regionInfo.InternalEndPoint.Port;
+
+            if (m_autoCreateClientStack) {
+                clientNetworkServers = m_clientStackManager.CreateServers(
+                    listenIP, ref port, proxyOffset, regionInfo.m_allow_alternate_ports, configSource,
+                    circuitManager);
+            } else {
+                clientServer = null;
+            }
+
+            regionInfo.InternalEndPoint.Port = (int)port;
+
+            Scene scene = CreateScene(regionInfo, m_simulationDataService, m_estateDataService, circuitManager);
+
+            if (m_autoCreateClientStack) {
+                foreach (IClientNetworkServer clientnetserver in clientNetworkServers) {
+                    clientnetserver.AddScene(scene);
+                }
+            }
+            clientServer = clientNetworkServers;
+            scene.LoadWorldMap();
+
+            Vector3 regionExtent = new Vector3(regionInfo.RegionSizeX, regionInfo.RegionSizeY, regionInfo.RegionSizeZ);
+            scene.PhysicsScene = GetPhysicsScene(scene.RegionInfo.RegionName, regionExtent);
+            scene.PhysicsScene.RequestAssetMethod = scene.PhysicsRequestAsset;
+            scene.PhysicsScene.SetTerrain(scene.Heightmap.GetFloatsSerialised());
+            scene.PhysicsScene.SetWaterLevel((float)regionInfo.RegionSettings.WaterHeight);
+
+            return scene;
+        }
+
+        protected ClientStackManager CreateClientStackManager() {
+            return new ClientStackManager(m_configSettings.ClientstackDll);
+        }
+
+        protected Scene CreateScene(RegionInfo regionInfo, ISimulationDataService simDataService,
+            IEstateDataService estateDataService, AgentCircuitManager circuitManager) {
+            SceneCommunicationService sceneGridService = new SceneCommunicationService();
+
+            return new Scene(
+                regionInfo, circuitManager, sceneGridService,
+                simDataService, estateDataService,
+                Config, m_version);
+        }
+
+        protected void ShutdownClientServer(RegionInfo whichRegion) {
+            // Close and remove the clientserver for a region
+            bool foundClientServer = false;
+            int clientServerElement = 0;
+            Location location = new Location(whichRegion.RegionHandle);
+
+            for (int i = 0; i < m_clientServers.Count; i++) {
+                if (m_clientServers[i].HandlesRegion(location)) {
+                    clientServerElement = i;
+                    foundClientServer = true;
+                    break;
+                }
+            }
+
+            if (foundClientServer) {
+                m_clientServers[clientServerElement].Stop();
+                m_clientServers.RemoveAt(clientServerElement);
+            }
+        }
+
+        protected virtual void HandleRestartRegion(RegionInfo whichRegion) {
+            m_log.InfoFormat(
+                "[OPENSIM]: Got restart signal from SceneManager for region {0} ({1},{2})",
+                whichRegion.RegionName, whichRegion.RegionLocX, whichRegion.RegionLocY);
+
+            ShutdownClientServer(whichRegion);
+            IScene scene;
+            CreateRegion(whichRegion, true, out scene);
+            scene.Start();
+
+            //// Where we are restarting multiple scenes at once, a previous call to RefreshPrompt may have set the 
+            //// m_console.ConsoleScene to null (indicating all scenes).
+            //if (m_console.ConsoleScene != null && whichRegion.RegionName == ((Scene)m_console.ConsoleScene).Name)
+            //    SceneManager.TrySetCurrentScene(whichRegion.RegionName);
+
+            //RefreshPrompt();
+            throw new FreAkkiRefactoringException("HandleRestartRegion");
+        }
+
+        protected PhysicsScene GetPhysicsScene(string osSceneIdentifier, Vector3 regionExtent) {
+            return GetPhysicsScene(
+                m_configSettings.PhysicsEngine, m_configSettings.MeshEngineName, Config, osSceneIdentifier, regionExtent);
+        }
+
+
+        /// <summary>
+        /// Performs any last-minute sanity checking and shuts down the region server
+        /// </summary>
+        protected override void ShutdownSpecific() {
+            if (m_shutdownCommandsFile != String.Empty) {
+                RunCommandScript(m_shutdownCommandsFile);
+            }
+
+            if (proxyUrl.Length > 0) {
+                Util.XmlRpcCommand(proxyUrl, "Stop");
+            }
+
+            m_log.Info("[SHUTDOWN]: Closing all threads");
+            m_log.Info("[SHUTDOWN]: Killing listener thread");
+            m_log.Info("[SHUTDOWN]: Killing clients");
+            m_log.Info("[SHUTDOWN]: Closing console and terminating");
+
+            try {
+                // FREAKKI SceneManager.Close();
+            } catch (Exception e) {
+                m_log.Error("[SHUTDOWN]: Ignoring failure during shutdown - ", e);
+            }
+
+            base.ShutdownSpecific();
+        }
+
+        /// <summary>
+        /// Get the start time and up time of Region server
+        /// </summary>
+        /// <param name="starttime">The first out parameter describing when the Region server started</param>
+        /// <param name="uptime">The second out parameter describing how long the Region server has run</param>
+        public void GetRunTime(out string starttime, out string uptime) {
+            starttime = m_startuptime.ToString();
+            uptime = (DateTime.Now - m_startuptime).ToString();
+        }
+
+        /// <summary>
+        /// Get the number of the avatars in the Region server
+        /// </summary>
+        /// <param name="usernum">The first out parameter describing the number of all the avatars in the Region server</param>
+        public void GetAvatarNumber(out int usernum) {
+            // usernum = SceneManager.GetCurrentSceneAvatars().Count;
+            throw new FreAkkiRefactoringException("GetAvatarNumber");
+        }
+
+        /// <summary>
+        /// Get the number of regions
+        /// </summary>
+        /// <param name="regionnum">The first out parameter describing the number of regions</param>
+        public void GetRegionNumber(out int regionnum) {
+            // regionnum = SceneManager.Scenes.Count;
+            throw new FreAkkiRefactoringException("GetRegionNumber");
+        }
+
+        /// <summary>
+        /// Create an estate with an initial region.
+        /// </summary>
+        /// <remarks>
+        /// This method doesn't allow an estate to be created with the same name as existing estates.
+        /// </remarks>
+        /// <param name="regInfo"></param>
+        /// <param name="estatesByName">A list of estate names that already exist.</param>
+        /// <param name="estateName">Estate name to create if already known</param>
+        /// <returns>true if the estate was created, false otherwise</returns>
+        public bool CreateEstate(RegionInfo regInfo, Dictionary<string, EstateSettings> estatesByName, string estateName) {
+            // Create a new estate
+            regInfo.EstateSettings = EstateDataService.LoadEstateSettings(regInfo.RegionID, true);
+
+            string newName;
+            if (!string.IsNullOrEmpty(estateName))
+                newName = estateName;
+            else
+                newName = MainConsole.Instance.CmdPrompt("New estate name", regInfo.EstateSettings.EstateName);
+
+            if (estatesByName.ContainsKey(newName)) {
+                MainConsole.Instance.OutputFormat("An estate named {0} already exists.  Please try again.", newName);
+                return false;
+            }
+
+            regInfo.EstateSettings.EstateName = newName;
+
+            // FIXME: Later on, the scene constructor will reload the estate settings no matter what.
+            // Therefore, we need to do an initial save here otherwise the new estate name will be reset
+            // back to the default.  The reloading of estate settings by scene could be eliminated if it
+            // knows that the passed in settings in RegionInfo are already valid.  Also, it might be 
+            // possible to eliminate some additional later saves made by callers of this method.
+            regInfo.EstateSettings.Save();
+
+            return true;
+        }
+
+        /// <summary>
+        /// Load the estate information for the provided RegionInfo object.
+        /// </summary>
+        /// <param name="regInfo"></param>
+        public bool PopulateRegionEstateInfo(RegionInfo regInfo) {
+            if (EstateDataService != null)
+                regInfo.EstateSettings = EstateDataService.LoadEstateSettings(regInfo.RegionID, false);
+
+            if (regInfo.EstateSettings.EstateID != 0)
+                return false;	// estate info in the database did not change
+
+            m_log.WarnFormat("[ESTATE] Region {0} is not part of an estate.", regInfo.RegionName);
+
+            List<EstateSettings> estates = EstateDataService.LoadEstateSettingsAll();
+            Dictionary<string, EstateSettings> estatesByName = new Dictionary<string, EstateSettings>();
+
+            foreach (EstateSettings estate in estates)
+                estatesByName[estate.EstateName] = estate;
+
+            string defaultEstateName = null;
+
+            if (Config.Configs[ESTATE_SECTION_NAME] != null) {
+                defaultEstateName = Config.Configs[ESTATE_SECTION_NAME].GetString("DefaultEstateName", null);
+
+                if (defaultEstateName != null) {
+                    EstateSettings defaultEstate;
+                    bool defaultEstateJoined = false;
+
+                    if (estatesByName.ContainsKey(defaultEstateName)) {
+                        defaultEstate = estatesByName[defaultEstateName];
+
+                        if (EstateDataService.LinkRegion(regInfo.RegionID, (int)defaultEstate.EstateID))
+                            defaultEstateJoined = true;
+                    } else {
+                        if (CreateEstate(regInfo, estatesByName, defaultEstateName))
+                            defaultEstateJoined = true;
+                    }
+
+                    if (defaultEstateJoined)
+                        return true; // need to update the database
+                    else
+                        m_log.ErrorFormat(
+                            "[OPENSIM BASE]: Joining default estate {0} failed", defaultEstateName);
+                }
+            }
+
+            // If we have no default estate or creation of the default estate failed then ask the user.
+            while (true) {
+                if (estates.Count == 0) {
+                    m_log.Info("[ESTATE]: No existing estates found.  You must create a new one.");
+
+                    if (CreateEstate(regInfo, estatesByName, null))
+                        break;
+                    else
+                        continue;
+                } else {
+                    string response
+                        = MainConsole.Instance.CmdPrompt(
+                            string.Format(
+                                "Do you wish to join region {0} to an existing estate (yes/no)?", regInfo.RegionName),
+                            "yes",
+                            new List<string>() { "yes", "no" });
+
+                    if (response == "no") {
+                        if (CreateEstate(regInfo, estatesByName, null))
+                            break;
+                        else
+                            continue;
+                    } else {
+                        string[] estateNames = estatesByName.Keys.ToArray();
+                        response
+                            = MainConsole.Instance.CmdPrompt(
+                                string.Format(
+                                    "Name of estate to join.  Existing estate names are ({0})",
+                                    string.Join(", ", estateNames)),
+                                estateNames[0]);
+
+                        List<int> estateIDs = EstateDataService.GetEstates(response);
+                        if (estateIDs.Count < 1) {
+                            MainConsole.Instance.Output("The name you have entered matches no known estate.  Please try again.");
+                            continue;
+                        }
+
+                        int estateId = estateIDs[0];
+
+                        regInfo.EstateSettings = EstateDataService.LoadEstateSettings(estateId);
+
+                        if (EstateDataService.LinkRegion(regInfo.RegionID, estateId))
+                            break;
+
+                        MainConsole.Instance.Output("Joining the estate failed. Please try again.");
+                    }
+                }
+            }
+
+            return true;	// need to update the database
+        }
+
+        /// <summary>
+        /// Get a new physics scene.
+        /// </summary>
+        /// <param name="engine">The name of the physics engine to use</param>
+        /// <param name="meshEngine">The name of the mesh engine to use</param>
+        /// <param name="config">The configuration data to pass to the physics and mesh engines</param>
+        /// <param name="osSceneIdentifier">
+        /// The name of the OpenSim scene this physics scene is serving.  This will be used in log messages.
+        /// </param>
+        /// <returns></returns>
+        protected PhysicsScene GetPhysicsScene(
+            string engine, string meshEngine, IConfigSource config, string osSceneIdentifier, Vector3 regionExtent) {
+            PhysicsPluginManager physicsPluginManager;
+            physicsPluginManager = new PhysicsPluginManager();
+            physicsPluginManager.LoadPluginsFromAssemblies("Physics");
+
+            return physicsPluginManager.GetPhysicsScene(engine, meshEngine, config, osSceneIdentifier, regionExtent);
         }
     }
 }

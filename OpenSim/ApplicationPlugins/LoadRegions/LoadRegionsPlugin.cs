@@ -60,7 +60,7 @@ namespace OpenSim.ApplicationPlugins.LoadRegions
             get { return m_name; }
         }
 
-        protected OpenSimBase m_openSim;
+        protected OpenSim m_openSim;
 
         public void Initialise()
         {
@@ -68,7 +68,7 @@ namespace OpenSim.ApplicationPlugins.LoadRegions
             throw new PluginNotInitialisedException(Name);
         }
 
-        public void Initialise(OpenSimBase openSim)
+        public void Initialise(OpenSim openSim)
         {
             m_openSim = openSim;
             m_openSim.ApplicationRegistry.RegisterInterface<IRegionCreator>(this);

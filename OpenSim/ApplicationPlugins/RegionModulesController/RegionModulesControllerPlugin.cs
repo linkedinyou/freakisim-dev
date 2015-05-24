@@ -45,7 +45,7 @@ namespace OpenSim.ApplicationPlugins.RegionModulesController
                 MethodBase.GetCurrentMethod().DeclaringType);
 
         // Config access
-        private OpenSimBase m_openSim;
+        private OpenSim m_openSim;
 
         // Our name
         private string m_name;
@@ -62,7 +62,7 @@ namespace OpenSim.ApplicationPlugins.RegionModulesController
 
 #region IApplicationPlugin implementation
         
-        public void Initialise (OpenSimBase openSim)
+        public void Initialise (OpenSim openSim)
         {
             m_openSim = openSim;
             m_openSim.ApplicationRegistry.RegisterInterface<IRegionModulesController>(this);

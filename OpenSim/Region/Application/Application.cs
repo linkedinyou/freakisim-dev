@@ -66,7 +66,7 @@ namespace OpenSim
         /// <summary>
         /// Instance of the OpenSim class.  This could be OpenSim or OpenSimBackground depending on the configuration
         /// </summary>
-        protected static OpenSimBase m_sim = null;
+        protected static OpenSim m_sim = null;
 
 
         /// <summary>
