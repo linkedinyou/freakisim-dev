@@ -2585,7 +2585,7 @@ namespace OpenSim.Region.Framework.Scenes
 
             // Get terrain height for sub-region in a megaregion if necessary
 
-				//COMMENT: If its only nessesary in a megaregion, why do it on normal region's too?
+			// COMMENT: If its only nessesary in a megaregion, why do it on normal region's too?
 
         	if (regionCombinerModule != null)
             {
@@ -2597,7 +2597,8 @@ namespace OpenSim.Region.Framework.Scenes
                 if (target_region == null)
                     return;
                
-                SceneManager.Instance.TryGetScene(target_region.RegionID, out targetScene);
+                // FREAKKI SceneManager.Instance.TryGetScene(target_region.RegionID, out targetScene);
+                throw new FreAkkiRefactoringException("MoveToTarget::regionCombinerModule not Null");
             }
 
             float terrainHeight = (float)targetScene.Heightmap[(int)(pos.X % regionSize.X), (int)(pos.Y % regionSize.Y)];

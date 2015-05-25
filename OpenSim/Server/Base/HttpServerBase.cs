@@ -132,7 +132,7 @@ namespace OpenSim.Server.Base
             foreach (BaseHttpServer s in MainServer.Servers.Values)
                 s.Start();
 
-            MainServer.RegisterHttpConsoleCommands(MainConsole.Instance);
+            // FREAKKI MainServer.RegisterHttpConsoleCommands(MainConsole.Instance);
 
             if (MainConsole.Instance is RemoteConsole)
             {

@@ -37,15 +37,14 @@ using System.Net;
 using System.Reflection;
 using System.Threading;
 
-namespace OpenSim.Region.Framework.Scenes
-{
+namespace OpenSim.Region.Framework.Scenes {
     public delegate void RestartSim(RegionInfo thisregion);
 
     /// <summary>
     /// Manager for adding, closing and restarting scenes.
     /// </summary>
-    public class SceneManager: ReceiveActor
-    {
+    public class SceneManager : ReceiveActor {
+        #region definitions
         private static readonly ILog m_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         public event RestartSim OnRestartSim;
@@ -59,29 +58,20 @@ namespace OpenSim.Region.Framework.Scenes
         /// <summary>
         /// Are all regions ready for use?
         /// </summary>
-        public bool AllRegionsReady
-        {
-            get
-            {
+        public bool AllRegionsReady {
+            get {
                 return m_allRegionsReady;
             }
 
-            private set
-            {
-                if (m_allRegionsReady != value)
-                {
+            private set {
+                if (m_allRegionsReady != value) {
                     m_allRegionsReady = value;
                     Action<SceneManager> handler = OnRegionsReadyStatusChange;
-                    if (handler != null)
-                    {
-                        foreach (Action<SceneManager> d in handler.GetInvocationList())
-                        {
-                            try
-                            {
+                    if (handler != null) {
+                        foreach (Action<SceneManager> d in handler.GetInvocationList()) {
+                            try {
                                 d(this);
-                            }
-                            catch (Exception e)
-                            {
+                            } catch (Exception e) {
                                 m_log.ErrorFormat("[SCENE MANAGER]: Delegate for OnRegionsReadyStatusChange failed - continuing {0} - {1}",
                                     e.Message, e.StackTrace);
                             }
@@ -92,32 +82,22 @@ namespace OpenSim.Region.Framework.Scenes
         }
         private bool m_allRegionsReady;
 
-        private static SceneManager m_instance = null;
-        public static SceneManager Instance
-        { 
-            get {
-                if (m_instance == null)
-                    m_instance = new SceneManager();
-                return m_instance;
-            } 
-        }
+        //private static SceneManager m_instance = null;
+        //public static SceneManager Instance
+        //{ 
+        //    get {
+        //        if (m_instance == null)
+        //            m_instance = new SceneManager();
+        //        return m_instance;
+        //    } 
+        //}
 
         private readonly List<Scene> m_localScenes = new List<Scene>();
         private ReaderWriterLock m_localScenesRwLock = new ReaderWriterLock();
 
-        public List<Scene> Scenes
-        {
-            get 
-            {
-                m_localScenesRwLock.AcquireReaderLock(-1);
-                try
-                {
-                    return new List<Scene>(m_localScenes);
-                }
-                finally
-                {
-                    m_localScenesRwLock.ReleaseReaderLock();
-                }
+        private List<Scene> Scenes {
+            get {
+                return new List<Scene>(m_localScenes);
             }
         }
 
@@ -127,87 +107,59 @@ namespace OpenSim.Region.Framework.Scenes
         /// <value>
         /// If null, then all scenes are considered selected (signalled as "Root" on the console).
         /// </value>
-        public Scene CurrentScene { get; private set; }
+        private Scene CurrentScene { get; set; }
 
-        public Scene CurrentOrFirstScene
-        {
-            get
-            {
-                if (CurrentScene == null)
-                {
-                    m_localScenesRwLock.AcquireReaderLock(-1);
-                    try
-                    {
-                        if (m_localScenes.Count > 0)
-                            return m_localScenes[0];
-                        else
-                            return null;
-                    }
-                    finally
-                    {
-                        m_localScenesRwLock.ReleaseReaderLock();
-                    }
-                }
-                else
-                {
+        private Scene CurrentOrFirstScene {
+            get {
+                if (CurrentScene == null) {
+                    if (m_localScenes.Count > 0)
+                       return m_localScenes[0];
+                    else
+                       return null;
+                } else {
                     return CurrentScene;
                 }
             }
         }
 
-        public SceneManager()
-        {
-            m_instance = this;
+        #endregion
+
+        public SceneManager() {
+            // m_instance = this;
             m_localScenes = new List<Scene>();
         }
 
-        public void Close()
-        {
+        private void Close() {
             m_localScenesRwLock.AcquireReaderLock(-1);
-            try
-            {
-                for (int i = 0; i < m_localScenes.Count; i++)
-                {
+            try {
+                for (int i = 0; i < m_localScenes.Count; i++) {
                     m_localScenes[i].Close();
                 }
-            }
-            finally
-            {
+            } finally {
                 m_localScenesRwLock.ReleaseReaderLock();
             }
         }
 
-        public void Close(Scene cscene)
-        {
+        private void Close(Scene cscene) {
             m_localScenesRwLock.AcquireReaderLock(-1);
-            try
-            {
-                if (m_localScenes.Contains(cscene))
-                {
-                    for (int i = 0; i < m_localScenes.Count; i++)
-                    {
-                        if (m_localScenes[i].Equals(cscene))
-                        {
+            try {
+                if (m_localScenes.Contains(cscene)) {
+                    for (int i = 0; i < m_localScenes.Count; i++) {
+                        if (m_localScenes[i].Equals(cscene)) {
                             m_localScenes[i].Close();
                         }
                     }
                 }
-            }
-            finally
-            {
+            } finally {
                 m_localScenesRwLock.ReleaseReaderLock();
             }
         }
 
-        public void Add(Scene scene)
-        {
+        private void Add(Scene scene) {
             m_localScenesRwLock.AcquireWriterLock(-1);
-            try
-            {
+            try {
                 m_localScenes.Add(scene);
-            }
-            finally
-            {
+            } finally {
                 m_localScenesRwLock.ReleaseWriterLock();
             }
 
@@ -215,25 +167,19 @@ namespace OpenSim.Region.Framework.Scenes
             scene.EventManager.OnRegionReadyStatusChange += HandleRegionReadyStatusChange;
         }
 
-        public void HandleRestart(RegionInfo rdata)
-        {
+        private void HandleRestart(RegionInfo rdata) {
             Scene restartedScene = null;
 
             m_localScenesRwLock.AcquireWriterLock(-1);
-            try
-            {
-                for (int i = 0; i < m_localScenes.Count; i++)
-                {
-                    if (rdata.RegionName == m_localScenes[i].RegionInfo.RegionName)
-                    {
+            try {
+                for (int i = 0; i < m_localScenes.Count; i++) {
+                    if (rdata.RegionName == m_localScenes[i].RegionInfo.RegionName) {
                         restartedScene = m_localScenes[i];
                         m_localScenes.RemoveAt(i);
                         break;
                     }
                 }
-            }
-            finally
-            {
+            } finally {
                 m_localScenesRwLock.ReleaseWriterLock();
             }
 
@@ -246,53 +192,38 @@ namespace OpenSim.Region.Framework.Scenes
             OnRestartSim(rdata);
         }
 
-        private void HandleRegionReadyStatusChange(IScene scene)
-        {
+        private void HandleRegionReadyStatusChange(IScene scene) {
             m_localScenesRwLock.AcquireReaderLock(-1);
-            try
-            {
+            try {
                 AllRegionsReady = m_localScenes.TrueForAll(s => s.Ready);
-            }
-            finally
-            {
+            } finally {
                 m_localScenesRwLock.ReleaseReaderLock();
             }
         }
 
-        public void SendSimOnlineNotification(ulong regionHandle)
-        {
+        private void SendSimOnlineNotification(ulong regionHandle) {
             RegionInfo Result = null;
 
             m_localScenesRwLock.AcquireReaderLock(-1);
-            try
-            {
-                for (int i = 0; i < m_localScenes.Count; i++)
-                {
-                    if (m_localScenes[i].RegionInfo.RegionHandle == regionHandle)
-                    {
+            try {
+                for (int i = 0; i < m_localScenes.Count; i++) {
+                    if (m_localScenes[i].RegionInfo.RegionHandle == regionHandle) {
                         // Inform other regions to tell their avatar about me
                         Result = m_localScenes[i].RegionInfo;
                     }
                 }
 
-                if (Result != null)
-                {
-                    for (int i = 0; i < m_localScenes.Count; i++)
-                    {
-                        if (m_localScenes[i].RegionInfo.RegionHandle != regionHandle)
-                        {
+                if (Result != null) {
+                    for (int i = 0; i < m_localScenes.Count; i++) {
+                        if (m_localScenes[i].RegionInfo.RegionHandle != regionHandle) {
                             // Inform other regions to tell their avatar about me
                             //m_localScenes[i].OtherRegionUp(Result);
                         }
                     }
-                }
-                else
-                {
+                } else {
                     m_log.Error("[REGION]: Unable to notify Other regions of this Region coming up");
                 }
-            }
-            finally
-            {
+            } finally {
                 m_localScenesRwLock.ReleaseReaderLock();
             }
         }
@@ -301,8 +232,7 @@ namespace OpenSim.Region.Framework.Scenes
         /// Save the prims in the current scene to an xml file in OpenSimulator's original 'xml' format
         /// </summary>
         /// <param name="filename"></param>
-        public void SaveCurrentSceneToXml(string filename)
-        {
+        private void SaveCurrentSceneToXml(string filename) {
             IRegionSerialiserModule serialiser = CurrentOrFirstScene.RequestModuleInterface<IRegionSerialiserModule>();
             if (serialiser != null)
                 serialiser.SavePrimsToXml(CurrentOrFirstScene, filename);
@@ -314,8 +244,7 @@ namespace OpenSim.Region.Framework.Scenes
         /// <param name="filename"></param>
         /// <param name="generateNewIDs"></param>
         /// <param name="loadOffset"></param>
-        public void LoadCurrentSceneFromXml(string filename, bool generateNewIDs, Vector3 loadOffset)
-        {
+        private void LoadCurrentSceneFromXml(string filename, bool generateNewIDs, Vector3 loadOffset) {
             IRegionSerialiserModule serialiser = CurrentOrFirstScene.RequestModuleInterface<IRegionSerialiserModule>();
             if (serialiser != null)
                 serialiser.LoadPrimsFromXml(CurrentOrFirstScene, filename, generateNewIDs, loadOffset);
@@ -325,15 +254,13 @@ namespace OpenSim.Region.Framework.Scenes
         /// Save the prims in the current scene to an xml file in OpenSimulator's current 'xml2' format
         /// </summary>
         /// <param name="filename"></param>
-        public void SaveCurrentSceneToXml2(string filename)
-        {
+        private void SaveCurrentSceneToXml2(string filename) {
             IRegionSerialiserModule serialiser = CurrentOrFirstScene.RequestModuleInterface<IRegionSerialiserModule>();
             if (serialiser != null)
                 serialiser.SavePrimsToXml2(CurrentOrFirstScene, filename);
         }
 
-        public void SaveNamedPrimsToXml2(string primName, string filename)
-        {
+        private void SaveNamedPrimsToXml2(string primName, string filename) {
             IRegionSerialiserModule serialiser = CurrentOrFirstScene.RequestModuleInterface<IRegionSerialiserModule>();
             if (serialiser != null)
                 serialiser.SaveNamedPrimsToXml2(CurrentOrFirstScene, primName, filename);
@@ -342,8 +269,7 @@ namespace OpenSim.Region.Framework.Scenes
         /// <summary>
         /// Load an xml file of prims in OpenSimulator's current 'xml2' file format to the current scene
         /// </summary>
-        public void LoadCurrentSceneFromXml2(string filename)
-        {
+        private void LoadCurrentSceneFromXml2(string filename) {
             IRegionSerialiserModule serialiser = CurrentOrFirstScene.RequestModuleInterface<IRegionSerialiserModule>();
             if (serialiser != null)
                 serialiser.LoadPrimsFromXml2(CurrentOrFirstScene, filename);
@@ -354,8 +280,7 @@ namespace OpenSim.Region.Framework.Scenes
         /// as well as the details of the prims themselves.
         /// </summary>
         /// <param name="cmdparams"></param>
-        public void SaveCurrentSceneToArchive(string[] cmdparams)
-        {
+        private void SaveCurrentSceneToArchive(string[] cmdparams) {
             IRegionArchiverModule archiver = CurrentOrFirstScene.RequestModuleInterface<IRegionArchiverModule>();
             if (archiver != null)
                 archiver.HandleSaveOarConsoleCommand(string.Empty, cmdparams);
@@ -366,76 +291,59 @@ namespace OpenSim.Region.Framework.Scenes
         /// their assets to the asset service.
         /// </summary>
         /// <param name="cmdparams"></param>
-        public void LoadArchiveToCurrentScene(string[] cmdparams)
-        {
+        private void LoadArchiveToCurrentScene(string[] cmdparams) {
             IRegionArchiverModule archiver = CurrentOrFirstScene.RequestModuleInterface<IRegionArchiverModule>();
             if (archiver != null)
                 archiver.HandleLoadOarConsoleCommand(string.Empty, cmdparams);
         }
 
-        public string SaveCurrentSceneMapToXmlString()
-        {
+        private string SaveCurrentSceneMapToXmlString() {
             return CurrentOrFirstScene.Heightmap.SaveToXmlString();
         }
 
-        public void LoadCurrenSceneMapFromXmlString(string mapData)
-        {
+        private void LoadCurrenSceneMapFromXmlString(string mapData) {
             CurrentOrFirstScene.Heightmap.LoadFromXmlString(mapData);
         }
 
-        public void SendCommandToPluginModules(string[] cmdparams)
-        {
+        private void SendCommandToPluginModules(string[] cmdparams) {
             ForEachSelectedScene(delegate(Scene scene) { scene.SendCommandToPlugins(cmdparams); });
         }
 
-        public void SetBypassPermissionsOnCurrentScene(bool bypassPermissions)
-        {
+        private void SetBypassPermissionsOnCurrentScene(bool bypassPermissions) {
             ForEachSelectedScene(delegate(Scene scene) { scene.Permissions.SetBypassPermissions(bypassPermissions); });
         }
 
-        public void ForEachSelectedScene(Action<Scene> func)
-        {
+        private void ForEachSelectedScene(Action<Scene> func) {
             if (CurrentScene == null)
                 ForEachScene(func);
             else
                 func(CurrentScene);
         }
 
-        public void RestartCurrentScene()
-        {
+        private void RestartCurrentScene() {
             ForEachSelectedScene(delegate(Scene scene) { scene.RestartNow(); });
         }
 
-        public void BackupCurrentScene()
-        {
+        private void BackupCurrentScene() {
             ForEachSelectedScene(delegate(Scene scene) { scene.Backup(true); });
         }
 
-        public bool TrySetCurrentScene(string regionName)
-        {
-            if ((String.Compare(regionName, "root") == 0) 
+        private bool TrySetCurrentScene(string regionName) {
+            if ((String.Compare(regionName, "root") == 0)
                 || (String.Compare(regionName, "..") == 0)
-                || (String.Compare(regionName, "/") == 0))
-            {
+                || (String.Compare(regionName, "/") == 0)) {
                 CurrentScene = null;
                 return true;
-            }
-            else
-            {
+            } else {
                 m_localScenesRwLock.AcquireReaderLock(-1);
-                try
-                {
-                    foreach (Scene scene in m_localScenes)
-                    {
-                        if (String.Compare(scene.RegionInfo.RegionName, regionName, true) == 0)
-                        {
+                try {
+                    foreach (Scene scene in m_localScenes) {
+                        if (String.Compare(scene.RegionInfo.RegionName, regionName, true) == 0) {
                             CurrentScene = scene;
                             return true;
                         }
                     }
-                }
-                finally
-                {
+                } finally {
                     m_localScenesRwLock.ReleaseReaderLock();
                 }
 
@@ -443,46 +351,34 @@ namespace OpenSim.Region.Framework.Scenes
             }
         }
 
-        public bool TrySetCurrentScene(UUID regionID)
-        {
+        private bool TrySetCurrentScene(UUID regionID) {
             m_log.Debug("Searching for Region: '" + regionID + "'");
 
             m_localScenesRwLock.AcquireReaderLock(-1);
-            try
-            {
-                foreach (Scene scene in m_localScenes)
-                {
-                    if (scene.RegionInfo.RegionID == regionID)
-                    {
+            try {
+                foreach (Scene scene in m_localScenes) {
+                    if (scene.RegionInfo.RegionID == regionID) {
                         CurrentScene = scene;
                         return true;
                     }
                 }
-            }
-            finally
-            {
+            } finally {
                 m_localScenesRwLock.ReleaseReaderLock();
             }
 
             return false;
         }
 
-        public bool TryGetScene(string regionName, out Scene scene)
-        {
+        private bool TryGetScene(string regionName, out Scene scene) {
             m_localScenesRwLock.AcquireReaderLock(-1);
-            try
-            {
-                foreach (Scene mscene in m_localScenes)
-                {
-                    if (String.Compare(mscene.RegionInfo.RegionName, regionName, true) == 0)
-                    {
+            try {
+                foreach (Scene mscene in m_localScenes) {
+                    if (String.Compare(mscene.RegionInfo.RegionName, regionName, true) == 0) {
                         scene = mscene;
                         return true;
                     }
                 }
-            }
-            finally
-            {
+            } finally {
                 m_localScenesRwLock.ReleaseReaderLock();
             }
 
@@ -490,86 +386,65 @@ namespace OpenSim.Region.Framework.Scenes
             return false;
         }
 
-        public bool TryGetScene(UUID regionID, out Scene scene)
-        {
+        private bool TryGetScene(UUID regionID, out Scene scene) {
             m_localScenesRwLock.AcquireReaderLock(-1);
-            try
-            {
-                foreach (Scene mscene in m_localScenes)
-                {
-                    if (mscene.RegionInfo.RegionID == regionID)
-                    {
+            try {
+                foreach (Scene mscene in m_localScenes) {
+                    if (mscene.RegionInfo.RegionID == regionID) {
                         scene = mscene;
                         return true;
                     }
                 }
-            }
-            finally
-            {
+            } finally {
                 m_localScenesRwLock.ReleaseReaderLock();
             }
-            
+
             scene = null;
             return false;
         }
 
-        public bool TryGetScene(uint locX, uint locY, out Scene scene)
-        {
+        private bool TryGetScene(uint locX, uint locY, out Scene scene) {
             m_localScenesRwLock.AcquireReaderLock(-1);
-            try
-            {
-                foreach (Scene mscene in m_localScenes)
-                {
+            try {
+                foreach (Scene mscene in m_localScenes) {
                     if (mscene.RegionInfo.RegionLocX == locX &&
-                        mscene.RegionInfo.RegionLocY == locY)
-                    {
+                        mscene.RegionInfo.RegionLocY == locY) {
                         scene = mscene;
                         return true;
                     }
                 }
-            }
-            finally
-            {
+            } finally {
                 m_localScenesRwLock.ReleaseReaderLock();
             }
-            
+
             scene = null;
             return false;
         }
 
-        public bool TryGetScene(IPEndPoint ipEndPoint, out Scene scene)
-        {
+        private bool TryGetScene(IPEndPoint ipEndPoint, out Scene scene) {
             m_localScenesRwLock.AcquireReaderLock(-1);
-            try
-            {
-                foreach (Scene mscene in m_localScenes)
-                {
+            try {
+                foreach (Scene mscene in m_localScenes) {
                     if ((mscene.RegionInfo.InternalEndPoint.Equals(ipEndPoint.Address)) &&
-                        (mscene.RegionInfo.InternalEndPoint.Port == ipEndPoint.Port))
-                    {
+                        (mscene.RegionInfo.InternalEndPoint.Port == ipEndPoint.Port)) {
                         scene = mscene;
                         return true;
                     }
                 }
-            }
-            finally
-            {
+            } finally {
                 m_localScenesRwLock.ReleaseReaderLock();
             }
-            
+
             scene = null;
             return false;
         }
 
-        public List<ScenePresence> GetCurrentSceneAvatars()
-        {
+        private List<ScenePresence> GetCurrentSceneAvatars() {
             List<ScenePresence> avatars = new List<ScenePresence>();
 
             ForEachSelectedScene(
-                delegate(Scene scene)
-                {
-                    scene.ForEachRootScenePresence(delegate(ScenePresence scenePresence)
-                    {
+                delegate(Scene scene) {
+                    scene.ForEachRootScenePresence(delegate(ScenePresence scenePresence) {
                         avatars.Add(scenePresence);
                     });
                 }
@@ -578,14 +453,11 @@ namespace OpenSim.Region.Framework.Scenes
             return avatars;
         }
 
-        public List<ScenePresence> GetCurrentScenePresences()
-        {
+        private List<ScenePresence> GetCurrentScenePresences() {
             List<ScenePresence> presences = new List<ScenePresence>();
 
-            ForEachSelectedScene(delegate(Scene scene)
-            {
-                scene.ForEachScenePresence(delegate(ScenePresence sp)
-                {
+            ForEachSelectedScene(delegate(Scene scene) {
+                scene.ForEachScenePresence(delegate(ScenePresence sp) {
                     presences.Add(sp);
                 });
             });
@@ -593,52 +465,38 @@ namespace OpenSim.Region.Framework.Scenes
             return presences;
         }
 
-        public RegionInfo GetRegionInfo(UUID regionID)
-        {
+        private RegionInfo GetRegionInfo(UUID regionID) {
             m_localScenesRwLock.AcquireReaderLock(-1);
-            try
-            {
-                foreach (Scene scene in m_localScenes)
-                {
-                    if (scene.RegionInfo.RegionID == regionID)
-                    {
+            try {
+                foreach (Scene scene in m_localScenes) {
+                    if (scene.RegionInfo.RegionID == regionID) {
                         return scene.RegionInfo;
                     }
                 }
-            }
-            finally
-            {
+            } finally {
                 m_localScenesRwLock.ReleaseReaderLock();
             }
 
             return null;
         }
 
-        public void ForceCurrentSceneClientUpdate()
-        {
+        private void ForceCurrentSceneClientUpdate() {
             ForEachSelectedScene(delegate(Scene scene) { scene.ForceClientUpdate(); });
         }
 
-        public void HandleEditCommandOnCurrentScene(string[] cmdparams)
-        {
+        private void HandleEditCommandOnCurrentScene(string[] cmdparams) {
             ForEachSelectedScene(delegate(Scene scene) { scene.HandleEditCommand(cmdparams); });
         }
 
-        public bool TryGetScenePresence(UUID avatarId, out ScenePresence avatar)
-        {
+        private bool TryGetScenePresence(UUID avatarId, out ScenePresence avatar) {
             m_localScenesRwLock.AcquireReaderLock(-1);
-            try
-            {
-                foreach (Scene scene in m_localScenes)
-                {
-                    if (scene.TryGetScenePresence(avatarId, out avatar))
-                    {
+            try {
+                foreach (Scene scene in m_localScenes) {
+                    if (scene.TryGetScenePresence(avatarId, out avatar)) {
                         return true;
                     }
                 }
-            }
-            finally
-            {
+            } finally {
                 m_localScenesRwLock.ReleaseReaderLock();
             }
 
@@ -646,21 +504,16 @@ namespace OpenSim.Region.Framework.Scenes
             return false;
         }
 
-        public bool TryGetRootScenePresence(UUID avatarId, out ScenePresence avatar)
-        {
+        private bool TryGetRootScenePresence(UUID avatarId, out ScenePresence avatar) {
             m_localScenesRwLock.AcquireReaderLock(-1);
-            try
-            {
-                foreach (Scene scene in m_localScenes)
-                {
+            try {
+                foreach (Scene scene in m_localScenes) {
                     avatar = scene.GetScenePresence(avatarId);
 
                     if (avatar != null && !avatar.IsChildAgent)
                         return true;
                 }
-            }
-            finally
-            {
+            } finally {
                 m_localScenesRwLock.ReleaseReaderLock();
             }
 
@@ -668,36 +521,26 @@ namespace OpenSim.Region.Framework.Scenes
             return false;
         }
 
-        public void CloseScene(Scene scene)
-        {
+        private void CloseScene(Scene scene) {
             m_localScenesRwLock.AcquireWriterLock(-1);
-            try
-            {
+            try {
                 m_localScenes.Remove(scene);
-            }
-            finally
-            {
+            } finally {
                 m_localScenesRwLock.ReleaseWriterLock();
             }
 
             scene.Close();
         }
 
-        public bool TryGetAvatarByName(string avatarName, out ScenePresence avatar)
-        {
+        private bool TryGetAvatarByName(string avatarName, out ScenePresence avatar) {
             m_localScenesRwLock.AcquireReaderLock(-1);
-            try
-            {
-                foreach (Scene scene in m_localScenes)
-                {
-                    if (scene.TryGetAvatarByName(avatarName, out avatar))
-                    {
+            try {
+                foreach (Scene scene in m_localScenes) {
+                    if (scene.TryGetAvatarByName(avatarName, out avatar)) {
                         return true;
                     }
                 }
-            }
-            finally
-            {
+            } finally {
                 m_localScenesRwLock.ReleaseReaderLock();
             }
 
@@ -705,20 +548,15 @@ namespace OpenSim.Region.Framework.Scenes
             return false;
         }
 
-        public bool TryGetRootScenePresenceByName(string firstName, string lastName, out ScenePresence sp)
-        {
+        private bool TryGetRootScenePresenceByName(string firstName, string lastName, out ScenePresence sp) {
             m_localScenesRwLock.AcquireReaderLock(-1);
-            try
-            {
-                foreach (Scene scene in m_localScenes)
-                {
+            try {
+                foreach (Scene scene in m_localScenes) {
                     sp = scene.GetScenePresence(firstName, lastName);
                     if (sp != null && !sp.IsChildAgent)
                         return true;
                 }
-            }
-            finally
-            {
+            } finally {
                 m_localScenesRwLock.ReleaseReaderLock();
             }
 
@@ -726,15 +564,11 @@ namespace OpenSim.Region.Framework.Scenes
             return false;
         }
 
-        public void ForEachScene(Action<Scene> action)
-        {
+        private void ForEachScene(Action<Scene> action) {
             m_localScenesRwLock.AcquireReaderLock(-1);
-            try
-            {
+            try {
                 m_localScenes.ForEach(action);
-            }
-            finally
-            {
+            } finally {
                 m_localScenesRwLock.ReleaseReaderLock();
             }
         }
