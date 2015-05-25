@@ -36,14 +36,50 @@ using System.Collections.Generic;
 using System.Net;
 using System.Reflection;
 using System.Threading;
+using Akka.Util.Internal;
 
 namespace OpenSim.Region.Framework.Scenes {
+
+    #region messages
+
+    public class SceneAddMessage {
+        public SceneAddMessage(Scene scene) {
+            this.Scene = scene;
+        }
+        public Scene Scene { get; private set; }
+    }
+
+    public class SceneCloseMessage { }
+
+    public class LoadArchiveToCurrentSceneMessage {
+        public LoadArchiveToCurrentSceneMessage(String[] commandparams) {
+            this.CmdStrings = commandparams;
+        }
+        public String[] CmdStrings { get; private set; }
+    }
+
+    public class SaveCurrentSceneToArchiveMessage {
+        public SaveCurrentSceneToArchiveMessage(String[] commandparams) {
+            this.CmdStrings = commandparams;
+        }
+        public String[] CmdStrings { get; private set; }
+    }
+
+    //public class ForEachSceneDelegateMessage {
+    //    public ForEachSceneDelegateMessage(Action<Scene> sceneAction) {
+    //        this.SceneAction = sceneAction;
+    //    }
+    //    public Action<Scene> SceneAction { get; private set; }
+    //}
+
+    #endregion
+
     public delegate void RestartSim(RegionInfo thisregion);
 
     /// <summary>
     /// Manager for adding, closing and restarting scenes.
     /// </summary>
-    public class SceneManager : ReceiveActor {
+    public class SceneManager : UntypedActor {
         #region definitions
         private static readonly ILog m_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
@@ -113,9 +149,9 @@ namespace OpenSim.Region.Framework.Scenes {
             get {
                 if (CurrentScene == null) {
                     if (m_localScenes.Count > 0)
-                       return m_localScenes[0];
+                        return m_localScenes[0];
                     else
-                       return null;
+                        return null;
                 } else {
                     return CurrentScene;
                 }
@@ -124,47 +160,93 @@ namespace OpenSim.Region.Framework.Scenes {
 
         #endregion
 
-        public SceneManager() {
-            // m_instance = this;
-            m_localScenes = new List<Scene>();
-        }
-
-        private void Close() {
-            m_localScenesRwLock.AcquireReaderLock(-1);
-            try {
-                for (int i = 0; i < m_localScenes.Count; i++) {
-                    m_localScenes[i].Close();
+        #region AKKA Message Handling
+        protected override void OnReceive(object message) {
+            if (message is SceneAddMessage) {
+                m_log.Info("Received SceneAdd message");
+                Add(message.AsInstanceOf<SceneAddMessage>().Scene);
+            } else if (message is SceneCloseMessage) {
+                m_log.Info("Received SceneClose message");
+                Close();
+                Sender.Tell("Closed", Self);
+            } else if (message is LoadArchiveToCurrentSceneMessage) {
+                try {
+                    m_log.Info("Received LoadArchiveToCurrentScene message");
+                    LoadArchiveToCurrentScene(message.AsInstanceOf<LoadArchiveToCurrentSceneMessage>().CmdStrings);
+                    Sender.Tell("Archive loaded from oar file", Self);
+                } catch (Exception e) {
+                    Sender.Tell(new Failure { Exception = e }, Self);
                 }
-            } finally {
-                m_localScenesRwLock.ReleaseReaderLock();
+            } else if (message is SaveCurrentSceneToArchiveMessage) {
+                try {
+                    m_log.Info("Received SaveArchiveToCurrentScene message");
+                    SaveCurrentSceneToArchive(message.AsInstanceOf<SaveCurrentSceneToArchiveMessage>().CmdStrings);
+                    Sender.Tell("Archive stored to oar file", Self);
+                } catch (Exception e) {
+                    Sender.Tell(new Failure { Exception = e }, Self);
+                }
+            // FREAKKI Not Yet Used
+            //} else if (message is ForEachSceneDelegateMessage) {
+            //    try {
+            //        m_log.Info("Received ForEachSceneDelegate message");
+            //        ForEachScene(message.AsInstanceOf<ForEachSceneDelegateMessage>().SceneAction);
+            //        Sender.Tell("ForEachSceneDelegate applied", Self);
+            //    } catch (Exception e) {
+            //        Sender.Tell(new Failure { Exception = e }, Self);
+            //    }
+            } else {
+                Unhandled(message);
             }
         }
 
-        private void Close(Scene cscene) {
-            m_localScenesRwLock.AcquireReaderLock(-1);
-            try {
-                if (m_localScenes.Contains(cscene)) {
-                    for (int i = 0; i < m_localScenes.Count; i++) {
-                        if (m_localScenes[i].Equals(cscene)) {
-                            m_localScenes[i].Close();
-                        }
-                    }
-                }
-            } finally {
-                m_localScenesRwLock.ReleaseReaderLock();
+        #endregion
+
+        private void Close() {
+            foreach (Scene t in m_localScenes) {
+                t.Close();
             }
         }
 
         private void Add(Scene scene) {
-            m_localScenesRwLock.AcquireWriterLock(-1);
-            try {
-                m_localScenes.Add(scene);
-            } finally {
-                m_localScenesRwLock.ReleaseWriterLock();
-            }
+            m_localScenes.Add(scene);
 
+            // FREAKKI refactor this
             scene.OnRestart += HandleRestart;
             scene.EventManager.OnRegionReadyStatusChange += HandleRegionReadyStatusChange;
+        }
+
+        /// <summary>
+        /// Save the current scene to an OpenSimulator archive.  This archive will eventually include the prim's assets
+        /// as well as the details of the prims themselves.
+        /// </summary>
+        /// <param name="cmdparams"></param>
+        private void SaveCurrentSceneToArchive(string[] cmdparams) {
+            IRegionArchiverModule archiver = CurrentOrFirstScene.RequestModuleInterface<IRegionArchiverModule>();
+            if (archiver != null)
+                archiver.HandleSaveOarConsoleCommand(string.Empty, cmdparams);
+        }
+
+        /// <summary>
+        /// Load an OpenSim archive into the current scene.  This will load both the shapes of the prims and upload
+        /// their assets to the asset service.
+        /// </summary>
+        /// <param name="cmdparams"></param>
+        private void LoadArchiveToCurrentScene(string[] cmdparams) {
+            IRegionArchiverModule archiver = CurrentOrFirstScene.RequestModuleInterface<IRegionArchiverModule>();
+            //ArchiveScenesGroup scenesGroup = new ArchiveScenesGroup();
+            if (archiver != null)
+                archiver.HandleLoadOarConsoleCommand(string.Empty, cmdparams, m_localScenes);
+        }
+
+        private void ForEachScene(Action<Scene> action) {
+            m_localScenes.ForEach(action);
+        }
+
+        private void ForEachSelectedScene(Action<Scene> func) {
+            if (CurrentScene == null)
+                ForEachScene(func);
+            else
+                func(CurrentScene);
         }
 
         private void HandleRestart(RegionInfo rdata) {
@@ -196,6 +278,21 @@ namespace OpenSim.Region.Framework.Scenes {
             m_localScenesRwLock.AcquireReaderLock(-1);
             try {
                 AllRegionsReady = m_localScenes.TrueForAll(s => s.Ready);
+            } finally {
+                m_localScenesRwLock.ReleaseReaderLock();
+            }
+        }
+
+        private void Close(Scene cscene) {
+            m_localScenesRwLock.AcquireReaderLock(-1);
+            try {
+                if (m_localScenes.Contains(cscene)) {
+                    for (int i = 0; i < m_localScenes.Count; i++) {
+                        if (m_localScenes[i].Equals(cscene)) {
+                            m_localScenes[i].Close();
+                        }
+                    }
+                }
             } finally {
                 m_localScenesRwLock.ReleaseReaderLock();
             }
@@ -275,28 +372,6 @@ namespace OpenSim.Region.Framework.Scenes {
                 serialiser.LoadPrimsFromXml2(CurrentOrFirstScene, filename);
         }
 
-        /// <summary>
-        /// Save the current scene to an OpenSimulator archive.  This archive will eventually include the prim's assets
-        /// as well as the details of the prims themselves.
-        /// </summary>
-        /// <param name="cmdparams"></param>
-        private void SaveCurrentSceneToArchive(string[] cmdparams) {
-            IRegionArchiverModule archiver = CurrentOrFirstScene.RequestModuleInterface<IRegionArchiverModule>();
-            if (archiver != null)
-                archiver.HandleSaveOarConsoleCommand(string.Empty, cmdparams);
-        }
-
-        /// <summary>
-        /// Load an OpenSim archive into the current scene.  This will load both the shapes of the prims and upload
-        /// their assets to the asset service.
-        /// </summary>
-        /// <param name="cmdparams"></param>
-        private void LoadArchiveToCurrentScene(string[] cmdparams) {
-            IRegionArchiverModule archiver = CurrentOrFirstScene.RequestModuleInterface<IRegionArchiverModule>();
-            if (archiver != null)
-                archiver.HandleLoadOarConsoleCommand(string.Empty, cmdparams);
-        }
-
         private string SaveCurrentSceneMapToXmlString() {
             return CurrentOrFirstScene.Heightmap.SaveToXmlString();
         }
@@ -311,13 +386,6 @@ namespace OpenSim.Region.Framework.Scenes {
 
         private void SetBypassPermissionsOnCurrentScene(bool bypassPermissions) {
             ForEachSelectedScene(delegate(Scene scene) { scene.Permissions.SetBypassPermissions(bypassPermissions); });
-        }
-
-        private void ForEachSelectedScene(Action<Scene> func) {
-            if (CurrentScene == null)
-                ForEachScene(func);
-            else
-                func(CurrentScene);
         }
 
         private void RestartCurrentScene() {
@@ -564,13 +632,5 @@ namespace OpenSim.Region.Framework.Scenes {
             return false;
         }
 
-        private void ForEachScene(Action<Scene> action) {
-            m_localScenesRwLock.AcquireReaderLock(-1);
-            try {
-                m_localScenes.ForEach(action);
-            } finally {
-                m_localScenesRwLock.ReleaseReaderLock();
-            }
-        }
     }
 }

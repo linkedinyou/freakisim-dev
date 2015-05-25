@@ -97,7 +97,7 @@ namespace OpenSim.Region.CoreModules.World.Archiver
         /// Load a whole region from an opensimulator archive.
         /// </summary>
         /// <param name="cmdparams"></param>
-        public void HandleLoadOarConsoleCommand(string module, string[] cmdparams)
+        public void HandleLoadOarConsoleCommand(string module, string[] cmdparams, List<Scene> simulatorScenes)
         {
             bool mergeOar = false;
             bool skipAssets = false;
@@ -211,11 +211,11 @@ namespace OpenSim.Region.CoreModules.World.Archiver
 
             if (mainParams.Count > 2)
             {
-                DearchiveRegion(mainParams[2], Guid.Empty, archiveOptions);
+                DearchiveRegion(mainParams[2], Guid.Empty, archiveOptions, simulatorScenes);
             }
             else
             {
-                DearchiveRegion(DEFAULT_OAR_BACKUP_FILENAME, Guid.Empty, archiveOptions);
+                DearchiveRegion(DEFAULT_OAR_BACKUP_FILENAME, Guid.Empty, archiveOptions, simulatorScenes);
             }
         }
 
@@ -283,29 +283,29 @@ namespace OpenSim.Region.CoreModules.World.Archiver
             new ArchiveWriteRequest(Scene, saveStream, requestId).ArchiveRegion(options);
         }
 
-        public void DearchiveRegion(string loadPath)
-        {
-            Dictionary<string, object> archiveOptions = new Dictionary<string, object>();
-            DearchiveRegion(loadPath, Guid.Empty, archiveOptions);
-        }
+        // FREAKKI public void DearchiveRegion(string loadPath)
+        //{
+        //    Dictionary<string, object> archiveOptions = new Dictionary<string, object>();
+        //    DearchiveRegion(loadPath, Guid.Empty, archiveOptions);
+        //}
         
-        public void DearchiveRegion(string loadPath, Guid requestId, Dictionary<string,object> options)
+        public void DearchiveRegion(string loadPath, Guid requestId, Dictionary<string,object> options, List<Scene> scenesGroup)
         {
             m_log.InfoFormat(
                 "[ARCHIVER]: Loading archive to region {0} from {1}", Scene.RegionInfo.RegionName, loadPath);
             
-            new ArchiveReadRequest(Scene, loadPath, requestId, options).DearchiveRegion();
+            new ArchiveReadRequest(Scene, loadPath, requestId, options).DearchiveRegion(scenesGroup);
         }
         
-        public void DearchiveRegion(Stream loadStream)
-        {
-            Dictionary<string, object> archiveOptions = new Dictionary<string, object>();
-            DearchiveRegion(loadStream, Guid.Empty, archiveOptions);
-        }
+        //public void DearchiveRegion(Stream loadStream)
+        //{
+        //    Dictionary<string, object> archiveOptions = new Dictionary<string, object>();
+        //    DearchiveRegion(loadStream, Guid.Empty, archiveOptions);
+        //}
         
-        public void DearchiveRegion(Stream loadStream, Guid requestId, Dictionary<string, object> options)
-        {
-            new ArchiveReadRequest(Scene, loadStream, requestId, options).DearchiveRegion();
-        }
+        //FREAKKI public void DearchiveRegion(Stream loadStream, Guid requestId, Dictionary<string, object> options)
+        //{
+        //    new ArchiveReadRequest(Scene, loadStream, requestId, options).DearchiveRegion();
+        //}
     }
 }

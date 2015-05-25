@@ -28,7 +28,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-
+using OpenSim.Region.Framework.Scenes;
 
 namespace OpenSim.Region.Framework.Interfaces
 {
@@ -37,7 +37,7 @@ namespace OpenSim.Region.Framework.Interfaces
     /// </summary>
     public interface IRegionArchiverModule
     {
-        void HandleLoadOarConsoleCommand(string module, string[] cmdparams);
+        void HandleLoadOarConsoleCommand(string module, string[] cmdparams, List<Scene> simulatorScenes);
         void HandleSaveOarConsoleCommand(string module, string[] cmdparams);
             
         /// <summary>
@@ -92,7 +92,7 @@ namespace OpenSim.Region.Framework.Interfaces
         /// If you want notification of when it has completed then subscribe to the EventManager.OnOarFileLoaded event.
         /// </remarks>
         /// <param name="loadPath"></param>
-        void DearchiveRegion(string loadPath);
+        // FREAKKI void DearchiveRegion(string loadPath);
         
         /// <summary>
         /// Dearchive the given region archive.  This replaces the existing scene.
@@ -103,9 +103,10 @@ namespace OpenSim.Region.Framework.Interfaces
         /// <param name="loadPath"></param>
         /// <param name="requestId">If supplied, this request Id is later returned in the saved event</param>
         /// <param name="options">
+        /// <param name="simulatorScenes">
         /// Dictionary of options.
         /// </param>
-        void DearchiveRegion(string loadPath, Guid requestId, Dictionary<string,object> options);
+        void DearchiveRegion(string loadPath, Guid requestId, Dictionary<string, object> options, List<Scene> simulatorScenes);
         
         /// <summary>
         /// Dearchive a region from a stream.  This replaces the existing scene. 
@@ -114,7 +115,7 @@ namespace OpenSim.Region.Framework.Interfaces
         /// If you want notification of when it has completed then subscribe to the EventManager.OnOarFileLoaded event.
         /// 
         /// <param name="loadStream"></param>
-        void DearchiveRegion(Stream loadStream);
+        // FREAKKI void DearchiveRegion(Stream loadStream);
         
         /// <summary>
         /// Dearchive a region from a stream.  This replaces the existing scene.
@@ -127,6 +128,6 @@ namespace OpenSim.Region.Framework.Interfaces
         /// <param name="options">
         /// Dictionary of options.
         /// </param>
-        void DearchiveRegion(Stream loadStream, Guid requestId, Dictionary<string,object> options);
+        // FREAKKI void DearchiveRegion(Stream loadStream, Guid requestId, Dictionary<string, object> options);
     }
 }

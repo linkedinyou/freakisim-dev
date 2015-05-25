@@ -38,6 +38,7 @@ using System.IO;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Timers;
+using OpenSim.Region.CoreModules.World.Archiver;
 
 namespace OpenSim.Region.OptionalModules.World.AutoBackup
 {
