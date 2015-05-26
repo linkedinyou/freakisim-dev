@@ -72,6 +72,14 @@ namespace OpenSim.Region.Framework.Scenes {
     //    public Action<Scene> SceneAction { get; private set; }
     //}
 
+    public class SetCurrentSceneMessage {
+        public SetCurrentSceneMessage(String regionName) {
+            this.RegionName = regionName;
+        }
+        public String RegionName { get; private set; }
+    }
+
+
     #endregion
 
     public delegate void RestartSim(RegionInfo thisregion);
@@ -194,6 +202,18 @@ namespace OpenSim.Region.Framework.Scenes {
             //    } catch (Exception e) {
             //        Sender.Tell(new Failure { Exception = e }, Self);
             //    }
+            } else if (message is SetCurrentSceneMessage) {
+                try {
+                    m_log.Info("Received SetCurrentScene message");
+                    bool isSet = TrySetCurrentScene(message.AsInstanceOf<SetCurrentSceneMessage>().RegionName);
+                    if( isSet ) {
+                        Sender.Tell("TRUE", Self);
+                    } else {
+                        Sender.Tell("FALSE", Self);
+                    }
+                } catch (Exception e) {
+                    Sender.Tell(new Failure { Exception = e }, Self);
+                }
             } else {
                 Unhandled(message);
             }
@@ -237,6 +257,28 @@ namespace OpenSim.Region.Framework.Scenes {
             if (archiver != null)
                 archiver.HandleLoadOarConsoleCommand(string.Empty, cmdparams, m_localScenes);
         }
+
+        /// <summary>
+        /// Sets Current Scene to the given Region Name. 
+        /// </summary>
+        /// <param name="regionName"></param>
+        private bool TrySetCurrentScene(string regionName) {
+            if ((String.Compare(regionName, "root") == 0)
+                || (String.Compare(regionName, "..") == 0)
+                || (String.Compare(regionName, "/") == 0)) {
+                CurrentScene = null;
+                return true;
+            } else {
+                foreach (Scene scene in m_localScenes) {
+                    if (String.Compare(scene.RegionInfo.RegionName, regionName, true) == 0) {
+                        CurrentScene = scene;
+                        return true;
+                    }
+                }
+                return false;
+            }
+        }
+
 
         private void ForEachScene(Action<Scene> action) {
             m_localScenes.ForEach(action);
@@ -395,30 +437,7 @@ namespace OpenSim.Region.Framework.Scenes {
         private void BackupCurrentScene() {
             ForEachSelectedScene(delegate(Scene scene) { scene.Backup(true); });
         }
-
-        private bool TrySetCurrentScene(string regionName) {
-            if ((String.Compare(regionName, "root") == 0)
-                || (String.Compare(regionName, "..") == 0)
-                || (String.Compare(regionName, "/") == 0)) {
-                CurrentScene = null;
-                return true;
-            } else {
-                m_localScenesRwLock.AcquireReaderLock(-1);
-                try {
-                    foreach (Scene scene in m_localScenes) {
-                        if (String.Compare(scene.RegionInfo.RegionName, regionName, true) == 0) {
-                            CurrentScene = scene;
-                            return true;
-                        }
-                    }
-                } finally {
-                    m_localScenesRwLock.ReleaseReaderLock();
-                }
-
-                return false;
-            }
-        }
-
+            
         private bool TrySetCurrentScene(UUID regionID) {
             m_log.Debug("Searching for Region: '" + regionID + "'");
 

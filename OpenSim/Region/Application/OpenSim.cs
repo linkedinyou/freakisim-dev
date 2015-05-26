@@ -991,20 +991,10 @@ namespace OpenSim {
             //                              "Change current console region", 
             // FREAKKI                             ChangeSelectedRegion);
 
-            //            m_console.Commands.AddCommand("Archiving", false, "save xml",
-            //                                          "save xml",
-            //                                          "Save a region's data in XML format", 
-            // FREAKKI                                         SaveXml);
-
             //            m_console.Commands.AddCommand("Archiving", false, "save xml2",
             //                                          "save xml2",
             //                                          "Save a region's data in XML2 format", 
             // FREAKKI                                         SaveXml2);
-
-            //            m_console.Commands.AddCommand("Archiving", false, "load xml",
-            //                                          "load xml [-newIDs [<x> <y> <z>]]",
-            //                                          "Load a region's data from XML format",
-            // FREAKKI                                         LoadXml);
 
             //            m_console.Commands.AddCommand("Archiving", false, "load xml2",
             //                                          "load xml2",
@@ -1683,20 +1673,19 @@ namespace OpenSim {
         /// </summary>
         /// <param name="cmdParams"></param>
         protected void ChangeSelectedRegion(string module, string[] cmdparams) {
-            //if (cmdparams.Length > 2)
-            //{
-            //    string newRegionName = CombineParams(cmdparams, 2);
+            if (cmdparams.Length > 2)
+            {
+                string newRegionName = CombineParams(cmdparams, 2);
 
-            //    if (!SceneManager.TrySetCurrentScene(newRegionName))
-            //        MainConsole.Instance.Output(String.Format("Couldn't select region {0}", newRegionName));
-            //    else
-            //        RefreshPrompt();
-            //}
-            //else
-            //{
-            //    MainConsole.Instance.Output("Usage: change region <region name>");
-            //}
-            throw new FreAkkiRefactoringException("ChangeSelectedRegion");
+                if (!SceneManager.TrySetCurrentScene(newRegionName))
+                    MainConsole.Instance.Output(String.Format("Couldn't select region {0}", newRegionName));
+                else
+                    RefreshPrompt();
+            }
+            else
+            {
+                MainConsole.Instance.Output("Usage: change region <region name>");
+            }
         }
 
         /// <summary>
@@ -1966,73 +1955,7 @@ namespace OpenSim {
             //}
             throw new FreAkkiRefactoringException("SavePrimsXml2");
         }
-
-        /// <summary>
-        /// Use XML format to serialize data to a file
-        /// </summary>
-        /// <param name="module"></param>
-        /// <param name="cmdparams"></param>
-        protected void SaveXml(string module, string[] cmdparams) {
-            //MainConsole.Instance.Output("PLEASE NOTE, save-xml is DEPRECATED and may be REMOVED soon.  If you are using this and there is some reason you can't use save-xml2, please file a mantis detailing the reason.");
-
-            //if (cmdparams.Length > 0)
-            //{
-            //    SceneManager.SaveCurrentSceneToXml(cmdparams[2]);
-            //}
-            //else
-            //{
-            //    SceneManager.SaveCurrentSceneToXml(DEFAULT_PRIM_BACKUP_FILENAME);
-            //}
-            throw new FreAkkiRefactoringException("SaveXml");
-        }
-
-        /// <summary>
-        /// Loads data and region objects from XML format.
-        /// </summary>
-        /// <param name="module"></param>
-        /// <param name="cmdparams"></param>
-        protected void LoadXml(string module, string[] cmdparams) {
-            //MainConsole.Instance.Output("PLEASE NOTE, load-xml is DEPRECATED and may be REMOVED soon.  If you are using this and there is some reason you can't use load-xml2, please file a mantis detailing the reason.");
-
-            //Vector3 loadOffset = new Vector3(0, 0, 0);
-            //if (cmdparams.Length > 2)
-            //{
-            //    bool generateNewIDS = false;
-            //    if (cmdparams.Length > 3)
-            //    {
-            //        if (cmdparams[3] == "-newUID")
-            //        {
-            //            generateNewIDS = true;
-            //        }
-            //        if (cmdparams.Length > 4)
-            //        {
-            //            loadOffset.X = (float)Convert.ToDecimal(cmdparams[4], Culture.NumberFormatInfo);
-            //            if (cmdparams.Length > 5)
-            //            {
-            //                loadOffset.Y = (float)Convert.ToDecimal(cmdparams[5], Culture.NumberFormatInfo);
-            //            }
-            //            if (cmdparams.Length > 6)
-            //            {
-            //                loadOffset.Z = (float)Convert.ToDecimal(cmdparams[6], Culture.NumberFormatInfo);
-            //            }
-            //            MainConsole.Instance.Output(String.Format("loadOffsets <X,Y,Z> = <{0},{1},{2}>",loadOffset.X,loadOffset.Y,loadOffset.Z));
-            //        }
-            //    }
-            //    SceneManager.LoadCurrentSceneFromXml(cmdparams[2], generateNewIDS, loadOffset);
-            //}
-            //else
-            //{
-            //    try
-            //    {
-            //        SceneManager.LoadCurrentSceneFromXml(DEFAULT_PRIM_BACKUP_FILENAME, false, loadOffset);
-            //    }
-            //    catch (FileNotFoundException)
-            //    {
-            //        MainConsole.Instance.Output("Default xml not found. Usage: load-xml <filename>");
-            //    }
-            //}
-            throw new FreAkkiRefactoringException("LoadXml");
-        }
+            
         /// <summary>
         /// Serialize region data to XML2Format
         /// </summary>
