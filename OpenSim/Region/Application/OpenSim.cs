@@ -87,11 +87,6 @@ namespace OpenSim {
         /// </summary>
         private string m_consolePrompt;
 
-        /// <summary>
-        /// Regex for parsing out special characters in the prompt.
-        /// </summary>
-        private Regex m_consolePromptRegex = new Regex(@"([^\\])\\(\w)", RegexOptions.Compiled);
-
         private string m_timedScript = "disabled";
         private int m_timeInterval = 1200;
         private Timer m_scriptTimer;
@@ -1668,51 +1663,6 @@ namespace OpenSim {
             throw new FreAkkiRefactoringException("RunCommand");
         }
 
-        /// <summary>
-        /// Change the currently selected region.  The selected region is that operated upon by single region commands.
-        /// </summary>
-        /// <param name="cmdParams"></param>
-        protected void ChangeSelectedRegion(string module, string[] cmdparams) {
-            if (cmdparams.Length > 2)
-            {
-                string newRegionName = CombineParams(cmdparams, 2);
-
-                if (!SceneManager.TrySetCurrentScene(newRegionName))
-                    MainConsole.Instance.Output(String.Format("Couldn't select region {0}", newRegionName));
-                else
-                    RefreshPrompt();
-            }
-            else
-            {
-                MainConsole.Instance.Output("Usage: change region <region name>");
-            }
-        }
-
-        /// <summary>
-        /// Refreshs prompt with the current selection details.
-        /// </summary>
-        private void RefreshPrompt() {
-            //            string regionName = (SceneManager.CurrentScene == null ? "root" : SceneManager.CurrentScene.RegionInfo.RegionName);
-            //            MainConsole.Instance.Output(String.Format("Currently selected region is {0}", regionName));
-
-            ////            m_log.DebugFormat("Original prompt is {0}", m_consolePrompt);
-            //            string prompt = m_consolePrompt;
-
-            //            // Replace "\R" with the region name
-            //            // Replace "\\" with "\"
-            //            prompt = m_consolePromptRegex.Replace(prompt, m =>
-            //            {
-            ////                m_log.DebugFormat("Matched {0}", m.Groups[2].Value);
-            //                if (m.Groups[2].Value == "R")
-            //                    return m.Groups[1].Value + regionName;
-            //                else
-            //                    return m.Groups[0].Value;
-            //            });
-
-            //            m_console.DefaultPrompt = prompt;
-            //            m_console.ConsoleScene = SceneManager.CurrentScene;
-            throw new FreAkkiRefactoringException("RefreshPrompt");
-        }
 
         // see BaseOpenSimServer
         /// <summary>

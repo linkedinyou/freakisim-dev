@@ -37,6 +37,7 @@ using System.Net;
 using System.Reflection;
 using System.Threading;
 using Akka.Util.Internal;
+using System.Text.RegularExpressions;
 
 namespace OpenSim.Region.Framework.Scenes {
 
@@ -282,6 +283,63 @@ namespace OpenSim.Region.Framework.Scenes {
 
         private void ForEachScene(Action<Scene> action) {
             m_localScenes.ForEach(action);
+        }
+
+        /// <summary>
+        /// Change the currently selected region.  The selected region is that operated upon by single region commands.
+        /// </summary>
+        /// <param name="cmdParams"></param>
+        private void ChangeSelectedRegion(string[] cmdparams) {
+            if (cmdparams.Length > 2)
+            {
+                string newRegionName = CombineParams(cmdparams, 2);
+
+                if (!TrySetCurrentScene (newRegionName)) {
+                    MainConsole.Instance.Output (String.Format ("Couldn't select region {0}", newRegionName));
+                } else {
+//                    RefreshPrompt(aConsolePromptString);
+                }
+            }
+            else
+            {
+                MainConsole.Instance.Output("Usage: change region <region name>");
+            }
+        }
+
+        private static string CombineParams(string[] commandParams, int pos) {
+            string result = String.Empty;
+            for (int i = pos; i < commandParams.Length; i++) {
+                result += commandParams[i] + " ";
+            }
+            result = result.TrimEnd(' ');
+            return result;
+        }
+
+        /// <summary>
+        /// Refreshs prompt with the current selection details.
+        /// </summary>
+        private void RefreshPrompt(String consolePrompt) {
+            // Regex for parsing out special characters in the prompt.
+            Regex consolePromptRegex = new Regex(@"([^\\])\\(\w)", RegexOptions.Compiled);
+                        
+            string regionName = (CurrentScene == null ? "root" : CurrentScene.RegionInfo.RegionName);
+            MainConsole.Instance.Output(String.Format("Currently selected region is {0}", regionName));
+
+            string prompt = consolePrompt;
+
+                        // Replace "\R" with the region name
+                        // Replace "\\" with "\"
+                        prompt = consolePromptRegex.Replace(prompt, m =>
+                        {
+                            if (m.Groups[2].Value == "R")
+                                return m.Groups[1].Value + regionName;
+                            else
+                                return m.Groups[0].Value;
+                        });
+
+// FREAKKI                        m_console.DefaultPrompt = prompt;
+// FREAKKI                       m_console.ConsoleScene = SceneManager.CurrentScene;
+            throw new FreAkkiRefactoringException("RefreshPrompt");
         }
 
         private void ForEachSelectedScene(Action<Scene> func) {
