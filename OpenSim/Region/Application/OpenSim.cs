@@ -85,7 +85,7 @@ namespace OpenSim {
         /// <summary>
         /// Prompt to use for simulator command line.
         /// </summary>
-        private string m_consolePrompt;
+        /// FREAKKI not used anymore ... private string m_consolePrompt;
 
         private string m_timedScript = "disabled";
         private int m_timeInterval = 1200;
