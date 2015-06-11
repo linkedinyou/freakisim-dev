@@ -194,7 +194,7 @@ namespace OpenSim {
 
                 stpMinThreads = startupConfig.GetInt("MinPoolThreads", 15);
                 stpMaxThreads = startupConfig.GetInt("MaxPoolThreads", 15);
-                m_consolePrompt = startupConfig.GetString("ConsolePrompt", @"Region (\R) ");
+                // FREAKKI m_consolePrompt = startupConfig.GetString("ConsolePrompt", @"Region (\R) ");
             }
 
             if (Util.FireAndForgetMethod == FireAndForgetMethod.SmartThreadPool)

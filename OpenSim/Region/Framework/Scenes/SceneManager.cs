@@ -38,6 +38,7 @@ using System.Reflection;
 using System.Threading;
 using Akka.Util.Internal;
 using System.Text.RegularExpressions;
+using OpenSim.Framework.Console;
 
 namespace OpenSim.Region.Framework.Scenes {
 
@@ -51,20 +52,6 @@ namespace OpenSim.Region.Framework.Scenes {
     }
 
     public class SceneCloseMessage { }
-
-    public class LoadArchiveToCurrentSceneMessage {
-        public LoadArchiveToCurrentSceneMessage(String[] commandparams) {
-            this.CmdStrings = commandparams;
-        }
-        public String[] CmdStrings { get; private set; }
-    }
-
-    public class SaveCurrentSceneToArchiveMessage {
-        public SaveCurrentSceneToArchiveMessage(String[] commandparams) {
-            this.CmdStrings = commandparams;
-        }
-        public String[] CmdStrings { get; private set; }
-    }
 
     //public class ForEachSceneDelegateMessage {
     //    public ForEachSceneDelegateMessage(Action<Scene> sceneAction) {

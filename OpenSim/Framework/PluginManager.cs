@@ -31,10 +31,10 @@ using Mono.Addins;
 using Mono.Addins.Description;
 using Mono.Addins.Setup;
 using System;
+using SysConsole=System.Console;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using OpenSim.Framework.Console;
 
 
 namespace OpenSim.Framework
@@ -213,15 +213,15 @@ namespace OpenSim.Framework
         public void ListUpdates()
         {
             IProgressStatus ps = new ConsoleProgressStatus(true);
-            Console.WriteLine ("Looking for updates...");
+            SysConsole.WriteLine ("Looking for updates...");
             Repositories.UpdateAllRepositories (ps);
-            Console.WriteLine ("Available add-in updates:");
+            SysConsole.WriteLine ("Available add-in updates:");
 
             AddinRepositoryEntry[] entries = Repositories.GetAvailableUpdates();
 
             foreach (AddinRepositoryEntry entry in entries)
             {
-                Console.WriteLine(String.Format("{0}",entry.Addin.Id));
+                SysConsole.WriteLine(String.Format("{0}",entry.Addin.Id));
             }
         }
 
