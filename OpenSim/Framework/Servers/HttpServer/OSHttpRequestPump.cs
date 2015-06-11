@@ -37,7 +37,6 @@ using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Threading;
 using log4net;
-using HttpServer;
 
 namespace OpenSim.Framework.Servers.HttpServer
 {

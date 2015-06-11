@@ -34,9 +34,8 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Security.Cryptography.X509Certificates;
 using log4net;
+using HttpServerLib=HttpServer;
 using HttpServer;
-
-using HttpListener = HttpServer.HttpListener;
 
 namespace OpenSim.Framework.Servers.HttpServer
 {
@@ -53,7 +52,7 @@ namespace OpenSim.Framework.Servers.HttpServer
         private object _syncObject = new object();
 
         // underlying HttpServer.HttpListener
-        protected HttpListener _listener;
+        protected HttpServerLib.HttpListener _listener;
         // underlying core/engine thread
         protected Thread _engine;
 

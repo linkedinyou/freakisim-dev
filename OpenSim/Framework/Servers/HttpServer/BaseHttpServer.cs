@@ -26,6 +26,8 @@
  */
 
 using HttpServerLib=HttpServer;
+using CoolHTTPListener = HttpServer.HttpListener;
+using LogPrio = HttpServer.LogPrio;
 using log4net;
 using Nwc.XmlRpc;
 using OpenMetaverse.StructuredData;
@@ -42,8 +44,6 @@ using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading;
 using System.Xml;
-using CoolHTTPListener = HttpServer.HttpListener;
-using LogPrio = HttpServer.LogPrio;
 
 namespace OpenSim.Framework.Servers.HttpServer
 {

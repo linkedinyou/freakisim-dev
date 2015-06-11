@@ -29,6 +29,8 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using log4net;
+using System.Threading.Tasks;
+using OpenSim.Framework.Servers;
 
 namespace OpenSim.Framework.Console
 {
@@ -50,6 +52,47 @@ namespace OpenSim.Framework.Console
             Commands.AddCommand(
                 "Help", false, "help", "help [<item>]",
                 "Display help on a particular command or on a list of commands in a category", Help);
+
+            Commands.AddCommand("Archiving", false, "load oar",
+                "load oar [--merge] [--persist-uuids] [--skip-assets]"
+                + " [--force-terrain] [--force-parcels]"
+                + " [--no-objects]"
+                + " [--rotation degrees] [--rotation-center \"<x,y,z>\"]"
+                + " [--displacement \"<x,y,z>\"]"
+                + " [--default-user \"User Name\"]"
+                + " [<OAR path>]",
+                "Load a region's data from an OAR archive.",
+                "--merge will merge the OAR with the existing scene (suppresses terrain and parcel info loading)." + Environment.NewLine
+                + "--skip-assets will load the OAR but ignore the assets it contains." + Environment.NewLine
+                + "--persist-uuids will restore the saved uuids from the oar (not to be combined with --merge)" + Environment.NewLine
+                + "--displacement will add this value to the position of every object loaded" + Environment.NewLine
+                + "--force-terrain forces the loading of terrain from the oar (undoes suppression done by --merge)" + Environment.NewLine
+                + "--force-parcels forces the loading of parcels from the oar (undoes suppression done by --merge)" + Environment.NewLine
+                + "--rotation specified rotation to be applied to the oar. Specified in degrees." + Environment.NewLine
+                + "--rotation-center Location (relative to original OAR) to apply rotation. Default is <128,128,0>" + Environment.NewLine
+                + "--no-objects suppresses the addition of any objects (good for loading only the terrain)" + Environment.NewLine
+                + "The path can be either a filesystem location or a URI."
+                + "  If this is not given then the command looks for an OAR named region.oar in the current directory.",
+                LoadOar);
+
+            Commands.AddCommand("Archiving", false, "save oar",
+                //"save oar [-v|--version=<N>] [-p|--profile=<url>] [<OAR path>]",
+                "save oar [-h|--home=<url>] [--noassets] [--publish] [--perm=<permissions>] [--all] [<OAR path>]",
+                "Save a region's data to an OAR archive.",
+                //                                          "-v|--version=<N> generates scene objects as per older versions of the serialization (e.g. -v=0)" + Environment.NewLine
+                "-h|--home=<url> adds the url of the profile service to the saved user information.\n"
+                + "--noassets stops assets being saved to the OAR.\n"
+                + "--publish saves an OAR stripped of owner and last owner information.\n"
+                + "   on reload, the estate owner will be the owner of all objects\n"
+                + "   this is useful if you're making oars generally available that might be reloaded to the same grid from which you published\n"
+                + "--perm=<permissions> stops objects with insufficient permissions from being saved to the OAR.\n"
+                + "   <permissions> can contain one or more of these characters: \"C\" = Copy, \"T\" = Transfer\n"
+                + "--all saves all the regions in the simulator, instead of just the current region.\n"
+                + "The OAR path must be a filesystem path."
+                + " If this is not given then the oar is saved to region.oar in the current directory.",
+                SaveOar);
+            
+            
         }
 
         private void Help(string module, string[] cmd)
@@ -107,5 +150,42 @@ namespace OpenSim.Framework.Console
             }
             return cmdinput;
         }
+
+        /// <summary>
+        /// Load a whole region from an opensimulator archive.
+        /// </summary>
+        /// <param name="cmdparams"></param>
+        private void LoadOar(string module, string[] cmdparams) {
+            var task = Task.Run(async () => {
+                var job = MainServer.SceneManager.Ask(new LoadArchiveToCurrentSceneMessage(cmdparams), Timeout.InfiniteTimeSpan);
+                await Task.WhenAll(job);
+                return (job.Result);
+            });
+
+            if (task.Result is Failure) {
+                MainConsole.Instance.Output(task.Result.AsInstanceOf<Failure>().Exception.Message);
+            } else {
+                MainConsole.Instance.OutputFormat("Load Oar result: {0}", task.Result.AsInstanceOf<String>());
+            }
+        }
+
+        /// <summary>
+        /// Save a region to a file, including all the assets needed to restore it.
+        /// </summary>
+        /// <param name="cmdparams"></param>
+        protected void SaveOar(string module, string[] cmdparams) {
+            var task = Task.Run(async () => {
+                var job = MainServer.SceneManager.Ask(new SaveCurrentSceneToArchiveMessage(cmdparams), Timeout.InfiniteTimeSpan);
+                await Task.WhenAll(job);
+                return (job.Result);
+            });
+
+            if (task.Result is Failure) {
+                MainConsole.Instance.Output(task.Result.AsInstanceOf<Failure>().Exception.Message);
+            } else {
+                MainConsole.Instance.OutputFormat("Load Oar result: {0}", task.Result.AsInstanceOf<String>());
+            }
+        }
+
     }
 }

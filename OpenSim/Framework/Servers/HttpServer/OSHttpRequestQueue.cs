@@ -28,7 +28,6 @@
 using System;
 using System.Collections.Generic;
 using System.Threading;
-using HttpServer;
 
 namespace OpenSim.Framework.Servers.HttpServer
 {

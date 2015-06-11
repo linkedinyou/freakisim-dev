@@ -30,6 +30,8 @@ using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
+using log4net;
+using System.Reflection;
 
 namespace OpenSim.Framework.Console
 {
@@ -38,7 +40,7 @@ namespace OpenSim.Framework.Console
     /// </summary>
     public class LocalConsole : CommandConsole
     {
-//        private static readonly ILog m_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog m_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         // private readonly object m_syncRoot = new object();
         private const string LOGLEVEL_NONE = "(none)";
