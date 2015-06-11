@@ -32,6 +32,7 @@ using System.IO;
 using System.Net;
 using System.Reflection;
 using System.Xml;
+using OpenSim.Framework;
 
 namespace OpenSim.Framework.RegionLoader.Web
 {
