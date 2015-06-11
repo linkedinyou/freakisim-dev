@@ -83,7 +83,9 @@
           <Exclude pattern="OSHttpXmlRpcHandler.*\.cs"/>
 		</Match>
 	    <Match path="Monitoring" pattern="*.cs" recurse="true"/>
-		
+	    <Match path="Serialization" pattern="*.cs" recurse="true">
+		  <Exclude pattern="Tests"/>
+		</Match>		
       </Files>
     </Project>
 
@@ -115,6 +117,7 @@
       </Files>
     </Project>
 
+<!--
     <Project frameworkVersion="v4_5" name="OpenSim.Framework.Serialization" path="OpenSim/Framework/Serialization" type="Library">
       <Configuration name="Release">
         <Options>
@@ -144,6 +147,7 @@
         </Match>
       </Files>
     </Project>
+-->
 
     <Project frameworkVersion="v4_5" name="OpenSim.Data" path="OpenSim/Data" type="Library">
       <Configuration name="Release">
@@ -465,7 +469,7 @@
       <Reference name="OpenSim.Capabilities"/>
       <Reference name="OpenSim.Framework.Communications"/>
       <Reference name="OpenSim.Data"/>
-      <Reference name="OpenSim.Framework.Serialization"/>
+      <!-- <Reference name="OpenSim.Framework.Serialization"/> -->
       <Reference name="OpenSim.Region.Physics.Manager"/>
 
       <!-- For scripting in funny languages by default -->
@@ -521,7 +525,7 @@
       <Reference name="OpenSim.Data"/>
       <Reference name="OpenSim.Framework"/>
       <Reference name="OpenSim.Framework.Communications"/>
-      <Reference name="OpenSim.Framework.Serialization"/>
+      <!-- <Reference name="OpenSim.Framework.Serialization"/> -->
       <Reference name="OpenSim.Region.ClientStack.LindenUDP"/>
       <Reference name="OpenSim.Region.Framework"/>
       <Reference name="OpenSim.Region.Physics.Manager"/>
@@ -1013,7 +1017,7 @@
       <Reference name="OpenMetaverseTypes" path="../../../bin/"/>
       <Reference name="OpenMetaverse" path="../../../bin/"/>
       <Reference name="OpenSim.Framework"/>
-      <Reference name="OpenSim.Framework.Serialization"/>
+      <!-- <Reference name="OpenSim.Framework.Serialization"/> -->
       <Reference name="OpenSim.Services.Interfaces"/>
       <Reference name="OpenSim.Services.Base"/>
       <Reference name="OpenSim.Services.AssetService"/>
