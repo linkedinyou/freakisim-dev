@@ -31,7 +31,7 @@ using OpenSim.Services.Interfaces;
 using System.Reflection;
 using System.Text;
 
-namespace OpenSim.Framework.Serialization
+namespace OpenSim.Region.Framework.Serialization
 {
     /// <summary>
     /// Resolves OpenSim Profile Anchors (OSPA).  An OSPA is a string used to provide information for 

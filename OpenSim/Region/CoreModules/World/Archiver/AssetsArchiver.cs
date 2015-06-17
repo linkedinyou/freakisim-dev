@@ -27,7 +27,7 @@
 
 using log4net;
 using OpenSim.Framework;
-using OpenSim.Framework.Serialization;
+using OpenSim.Region.Framework.Serialization;
 using System.Reflection;
 
 namespace OpenSim.Region.CoreModules.World.Archiver

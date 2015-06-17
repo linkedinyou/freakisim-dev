@@ -29,7 +29,7 @@ using System;
 using System.IO;
 using System.Text;
 
-namespace OpenSim.Framework.Serialization
+namespace OpenSim.Region.Framework.Serialization
 {
     /// <summary>
     /// Temporary code to do the bare minimum required to read a tar archive for our purposes

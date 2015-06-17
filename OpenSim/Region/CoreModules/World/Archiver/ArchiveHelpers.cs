@@ -26,7 +26,7 @@
  */
 
 using OpenSim.Framework;
-using OpenSim.Framework.Serialization;
+using OpenSim.Region.Framework.Serialization;
 using OpenSim.Region.Framework.Scenes;
 using System;
 using System.IO;

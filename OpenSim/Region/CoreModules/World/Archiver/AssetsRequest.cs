@@ -28,7 +28,7 @@
 using log4net;
 using OpenMetaverse;
 using OpenSim.Framework;
-using OpenSim.Framework.Serialization.External;
+using OpenSim.Region.Framework.Serialization.External;
 using OpenSim.Services.Interfaces;
 using System;
 using System.Collections.Generic;

@@ -32,8 +32,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Xml;
-    
-namespace OpenSim.Framework.Serialization.External
+using OpenSim.Framework;
+
+namespace OpenSim.Region.Framework.Serialization.External
 {        
     /// <summary>
     /// Serialize and deserialize user inventory items as an external format.

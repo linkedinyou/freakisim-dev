@@ -28,8 +28,9 @@
 using System;
 using System.IO;
 using System.Text;
+using OpenSim.Framework;
 
-namespace OpenSim.Framework.Serialization
+namespace OpenSim.Region.Framework.Serialization
 {
     /// <summary>
     /// Temporary code to produce a tar archive in tar v7 format

@@ -28,9 +28,10 @@
 using OpenMetaverse;
 using System;
 using System.Collections.Generic;
+using OpenSim.Framework;
 using OpenSimAssetType = OpenSim.Framework.SLUtil.OpenSimAssetType;
 
-namespace OpenSim.Framework.Serialization
+namespace OpenSim.Region.Framework.Serialization
 {
     /// <summary>
     /// Constants for the archiving module

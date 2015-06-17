@@ -34,7 +34,7 @@ using System.IO;
 using System.Reflection;
 using System.Xml;
 
-namespace OpenSim.Framework.Serialization.External
+namespace OpenSim.Region.Framework.Serialization.External
 {
     /// <summary>
     /// Utilities for manipulating external representations of data structures in OpenSim

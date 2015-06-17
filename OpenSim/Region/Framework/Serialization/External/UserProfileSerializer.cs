@@ -29,7 +29,7 @@ using OpenMetaverse;
 using System.IO;
 using System.Xml;
 
-namespace OpenSim.Framework.Serialization.External
+namespace OpenSim.Region.Framework.Serialization.External
 {
     /// <summary>
     /// Serialize and deserialize user profiles as an external format.

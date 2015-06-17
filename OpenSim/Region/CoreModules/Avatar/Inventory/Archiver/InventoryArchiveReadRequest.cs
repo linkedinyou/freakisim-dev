@@ -28,8 +28,8 @@
 using log4net;
 using OpenMetaverse;
 using OpenSim.Framework;
-using OpenSim.Framework.Serialization;
-using OpenSim.Framework.Serialization.External;
+using OpenSim.Region.Framework.Serialization;
+using OpenSim.Region.Framework.Serialization.External;
 using OpenSim.Region.CoreModules.World.Archiver;
 using OpenSim.Region.Framework.Scenes;
 using OpenSim.Region.Framework.Scenes.Serialization;

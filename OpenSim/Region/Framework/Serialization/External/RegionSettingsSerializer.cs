@@ -29,8 +29,9 @@ using OpenMetaverse;
 using System.IO;
 using System.Text;
 using System.Xml;
+using OpenSim.Framework;
 
-namespace OpenSim.Framework.Serialization.External
+namespace OpenSim.Region.Framework.Serialization.External
 {
     /// <summary>
     /// Serialize and deserialize region settings as an external format.

@@ -83,9 +83,6 @@
           <Exclude pattern="OSHttpXmlRpcHandler.*\.cs"/>
 		</Match>
 	    <Match path="Monitoring" pattern="*.cs" recurse="true"/>
-	    <Match path="Serialization" pattern="*.cs" recurse="true">
-		  <Exclude pattern="Tests"/>
-		</Match>		
       </Files>
     </Project>
 
@@ -469,7 +466,6 @@
       <Reference name="OpenSim.Capabilities"/>
       <Reference name="OpenSim.Framework.Communications"/>
       <Reference name="OpenSim.Data"/>
-      <!-- <Reference name="OpenSim.Framework.Serialization"/> -->
       <Reference name="OpenSim.Region.Physics.Manager"/>
 
       <!-- For scripting in funny languages by default -->
@@ -482,9 +478,12 @@
       <Reference name="ThreadedClasses" path="../../../bin/"/>
 
       <Files>
-        <Match pattern="*.cs" recurse="true">
+        <Match pattern="*.cs" recurse="false">
           <Exclude name="Tests" pattern="Tests"/>
         </Match>
+		<Match path="Serialization" pattern="*.cs" recurse="true">
+		  <Exclude pattern="Tests"/>
+		</Match>
       </Files>
     </Project>
 
